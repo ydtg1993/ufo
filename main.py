@@ -1,22 +1,16 @@
-import undetected_chromedriver as uc
-import threading
 import time
-
-def thread_function():
-    options = uc.ChromeOptions()
-    driver = uc.Chrome(options=options, user_multi_procs=True)
-    time.sleep(7)
-    driver.get('https://www.manhuagui.com/')
+from assiatant.bot import Bot
+from dotenv import load_dotenv
+from assiatant.db import MysqlConnector
+from assiatant.rd import RedisConnector
 
 
-threads = []
-for i in range(2):
-    thread = threading.Thread(target=thread_function, args=())
-    threads.append(thread)
-    thread.start()
+def main():
+    global DB,RD
+    DB = MysqlConnector()
+    RD = RedisConnector()
+    # Bot(2)
 
-# 等待所有线程结束
-for thread in threads:
-    thread.join()
-
-input("按任意键退出...")
+if __name__ == '__main__':
+    main()
+    input("按任意键退出...")
