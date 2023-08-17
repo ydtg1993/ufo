@@ -13,10 +13,13 @@ class Bot(object):
             self.beginning()
 
     def beginning(self):
-        options = uc.ChromeOptions()
-        driver = uc.Chrome(options=options, user_multi_procs=True)
-        with self.pool_lock:
-            self.pool.append(driver)
+        try:
+            options = uc.ChromeOptions()
+            driver = uc.Chrome(options=options)
+            with self.pool_lock:
+                self.pool.append(driver)
+        except BaseException as e:
+            print(f'webview开启失败{e}')
 
     def get_driver(self):
         with self.pool_lock:

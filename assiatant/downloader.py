@@ -18,7 +18,7 @@ class ImageDownloader:
 
         for retry in range(self.max_retries):
             try:
-                response = requests.get(url, headers=self.headers, cookies=self.cookies)
+                response = requests.get(url, headers=self.headers, cookies=self.cookies, timeout=10)
                 if response.status_code == 200:
                     # 构建图片保存的相对路径
                     image_filename = url.split("/")[-1]
@@ -29,11 +29,8 @@ class ImageDownloader:
                     # 保存图片到指定目录
                     with open(relative_path, "wb") as f:
                         f.write(response.content)
-
-                    print("Image downloaded successfully:", relative_path)
                     break
                 else:
-                    print("Failed to download image. Retrying...")
                     time.sleep(1)
             except Exception as e:
                 print(f"Error while downloading image: {e}. Retrying...")
