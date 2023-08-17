@@ -4,11 +4,11 @@ import redis
 
 class RedisConnector:
     def __init__(self, config: ConfigParser):
-        self.RD_HOST = config.get("Redis","HOST")
-        self.RD_PORT = int(config.get("Redis","PORT"))
-        self.RD_USER = config.get("Redis","USER")
-        self.RD_PASS = config.get("Redis","PASS")
-        self.RD_INDEX = int(config.get("Redis","INDEX"))
+        self.RD_HOST = config.get("Redis", "HOST")
+        self.RD_PORT = int(config.get("Redis", "PORT"))
+        self.RD_USER = config.get("Redis", "USER")
+        self.RD_PASS = config.get("Redis", "PASS")
+        self.RD_INDEX = int(config.get("Redis", "INDEX"))
 
         try:
             self.redis_pool = redis.ConnectionPool(

@@ -7,9 +7,9 @@ from assiatant.rd import RedisConnector
 
 
 class Proxy:
-    def __init__(self,rd: RedisConnector, config: ConfigParser):
+    def __init__(self, rd: RedisConnector, config: ConfigParser):
         self.RD: RedisConnector = rd
-        self.proxyUrl = config.get("App","PROXY_URL")
+        self.proxyUrl = config.get("App", "PROXY_URL")
 
     def get_proxy(self):
         save_data = []
@@ -38,5 +38,5 @@ class Proxy:
         if len(save_data) > 0:
             random_index = random.randint(0, len(save_data) - 1)
             proxy = save_data[random_index]
-            self.RD.set_cache(cache,json.dumps(save_data))
+            self.RD.set_cache(cache, json.dumps(save_data))
         return proxy

@@ -4,22 +4,22 @@ import pymysql
 
 
 class MysqlConnector:
-    def __init__(self,config:ConfigParser):
-        self.DB_HOST = config.get("Database","HOST")
-        self.DB_PORT = int(config.get("Database","PORT"))
-        self.DB_USER = config.get("Database","USER")
-        self.DB_PASS = config.get("Database","PASS")
-        self.DB_NAME = config.get("Database","DB")
+    def __init__(self, config: ConfigParser):
+        self.DB_HOST = config.get("Database", "HOST")
+        self.DB_PORT = int(config.get("Database", "PORT"))
+        self.DB_USER = config.get("Database", "USER")
+        self.DB_PASS = config.get("Database", "PASS")
+        self.DB_NAME = config.get("Database", "DB")
 
         try:
             self.mysql_pool = PooledDB(creator=pymysql,  # 数据库类型
-                                            maxcached=20,  # 最大空闲数
-                                            blocking=True,  # 默认False，即达到最大连接数时，再取新连接将会报错，True，达到最大连接数时，新连接阻塞，等待连接数减少再连接
-                                            ping=4,
-                                            host=self.DB_HOST, port=self.DB_PORT, user=self.DB_USER,
-                                            password=self.DB_PASS,
-                                            db=self.DB_NAME,
-                                            charset='utf8')
+                                       maxcached=20,  # 最大空闲数
+                                       blocking=True,  # 默认False，即达到最大连接数时，再取新连接将会报错，True，达到最大连接数时，新连接阻塞，等待连接数减少再连接
+                                       ping=4,
+                                       host=self.DB_HOST, port=self.DB_PORT, user=self.DB_USER,
+                                       password=self.DB_PASS,
+                                       db=self.DB_NAME,
+                                       charset='utf8')
             self.mysql_pool.connection()
         except BaseException as e:
             print(f'数据库链接错误{e}')
@@ -29,23 +29,23 @@ class MysqlConnector:
     def get_conn(self):
         conn = self.mysql_pool.connection()
         cur = conn.cursor()
-        return conn,cur
+        return conn, cur
 
-    def close_conn(self,conn,cur):
+    def close_conn(self, conn, cur):
         cur.close()
         conn.close()
 
-    def select_infor(self,insert):
-        conn,cur = self.get_conn()
+    def select_infor(self, insert):
+        conn, cur = self.get_conn()
         try:
             cur.execute(insert)
             return cur.fetchall()
         except BaseException as e:
             print('数据库查询错误')
         finally:
-            self.close_conn(conn,cur)
+            self.close_conn(conn, cur)
 
-    def update_infor(self,insert):
+    def update_infor(self, insert):
         conn, cur = self.get_conn()
         try:
             cur.execute(insert)
