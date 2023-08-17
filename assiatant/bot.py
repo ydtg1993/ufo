@@ -1,13 +1,13 @@
-import os
 import threading
+from configparser import ConfigParser
 import undetected_chromedriver as uc
-from dotenv import load_dotenv
 
 class Bot(object):
     pool = []
     pool_lock = threading.Lock()
-    def __init__(self, n=1):
-        for i in range(n):
+    def __init__(self, config: ConfigParser):
+        num = int(config.get("Bot","thread"))
+        for i in range(num):
             thread = threading.Thread(target=self.beginning, args=())
             thread.start()
 

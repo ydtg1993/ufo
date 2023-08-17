@@ -12,7 +12,7 @@ def main():
         CONF=config,
         DB_POOL=MysqlConnector(config),
         RD_POOL=RedisConnector(config),
-        BOT_POOL=Bot(0), )
+        BOT_POOL=Bot(config), )
     time.sleep(3)
     Comic(**tools)
 

@@ -15,7 +15,7 @@ class Proxy:
         save_data = []
         proxy = ""
         cache = "proxy:" + self.proxyUrl
-        cache_proxy = self.RD.getCache(cache)
+        cache_proxy = self.RD.get_cache(cache)
         if cache_proxy:
             try:
                 save_data = json.loads(cache_proxy)
@@ -29,14 +29,14 @@ class Proxy:
             response = requests.get(self.proxyUrl)
             if response.status_code == 200:
                 json_data = response.json()
-                value = json_data.get("data")
-                print(value)
+                for entry in json_data.get("data"):
+                    save_data.append(f"http://{entry['ip']}:{str(entry['port'])}")
                 break
             else:
                 time.sleep(5)
 
-        if save_data:
+        if len(save_data) > 0:
             random_index = random.randint(0, len(save_data) - 1)
             proxy = save_data[random_index]
-
+            self.RD.set_cache(cache,json.dumps(save_data))
         return proxy
