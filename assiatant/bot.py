@@ -1,5 +1,7 @@
+import os
 import threading
 import undetected_chromedriver as uc
+from dotenv import load_dotenv
 
 class Bot(object):
     def __init__(self, n=1):
@@ -12,8 +14,11 @@ class Bot(object):
             thread.start()
 
     def beginning(self):
+        load_dotenv()
+        url = os.getenv("SOURCE_URL")
+
         options = uc.ChromeOptions()
         options.add_argument("--load-images=no")
         driver = uc.Chrome(options=options, user_multi_procs=True)
-        driver.get('https://baozimh.org/allmanga/')
+        driver.get(url)
         self.Webdrivers.append(driver)

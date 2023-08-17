@@ -1,15 +1,16 @@
 import time
 from assiatant.bot import Bot
-from dotenv import load_dotenv
 from assiatant.db import MysqlConnector
 from assiatant.rd import RedisConnector
-
+from controller.comic import Comic
 
 def main():
-    global DB,RD
-    DB = MysqlConnector()
-    RD = RedisConnector()
-    # Bot(2)
+    tools = dict(
+        DB_POOL=MysqlConnector(),
+        RD_POOL=RedisConnector(),
+        BOT_POOL=Bot(0),)
+    Comic(**tools)
+
 
 if __name__ == '__main__':
     main()

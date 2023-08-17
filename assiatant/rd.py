@@ -2,7 +2,6 @@ import os
 import redis
 from dotenv import load_dotenv
 
-
 class RedisConnector:
     def __init__(self):
         load_dotenv()

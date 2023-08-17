@@ -3,12 +3,11 @@ from dbutils.pooled_db import PooledDB
 import pymysql
 from dotenv import load_dotenv
 
-
 class MysqlConnector:
     def __init__(self):
         load_dotenv()
         self.DB_HOST = os.getenv("DB_HOST","localhost")
-        self.DB_PORT = os.getenv("DB_PORT",3306)
+        self.DB_PORT = int(os.getenv("DB_PORT",3306))
         self.DB_USER = os.getenv("DB_USER","root")
         self.DB_PASS = os.getenv("DB_PASS","123456")
         self.DB_NAME = os.getenv("DB_NAME","db")
@@ -21,6 +20,7 @@ class MysqlConnector:
                                             password=self.DB_PASS,
                                             db=self.DB_NAME,
                                             charset='utf8')
+            self.mysql_pool.connection()
         except BaseException as e:
             print(f'数据库链接错误{e}')
         else:
@@ -53,5 +53,17 @@ class MysqlConnector:
             return True
         except BaseException as e:
             print(f'数据库更新错误{e}')
+        finally:
+            self.close_conn(conn, cur)
+
+    def insert_data(self, insert_query):
+        conn, cur = self.get_conn()
+        try:
+            cur.execute(insert_query)
+            conn.commit()
+            return True
+        except BaseException as e:
+            print(f'数据库插入错误: {e}')
+            return False
         finally:
             self.close_conn(conn, cur)
