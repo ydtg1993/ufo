@@ -1,11 +1,13 @@
 import os
+import time
+
 import requests
 
 
 class ImageDownloader:
     def __init__(self, save_directory, rename="", headers=None, cookies=None):
         self.save_directory = save_directory
-        self.max_retries = 7
+        self.max_retries = 12
         self.rename = rename
         self.headers = headers
         self.cookies = cookies
@@ -32,6 +34,7 @@ class ImageDownloader:
                     break
                 else:
                     print("Failed to download image. Retrying...")
+                    time.sleep(1)
             except Exception as e:
                 print(f"Error while downloading image: {e}. Retrying...")
 
