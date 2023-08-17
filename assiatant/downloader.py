@@ -3,10 +3,12 @@ import requests
 
 
 class ImageDownloader:
-    def __init__(self, save_directory, rename=""):
+    def __init__(self, save_directory, rename="", headers=None, cookies=None):
         self.save_directory = save_directory
         self.max_retries = 7
         self.rename = rename
+        self.headers = headers
+        self.cookies = cookies
         os.makedirs(self.save_directory, exist_ok=True)
 
     def download_image(self, url):
@@ -14,7 +16,7 @@ class ImageDownloader:
 
         for retry in range(self.max_retries):
             try:
-                response = requests.get(url)
+                response = requests.get(url, headers=self.headers, cookies=self.cookies)
                 if response.status_code == 200:
                     # 构建图片保存的相对路径
                     image_filename = url.split("/")[-1]
