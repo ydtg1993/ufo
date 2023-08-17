@@ -1,16 +1,16 @@
-import os
+from configparser import ConfigParser
 from dbutils.pooled_db import PooledDB
 import pymysql
-from dotenv import load_dotenv
+
 
 class MysqlConnector:
-    def __init__(self):
-        load_dotenv()
-        self.DB_HOST = os.getenv("DB_HOST","localhost")
-        self.DB_PORT = int(os.getenv("DB_PORT",3306))
-        self.DB_USER = os.getenv("DB_USER","root")
-        self.DB_PASS = os.getenv("DB_PASS","123456")
-        self.DB_NAME = os.getenv("DB_NAME","db")
+    def __init__(self,config:ConfigParser):
+        self.DB_HOST = config.get("Database","HOST")
+        self.DB_PORT = int(config.get("Database","PORT"))
+        self.DB_USER = config.get("Database","USER")
+        self.DB_PASS = config.get("Database","PASS")
+        self.DB_NAME = config.get("Database","DB")
+
         try:
             self.mysql_pool = PooledDB(creator=pymysql,  # 数据库类型
                                             maxcached=20,  # 最大空闲数

@@ -1,15 +1,14 @@
-import os
+from configparser import ConfigParser
 import redis
-from dotenv import load_dotenv
+
 
 class RedisConnector:
-    def __init__(self):
-        load_dotenv()
-        self.RD_HOST = os.getenv("RD_HOST", "localhost")
-        self.RD_PORT = os.getenv("RD_PORT", 6379)
-        self.RD_USER = os.getenv("RD_USER", "root")
-        self.RD_PASS = os.getenv("RD_PASS", "")
-        self.RD_INDEX = os.getenv("RD_INDEX", 0)
+    def __init__(self, config: ConfigParser):
+        self.RD_HOST = config.get("Redis","HOST")
+        self.RD_PORT = config.get("Redis","PORT")
+        self.RD_USER = config.get("Redis","USER")
+        self.RD_PASS = config.get("Redis","PASS")
+        self.RD_INDEX = config.get("Redis","INDEX")
 
         try:
             self.redis_pool = redis.ConnectionPool(
@@ -24,3 +23,11 @@ class RedisConnector:
             print(f'读取配置文件错误：{e}')
         else:
             print('redis链接成功')
+
+    def getCache(self, key):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        channel.get(key)
+
+    def setCache(self, key, val):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        channel.set(key, val)

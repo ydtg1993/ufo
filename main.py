@@ -3,13 +3,17 @@ from assiatant.bot import Bot
 from assiatant.db import MysqlConnector
 from assiatant.rd import RedisConnector
 from controller.comic import Comic
+import configparser
 
 def main():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
     tools = dict(
-        DB_POOL=MysqlConnector(),
-        RD_POOL=RedisConnector(),
-        BOT_POOL=Bot(1),)
-    time.sleep(5)
+        CONF=config,
+        DB_POOL=MysqlConnector(config),
+        RD_POOL=RedisConnector(config),
+        BOT_POOL=Bot(0), )
+    time.sleep(3)
     Comic(**tools)
 
 
