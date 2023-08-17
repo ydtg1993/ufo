@@ -26,7 +26,7 @@ class Comic:
         WebDriverWait(WB, 10).until(element_present)
 
         cookies = WB.get_cookies()
-
+        time.sleep(5)
         comicElems = WB.find_elements(By.CSS_SELECTOR, ".entries>article")
         for comicElem in comicElems:
             print(comicElem.find_element(By.CLASS_NAME, "entry-title").text)

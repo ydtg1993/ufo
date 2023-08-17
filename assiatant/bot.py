@@ -10,8 +10,7 @@ class Bot(object):
     def __init__(self, config: ConfigParser):
         num = int(config.get("Bot", "thread"))
         for i in range(num):
-            thread = threading.Thread(target=self.beginning, args=())
-            thread.start()
+            self.beginning()
 
     def beginning(self):
         options = uc.ChromeOptions()
