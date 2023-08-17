@@ -14,7 +14,8 @@ class Bot(object):
     def beginning(self):
         options = uc.ChromeOptions()
         driver = uc.Chrome(options=options, user_multi_procs=True)
-        self.pool.append(driver)
+        with self.pool_lock:
+            self.pool.append(driver)
 
     def get_driver(self):
         with self.pool_lock:
