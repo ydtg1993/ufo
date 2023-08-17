@@ -8,7 +8,8 @@ def main():
     tools = dict(
         DB_POOL=MysqlConnector(),
         RD_POOL=RedisConnector(),
-        BOT_POOL=Bot(0),)
+        BOT_POOL=Bot(1),)
+    time.sleep(5)
     Comic(**tools)
 
 

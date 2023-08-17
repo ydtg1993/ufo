@@ -1,3 +1,5 @@
+import time
+from undetected_chromedriver import Chrome
 from assiatant.bot import Bot
 from assiatant.db import MysqlConnector
 from assiatant.rd import RedisConnector
@@ -8,5 +10,7 @@ class Comic:
         DB: MysqlConnector = kwargs.get('DB_POOL')
         RD: RedisConnector = kwargs.get('RD_POOL')
         BOT:Bot = kwargs.get('BOT_POOL')
-        print(DB.get_conn(),RD,BOT)
+        WebDriver:Chrome = BOT.get_driver()
+        WebDriver.get("https://baidu.com")
+
 
