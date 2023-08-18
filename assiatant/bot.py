@@ -28,6 +28,6 @@ class Bot(object):
             else:
                 return None
 
-    def release_driver(self, driver):
+    def release_driver(self, driver: uc.Chrome):
         with self.pool_lock:
             self.pool.append(driver)

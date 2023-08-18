@@ -1,3 +1,4 @@
+import hashlib
 import os
 import time
 
@@ -21,7 +22,8 @@ class ImageDownloader:
                 response = requests.get(url, headers=self.headers, cookies=self.cookies, timeout=10)
                 if response.status_code == 200:
                     # 构建图片保存的相对路径
-                    image_filename = url.split("/")[-1]
+                    _, file_extension = os.path.splitext(url)
+                    image_filename = hashlib.md5(url.encode('utf-8')).hexdigest() + file_extension.lower()
                     if self.rename != "":
                         image_filename = self.rename
                     relative_path = os.path.join(self.save_directory, image_filename)
