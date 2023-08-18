@@ -28,7 +28,16 @@ class Comic:
         cookies = WB.get_cookies()
         time.sleep(5)
         comicElems = WB.find_elements(By.CSS_SELECTOR, ".entries>article")
+        imgDownLoader = ImageDownloader("./resources", None, cookies)
         for comicElem in comicElems:
-            print(comicElem.find_element(By.CLASS_NAME, "entry-title").text)
+            comic = dict(source=3)
+            tDom = comicElem.find_element(By.CLASS_NAME, "entry-title")
+            comic["title"] = tDom.text.strip()
+            comic["source_url"] = tDom.find_element(By.TAG_NAME,'a').get_attribute('href')
+            comic["source_id"] = 0
             cover = comicElem.find_element(By.TAG_NAME, "img").get_attribute("data-src")
-            ImageDownloader("./resources", "", None, cookies).download_image(cover)
+            comic["cover"] = imgDownLoader.download_image(cover)
+            comic["label"] = '[]'
+            comic["category"] = '[]'
+            comic["source_data"] = comicElem.get_attribute('innerHTML')
+            DB.insert_data('source_comic', comic)

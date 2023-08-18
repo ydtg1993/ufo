@@ -56,13 +56,20 @@ class MysqlConnector:
         finally:
             self.close_conn(conn, cur)
 
-    def insert_data(self, insert_query):
+    def insert_data(self, table: str, data_dict: dict):
         conn, cur = self.get_conn()
         try:
-            cur.execute(insert_query)
-            conn.commit()
+            placeholders = ', '.join(['%s'] * len(data_dict))
+            columns = ', '.join(data_dict.keys())
+            sql = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
+
+            # 执行单条记录插入
+            cur.execute(sql, tuple(data_dict.values()))
+
+            conn.commit()  # 提交事务
             return True
         except BaseException as e:
+            conn.rollback()  # 回滚事务
             print(f'数据库插入错误: {e}')
             return False
         finally:

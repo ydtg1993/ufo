@@ -6,15 +6,14 @@ import requests
 
 
 class ImageDownloader:
-    def __init__(self, save_directory, rename="", headers=None, cookies=None):
+    def __init__(self, save_directory, headers=None, cookies=None):
         self.save_directory = save_directory
         self.max_retries = 12
-        self.rename = rename
         self.headers = headers
         self.cookies = cookies
         os.makedirs(self.save_directory, exist_ok=True)
 
-    def download_image(self, url):
+    def download_image(self, url,rename=""):
         relative_path = None
 
         for retry in range(self.max_retries):
@@ -24,8 +23,8 @@ class ImageDownloader:
                     # 构建图片保存的相对路径
                     _, file_extension = os.path.splitext(url)
                     image_filename = hashlib.md5(url.encode('utf-8')).hexdigest() + file_extension.lower()
-                    if self.rename != "":
-                        image_filename = self.rename
+                    if rename != "":
+                        image_filename = rename + file_extension.lower()
                     relative_path = os.path.join(self.save_directory, image_filename)
 
                     # 保存图片到指定目录
