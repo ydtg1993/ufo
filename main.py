@@ -1,3 +1,4 @@
+import threading
 import time
 from assiatant.bot import Bot
 from assiatant.db import MysqlConnector
@@ -14,7 +15,10 @@ def main():
         RD_POOL=RedisConnector(config),
         BOT_POOL=Bot(config), )
     time.sleep(3)
-    Comic(**tools)
+
+    for t in range(3):
+        thread = threading.Thread(target=Comic, kwargs=tools)
+        thread.start()
 
 
 if __name__ == '__main__':

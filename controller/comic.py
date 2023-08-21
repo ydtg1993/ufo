@@ -26,15 +26,21 @@ class Comic:
         WebDriverWait(WB, 10).until(element_present)
 
         cookies = WB.get_cookies()
+        combined_cookies = {}
+        for cookie in cookies:
+            combined_cookies[cookie["name"]] = cookie["value"]
+
         time.sleep(5)
         comicElems = WB.find_elements(By.CSS_SELECTOR, ".entries>article")
-        imgDownLoader = ImageDownloader("./resources", None, cookies)
+        imgDownLoader = ImageDownloader("./resources", {
+            "Referer":"https://baozimh.org/",
+            "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+        }, combined_cookies)
         for comicElem in comicElems:
-            comic = dict(source=3)
+            comic = dict()
             tDom = comicElem.find_element(By.CLASS_NAME, "entry-title")
             comic["title"] = tDom.text.strip()
             comic["source_url"] = tDom.find_element(By.TAG_NAME,'a').get_attribute('href')
-            comic["source_id"] = 0
             cover = comicElem.find_element(By.TAG_NAME, "img").get_attribute("data-src")
             comic["cover"] = imgDownLoader.download_image(cover)
             comic["label"] = '[]'

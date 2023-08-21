@@ -6,7 +6,7 @@ import requests
 
 
 class ImageDownloader:
-    def __init__(self, save_directory, headers=None, cookies=None):
+    def __init__(self, save_directory, headers=dict, cookies=dict):
         self.save_directory = save_directory
         self.max_retries = 12
         self.headers = headers
@@ -14,7 +14,7 @@ class ImageDownloader:
         os.makedirs(self.save_directory, exist_ok=True)
 
     def download_image(self, url,rename=""):
-        relative_path = None
+        relative_path = ""
 
         for retry in range(self.max_retries):
             try:
