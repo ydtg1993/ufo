@@ -1,4 +1,3 @@
-import threading
 import time
 from assiatant.bot import Bot
 from assiatant.db import MysqlConnector
@@ -16,10 +15,10 @@ def main():
         BOT_POOL=Bot(config), )
     time.sleep(3)
 
-    thread = threading.Thread(target=Volume, kwargs=tools)
-    thread.start()
-
+    schedule.every(2).hours.do(Volume(**tools))
+    while True:
+        schedule.run_pending()
+        time.sleep(30)
 
 if __name__ == '__main__':
     main()
-    input("按任意键退出...")
