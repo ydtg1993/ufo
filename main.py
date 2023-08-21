@@ -16,9 +16,8 @@ def main():
         BOT_POOL=Bot(config), )
     time.sleep(3)
 
-    for t in range(3):
-        thread = threading.Thread(target=Comic, kwargs=tools)
-        thread.start()
+    thread = threading.Thread(target=Comic, kwargs=tools)
+    thread.start()
 
 
 if __name__ == '__main__':
