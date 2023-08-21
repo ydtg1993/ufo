@@ -9,10 +9,8 @@ class Bot(object):
 
     def __init__(self, config: ConfigParser):
         num = int(config.get("Bot", "thread"))
-        for i in range(num):
-            self.beginning()
 
-    def beginning(self):
+    def start(self):
         try:
             options = uc.ChromeOptions()
             driver = uc.Chrome(options=options)
@@ -27,7 +25,3 @@ class Bot(object):
                 return self.pool.pop()
             else:
                 return None
-
-    def release_driver(self, driver: uc.Chrome):
-        with self.pool_lock:
-            self.pool.append(driver)

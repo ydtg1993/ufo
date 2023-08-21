@@ -17,6 +17,7 @@ class Volume:
         DB: MysqlConnector = kwargs.get('DB_POOL')
         RD: RedisConnector = kwargs.get('RD_POOL')
         BOT: Bot = kwargs.get('BOT_POOL')
+        BOT.start()
         WB: Chrome = BOT.get_driver()
 
         url = CONF.get("App", "SOURCE_URL")
@@ -72,3 +73,5 @@ class Volume:
             except Exception as e:
                 print(e)
                 continue
+
+        WB.close()

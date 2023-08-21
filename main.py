@@ -4,6 +4,7 @@ from assiatant.db import MysqlConnector
 from assiatant.rd import RedisConnector
 from controller.volume import Volume
 import configparser
+import schedule
 
 def main():
     config = configparser.ConfigParser()
@@ -15,10 +16,13 @@ def main():
         BOT_POOL=Bot(config), )
     time.sleep(3)
 
-    schedule.every(2).hours.do(Volume(**tools))
+    schedule.every(6).hours.do(run_volume_task, tools)
     while True:
         schedule.run_pending()
-        time.sleep(30)
+        time.sleep(1200)
+
+def run_volume_task(tools):
+    Volume(**tools)
 
 if __name__ == '__main__':
     main()
