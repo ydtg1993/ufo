@@ -3,7 +3,7 @@ import time
 from assiatant.bot import Bot
 from assiatant.db import MysqlConnector
 from assiatant.rd import RedisConnector
-from controller.comic import Comic
+from controller.volume import Volume
 import configparser
 
 def main():
@@ -16,7 +16,7 @@ def main():
         BOT_POOL=Bot(config), )
     time.sleep(3)
 
-    thread = threading.Thread(target=Comic, kwargs=tools)
+    thread = threading.Thread(target=Volume, kwargs=tools)
     thread.start()
 
 
