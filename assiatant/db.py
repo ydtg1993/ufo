@@ -13,6 +13,7 @@ class MysqlConnector:
             self.engine = create_engine(
                 f"mysql+pymysql://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}",
                 pool_size=20, max_overflow=0)
+            self.engine.connect()
             Session = sessionmaker(bind=self.engine)
             self.session = Session()
         except BaseException as e:

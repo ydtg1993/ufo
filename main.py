@@ -15,6 +15,7 @@ def main():
         RD_POOL=RedisConnector(config),
         BOT_POOL=Bot(config), )
     time.sleep(3)
+    run_volume_task(tools)
 
     schedule.every(6).hours.do(run_volume_task, tools)
     while True:
