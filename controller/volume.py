@@ -22,7 +22,6 @@ class Volume:
         url = CONF.get("App", "SOURCE_URL")
 
         WB.get(f"{url}")
-        time.sleep(30)
 
         task_map = {}
 
