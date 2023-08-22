@@ -11,7 +11,7 @@ class Bot(object):
             options = uc.ChromeOptions()
             options.add_argument("window-size=1920,1080")
             options.add_argument('--blink-settings=imagesEnabled=false')
-            driver = uc.Chrome(options=options,headless=True,debug=True)
+            driver = uc.Chrome(options=options,headless=True,driver_executable_path="./chromedriver")
             return driver
         except BaseException as e:
             print(f'webview开启失败{e}')
