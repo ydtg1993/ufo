@@ -11,7 +11,7 @@ class Bot(object):
             options = uc.ChromeOptions()
             options.add_argument("window-size=1920,1080")
             options.add_argument('--blink-settings=imagesEnabled=false')
-            
+
             driver = uc.Chrome(options=options,headless=True,debug=True,browser_executable_path="/usr/bin/google-chrome")
             return driver
         except BaseException as e:
