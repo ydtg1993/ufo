@@ -13,6 +13,7 @@ class Bot(object):
     def start(self):
         try:
             options = uc.ChromeOptions()
+            options.headless = True
             options.add_argument('--headless')
             options.add_argument('--blink-settings=imagesEnabled=false')
             driver = uc.Chrome(options=options,executable_path="./chromedriver")
