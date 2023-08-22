@@ -1,12 +1,8 @@
-import threading
 from configparser import ConfigParser
 import undetected_chromedriver as uc
 
 
 class Bot(object):
-    pool = []
-    pool_lock = threading.Lock()
-
     def __init__(self, config: ConfigParser):
         num = int(config.get("Bot", "thread"))
 
@@ -18,7 +14,6 @@ class Bot(object):
             options.add_argument("window-size=1920,1080")
             options.add_argument('--blink-settings=imagesEnabled=false')
             driver = uc.Chrome(options=options)
-            driver.get("https://www.google.com")
             return driver
         except BaseException as e:
             print(f'webview开启失败{e}')

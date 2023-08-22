@@ -13,7 +13,7 @@ def main():
         CONF=config,
         DB_POOL=MysqlConnector(config),
         RD_POOL=RedisConnector(config),
-        BOT_POOL=Bot(config), )
+        BOT=Bot(config), )
 
     Volume(**tools)
 

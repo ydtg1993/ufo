@@ -16,7 +16,7 @@ class Volume:
         CONF: ConfigParser = kwargs.get('CONF')
         DB: MysqlConnector = kwargs.get('DB_POOL')
         RD: RedisConnector = kwargs.get('RD_POOL')
-        BOT: Bot = kwargs.get('BOT_POOL')
+        BOT: Bot = kwargs.get('BOT')
         WB: Chrome = BOT.start()
 
         url = CONF.get("App", "SOURCE_URL")
