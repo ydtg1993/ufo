@@ -12,7 +12,6 @@ class Bot(object):
             options.add_argument("window-size=1920,1080")
             options.add_argument('--blink-settings=imagesEnabled=false')
             driver = uc.Chrome(options=options,headless=True)
-            driver.get("https://cn.nytimes.com")
             return driver
         except BaseException as e:
             print(f'webview开启失败{e}')
