@@ -18,7 +18,7 @@ class Volume:
         RD: RedisConnector = kwargs.get('RD_POOL')
         BOT: Bot = kwargs.get('BOT')
         WB: Chrome = BOT.start()
-
+        time.sleep(30)
         url = CONF.get("App", "SOURCE_URL")
 
         WB.get(f"{url}")
