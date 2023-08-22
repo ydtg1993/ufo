@@ -13,8 +13,9 @@ class Bot(object):
     def start(self):
         try:
             options = uc.ChromeOptions()
-            options.headless = True
             options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
+            options.add_argument("window-size=1920,1080")
             options.add_argument('--blink-settings=imagesEnabled=false')
             driver = uc.Chrome(options=options,executable_path="./chromedriver")
             with self.pool_lock:
