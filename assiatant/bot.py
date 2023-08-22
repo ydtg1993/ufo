@@ -1,4 +1,3 @@
-import os
 from configparser import ConfigParser
 import undetected_chromedriver as uc
 
@@ -16,8 +15,7 @@ class Bot(object):
             options.add_argument('--headless')
             options.add_argument("window-size=1920,1080")
             options.add_argument("--disable-gpu")
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            driver = uc.Chrome(options=options,browser_executable_path="/usr/bin/google-chrome",driver_executable_path=current_dir+"/../chromedriver")
+            driver = uc.Chrome(options=options,browser_executable_path="/usr/bin/google-chrome")
             driver.set_page_load_timeout(10)
             driver.implicitly_wait(10)
             return driver
