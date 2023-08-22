@@ -17,7 +17,7 @@ class Bot(object):
             options.add_argument('--no-sandbox')
             options.add_argument("window-size=1920,1080")
             options.add_argument('--blink-settings=imagesEnabled=false')
-            driver = uc.Chrome(options=options,executable_path="./chromedriver")
+            driver = uc.Chrome(options=options,executable_path="./../chromedriver")
             with self.pool_lock:
                 self.pool.append(driver)
         except BaseException as e:
