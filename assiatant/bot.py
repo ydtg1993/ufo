@@ -15,7 +15,7 @@ class Bot(object):
             options = uc.ChromeOptions()
             options.add_argument('--headless')
             options.add_argument('--blink-settings=imagesEnabled=false')
-            driver = uc.Chrome(options=options)
+            driver = uc.Chrome(options=options,executable_path="./chromedriver")
             with self.pool_lock:
                 self.pool.append(driver)
         except BaseException as e:
