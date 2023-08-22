@@ -14,13 +14,13 @@ def main():
         DB_POOL=MysqlConnector(config),
         RD_POOL=RedisConnector(config),
         BOT_POOL=Bot(config), )
-    time.sleep(3)
-    run_volume_task(tools)
+
+    Volume(**tools)
 
     schedule.every(6).hours.do(run_volume_task, tools)
     while True:
         schedule.run_pending()
-        time.sleep(1200)
+        time.sleep(900)
 
 def run_volume_task(tools):
     Volume(**tools)
