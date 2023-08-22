@@ -1,5 +1,4 @@
 import threading
-import time
 from configparser import ConfigParser
 import undetected_chromedriver as uc
 
@@ -20,14 +19,6 @@ class Bot(object):
             options.add_argument('--blink-settings=imagesEnabled=false')
             driver = uc.Chrome(options=options)
             driver.get("https://www.google.com")
-            with self.pool_lock:
-                self.pool.append(driver)
+            return driver
         except BaseException as e:
             print(f'webview开启失败{e}')
-
-    def get_driver(self):
-        with self.pool_lock:
-            if self.pool:
-                return self.pool.pop()
-            else:
-                return None
