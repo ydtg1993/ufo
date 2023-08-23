@@ -48,7 +48,7 @@ class Bot(object):
     def start(self):
         try:
             options = uc.ChromeOptions()
-            if not self._proxy :
+            if self._proxy is not None:
                 options.add_argument(f"--proxy-server={self._proxy}")
                 self._proxy = None
 
