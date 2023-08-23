@@ -4,7 +4,7 @@ import undetected_chromedriver as uc
 
 class Bot(object):
     def __init__(self, config: ConfigParser):
-        self.DEBUG = int(config.get("App", "DEBUG"))
+        self.DEBUG = bool(config.get("App", "DEBUG"))
 
     def start(self):
         try:
@@ -20,7 +20,7 @@ class Bot(object):
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
 
-            driver = uc.Chrome(options=options,browser_executable_path="/usr/bin/google-chrome")
+            driver = uc.Chrome(options=options)
             return driver
         except BaseException as e:
             print(f'webview开启失败{e}')
