@@ -1,29 +1,20 @@
 import time
-from undetected_chromedriver import Chrome
 from selenium.webdriver.common.by import By
-from assiatant.bot import Bot
-from assiatant.db import MysqlConnector
 from assiatant.downloader import ImageDownloader
-from assiatant.proxy import Proxy
-from assiatant.rd import RedisConnector
-from configparser import ConfigParser
+from assiatant.globe import GB
 from model.new_model import NewModel
 import re
 import json
 
 class Volume:
-    def __init__(self, **kwargs):
-        CONF: ConfigParser = kwargs.get('CONF')
-        DB: MysqlConnector = kwargs.get('DB_POOL')
-        RD: RedisConnector = kwargs.get('RD_POOL')
-        BOT: Bot = kwargs.get('BOT')
-        WB: Chrome = BOT.start()
-        url = CONF.get("App", "SOURCE_URL")
+    def __init__(self):
+        DB = GB['mysql']
+        WB = GB['bot'].start()
+        url = GB['config'].get("App", "SOURCE_URL")
 
         WB.get(f"{url}")
 
         task_map = {}
-
         t0 = WB.find_elements(By.CSS_SELECTOR,"h3.regularSummaryHeadline")
         for t in t0 :
             a = t.find_element(By.TAG_NAME,'a')

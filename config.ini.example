@@ -1,10 +1,9 @@
 [App]
 SOURCE_URL = https://cn.nytimes.com
-PROXY_URL = https://dvapi.doveproxy.net/cmapi.php?rq=distribute&user=onemanhua&token=OXBZTmJEL043clF4cmRRYW5sS3Fjdz09&auth=0&geo=all&city=all&agreement=1&timeout=30&num=10&rtype=0
-DEBUG = True
+DEBUG = on
 
 [Bot]
-Thread = 1
+PROXY_URL = https://dvapi.doveproxy.net/cmapi.php?rq=distribute&user=onemanhua&token=OXBZTmJEL043clF4cmRRYW5sS3Fjdz09&auth=0&geo=all&city=all&agreement=1&timeout=30&num=10&rtype=0
 
 [Database]
 HOST = 127.0.0.1
