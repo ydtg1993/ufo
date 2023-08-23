@@ -9,22 +9,23 @@ import json
 
 class News:
     def __init__(self):
-        DB = GB['mysql']
-        WB = GB['bot'].start()
-        url = GB['config'].get("App", "SOURCE_URL")
+        db = GB['mysql']
+        config = GB['config']
+        rd = GB['redis']
+        wb = GB['bot'].proxy(config, rd).start()
+        url = config.get("App", "SOURCE_URL")
 
-        print(url)
-        WB.get(url)
+        wb.get(url)
 
         task_map = {}
-        t0 = WB.find_elements(By.CSS_SELECTOR, "h3.regularSummaryHeadline")
+        t0 = wb.find_elements(By.CSS_SELECTOR, "h3.regularSummaryHeadline")
         for t in t0:
             a = t.find_element(By.TAG_NAME, 'a')
             title = a.get_attribute("title")
             link = a.get_attribute("href")
             task_map[title] = link
 
-        t1 = WB.find_elements(By.CSS_SELECTOR, "ol.hotStoryList>li")
+        t1 = wb.find_elements(By.CSS_SELECTOR, "ol.hotStoryList>li")
         for t in t1:
             a = t.find_element(By.TAG_NAME, 'a')
             title = a.get_attribute("title")
@@ -32,16 +33,16 @@ class News:
             task_map[title] = link
 
         for title, link in task_map.items():
-            WB.get(link)
+            wb.get(link)
             time.sleep(3)
             try:
-                main = WB.find_element(By.CLASS_NAME, 'article-area')
-                exist = DB.session.query(NewModel).filter(NewModel.source_url == link).first()
+                main = wb.find_element(By.CLASS_NAME, 'article-area')
+                exist = db.session.query(NewModel).filter(NewModel.source_url == link).first()
                 if exist is None:
                     desc = []
                     banner = main.find_element(By.CSS_SELECTOR, "figure.article-span-photo img")
                     desc.append({'type': 'img', 'val': banner.get_attribute('src'), 'alt': banner.get_attribute('alt')})
-                    paragraph = WB.find_elements(By.CLASS_NAME, "article-paragraph")
+                    paragraph = wb.find_elements(By.CLASS_NAME, "article-paragraph")
                     for p in paragraph:
                         childrenDom = p.get_attribute('innerHTML')
                         if re.compile(r'<b>.*?</b>').search(childrenDom):
@@ -59,10 +60,10 @@ class News:
                                    introduce=json.dumps(desc),
                                    source_id=8,
                                    category_id=1, )
-                    DB.session.add(new)
-                    DB.session.commit()
+                    db.session.add(new)
+                    db.session.commit()
             except Exception as e:
                 print(e)
                 continue
 
-        WB.close()
+        wb.close()

@@ -25,12 +25,13 @@ class Bot(object):
                 save_data = json.loads(cache_proxy)
                 if save_data:
                     random_index = random.randint(0, len(save_data) - 1)
-                    return save_data[random_index]
+                    self._proxy = save_data[random_index]
+                    return self
             except Exception as e:
                 raise e
 
         for try_count in range(10):
-            response = requests.get(GB['config'].get("Bot", "PROXY_URL"))
+            response = requests.get(config.get("Bot", "PROXY_URL"))
             if response.status_code == 200:
                 json_data = response.json()
                 for entry in json_data.get("data"):
@@ -43,7 +44,9 @@ class Bot(object):
             random_index = random.randint(0, len(save_data) - 1)
             proxy = save_data[random_index]
             rd.set_cache(cache, json.dumps(save_data))
+
         self._proxy = proxy
+        return self
 
     def start(self):
         try:

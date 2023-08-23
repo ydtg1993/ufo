@@ -20,7 +20,7 @@ def main():
     schedule.every(6).hours.do(News())
     while True:
         schedule.run_pending()
-        time.sleep(900)
+        time.sleep(1200)
 
 
 if __name__ == '__main__':
