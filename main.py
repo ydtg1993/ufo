@@ -5,7 +5,7 @@ from assiatant.bot import Bot
 from assiatant.db import MysqlConnector
 from assiatant.globe import GB
 from assiatant.rd import RedisConnector
-from controller.volume import Volume
+from controller.news import News
 
 
 def main():
@@ -15,15 +15,13 @@ def main():
     GB["mysql"] = MysqlConnector(config)
     GB["redis"] = RedisConnector(config)
     GB["bot"] = Bot(config)
-    Volume()
+    News()
 
-    schedule.every(6).hours.do(run_volume_task)
+    schedule.every(6).hours.do(News())
     while True:
         schedule.run_pending()
         time.sleep(900)
 
-def run_volume_task():
-    Volume()
 
 if __name__ == '__main__':
     main()
