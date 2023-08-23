@@ -67,8 +67,7 @@ class Volume:
                              category_id=1,)
                     DB.session.add(new)
                     DB.session.commit()
-            except Exception as e:
-                print(e)
+            except Exception:
                 continue
 
         WB.close()
