@@ -8,6 +8,7 @@ class NewModel(Base):
     __tablename__ = 'media'
     media_id = Column(Integer, primary_key=True)
     title = Column(String)
+    cover = Column(String)
     full_title = Column(String)
     introduce = Column(String)
     category_id = Column(Integer)
