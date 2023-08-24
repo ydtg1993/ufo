@@ -11,8 +11,7 @@ class News:
     def __init__(self):
         db = GB['mysql']
         config = GB['config']
-        rd = GB['redis']
-        wb = GB['bot'].proxy(config, rd).start()
+        wb = GB['bot'].start()
         url = config.get("App", "SOURCE_URL")
 
         wb.get(url)
