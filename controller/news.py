@@ -36,11 +36,12 @@ class News:
             time.sleep(3)
             try:
                 main = wb.find_element(By.CLASS_NAME, 'article-area')
-                exist = db.session.query(NewModel).filter(NewModel.source_url == link).first()
+                exist = db.session.query(NewModel).filter(NewModel.title == title).first()
                 if exist is None:
                     desc = []
                     banner = main.find_element(By.CSS_SELECTOR, "figure.article-span-photo img")
-                    desc.append({'type': 'img', 'val': banner.get_attribute('src'), 'alt': banner.get_attribute('alt')})
+                    cover = banner.get_attribute('src')
+                    desc.append({'type': 'img', 'val': cover, 'alt': banner.get_attribute('alt')})
                     paragraph = wb.find_elements(By.CLASS_NAME, "article-paragraph")
                     for p in paragraph:
                         childrenDom = p.get_attribute('innerHTML')
@@ -54,6 +55,7 @@ class News:
                             desc.append({'type': 'text', 'val': p.text})
 
                     new = NewModel(title=title,
+                                   cover=cover,
                                    full_title=main.find_element(By.CSS_SELECTOR, '.article-header h1').text,
                                    source_url=link,
                                    introduce=json.dumps(desc),
