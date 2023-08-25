@@ -59,7 +59,7 @@ class News:
                                    full_title=main.find_element(By.CSS_SELECTOR, '.article-header h1').text,
                                    source_url=link,
                                    content=json.dumps(desc),
-                                   introduce=self.j2m(json.dumps(desc)),
+                                   introduce=self.j2m(desc),
                                    source_id=8,
                                    category_id=1, )
                     db.session.add(new)
