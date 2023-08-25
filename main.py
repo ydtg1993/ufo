@@ -17,7 +17,7 @@ def main():
     GB["bot"] = Bot(config)
     News()
 
-    schedule.every(6).hours.do(News())
+    schedule.every(6).hours.do(News)
     while True:
         schedule.run_pending()
         time.sleep(1200)

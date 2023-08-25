@@ -58,7 +58,8 @@ class News:
                                    cover=cover,
                                    full_title=main.find_element(By.CSS_SELECTOR, '.article-header h1').text,
                                    source_url=link,
-                                   introduce=json.dumps(desc),
+                                   content=json.dumps(desc),
+                                   introduce=self.j2m(json.dumps(desc)),
                                    source_id=8,
                                    category_id=1, )
                     db.session.add(new)
@@ -68,3 +69,17 @@ class News:
                 continue
 
         wb.close()
+
+    def j2m(self,data, level=0):
+        if isinstance(data, dict):
+            markdown = ""
+            for key, value in data.items():
+                markdown += "  " * level + f"- **{key}**:\n" + self.j2m(value, level + 1)
+        elif isinstance(data, list):
+            markdown = ""
+            for item in data:
+                markdown += "  " * level + "- " + self.j2m(item, level + 1)
+        else:
+            markdown = str(data) + "\n"
+
+        return markdown
