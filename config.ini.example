@@ -1,0 +1,21 @@
+[App]
+SOURCE_URL = https://cn.nytimes.com
+DEBUG = on
+
+[Bot]
+PROXY_URL = https://dvapi.doveproxy.net/cmapi.php?rq=distribute&user=onemanhua&token=OXBZTmJEL043clF4cmRRYW5sS3Fjdz09&auth=0&geo=all&city=all&agreement=1&timeout=30&num=10&rtype=0
+
+[Database]
+HOST = 127.0.0.1
+PORT = 3306
+DB = news
+USER = root
+PASS = 123456
+
+[Redis]
+HOST = 127.0.0.1
+PORT = 6379
+USER = root
+PASS = 123456
+INDEX = 1
+

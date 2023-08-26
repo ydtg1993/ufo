@@ -1,49 +1,42 @@
 import time
-from undetected_chromedriver import Chrome
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from assiatant.bot import Bot
-from assiatant.db import MysqlConnector
 from assiatant.downloader import ImageDownloader
-from assiatant.proxy import Proxy
-from assiatant.rd import RedisConnector
-from configparser import ConfigParser
+from assiatant.globe import GB
+from model.source_comic_model import SourceComicModel
 
 
 class Comic:
     def __init__(self, **kwargs):
-        CONF: ConfigParser = kwargs.get('CONF')
-        DB: MysqlConnector = kwargs.get('DB_POOL')
-        RD: RedisConnector = kwargs.get('RD_POOL')
-        BOT: Bot = kwargs.get('BOT_POOL')
-        WB: Chrome = BOT.get_driver()
+        db = GB['mysql']
+        config = GB['config']
+        wb = GB['bot'].start()
+        url = config.get("App", "SOURCE_URL")
 
-        url = CONF.get("App", "SOURCE_URL") + "/allmanga/"
+        wb.get(url + "/allmanga/")
 
-        WB.get(f"{url}")
-        element_present = EC.presence_of_element_located((By.CSS_SELECTOR, ".entries>article"))
-        WebDriverWait(WB, 10).until(element_present)
-
-        cookies = WB.get_cookies()
+        cookies = wb.get_cookies()
         combined_cookies = {}
         for cookie in cookies:
             combined_cookies[cookie["name"]] = cookie["value"]
 
         time.sleep(5)
-        comicElems = WB.find_elements(By.CSS_SELECTOR, ".entries>article")
-        imgDownLoader = ImageDownloader("comic", {
-            "Referer":"https://baozimh.org/",
-            "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+        comic_elems = wb.find_elements(By.CSS_SELECTOR, ".entries>article")
+        img_downLoader = ImageDownloader("comic", {
+            "Referer": "https://baozimh.org/",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
         }, combined_cookies)
-        for comicElem in comicElems:
-            comic = dict()
-            tDom = comicElem.find_element(By.CLASS_NAME, "entry-title")
-            comic["title"] = tDom.text.strip()
-            comic["source_url"] = tDom.find_element(By.TAG_NAME,'a').get_attribute('href')
-            cover = comicElem.find_element(By.TAG_NAME, "img").get_attribute("data-src")
-            comic["cover"] = imgDownLoader.download_image(cover)
-            comic["label"] = '[]'
-            comic["category"] = '[]'
-            comic["source_data"] = comicElem.get_attribute('innerHTML')
-            DB.insert_data('source_comic', comic)
+        for comic_elem in comic_elems:
+            t_dom = comic_elem.find_element(By.CLASS_NAME, "entry-title")
+            title = t_dom.text.strip()
+            source_url = t_dom.find_element(By.TAG_NAME, 'a').get_attribute('href')
+            exist = db.session.query(SourceComicModel).filter(SourceComicModel.source_url == source_url).first()
+            if exist is None:
+                cover = comic_elem.find_element(By.TAG_NAME, "img").get_attribute("data-src")
+                cover = img_downLoader.download_image(cover)
+                comic = SourceComicModel(title=title,
+                                         source_url=source_url,
+                                         cover=cover,
+                                         source_data=comic_elem.get_attribute('innerHTML')
+                                         )
+                db.session.add(comic)
+                db.session.commit()

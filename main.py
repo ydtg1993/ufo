@@ -1,25 +1,27 @@
-import threading
+import configparser
 import time
+import schedule
 from assiatant.bot import Bot
 from assiatant.db import MysqlConnector
+from assiatant.globe import GB
 from assiatant.rd import RedisConnector
 from controller.comic import Comic
-import configparser
+
 
 def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
-    tools = dict(
-        CONF=config,
-        DB_POOL=MysqlConnector(config),
-        RD_POOL=RedisConnector(config),
-        BOT_POOL=Bot(config), )
-    time.sleep(3)
+    GB["config"] = config
+    GB["mysql"] = MysqlConnector(config)
+    GB["redis"] = RedisConnector(config)
+    GB["bot"] = Bot(config)
+    Comic()
 
-    thread = threading.Thread(target=Comic, kwargs=tools)
-    thread.start()
+    schedule.every(6).hours.do(Comic)
+    while True:
+        schedule.run_pending()
+        time.sleep(5)
 
 
 if __name__ == '__main__':
     main()
-    input("按任意键退出...")
