@@ -10,7 +10,6 @@ class NewModel(Base):
     title = Column(String)
     cover = Column(String)
     full_title = Column(String)
-    content = Column(String)
     introduce = Column(String)
     category_id = Column(Integer)
     source_id = Column(Integer)

@@ -4,7 +4,6 @@ from assiatant.downloader import ImageDownloader
 from assiatant.globe import GB
 from model.new_model import NewModel
 import re
-import json
 
 
 class News:
@@ -36,30 +35,32 @@ class News:
             time.sleep(3)
             try:
                 main = wb.find_element(By.CLASS_NAME, 'article-area')
-                exist = db.session.query(NewModel).filter(NewModel.title == title).first()
+                exist = db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
                 if exist is None:
-                    desc = []
+                    introduce = ""
                     banner = main.find_element(By.CSS_SELECTOR, "figure.article-span-photo img")
                     cover = banner.get_attribute('src')
-                    desc.append({'type': 'img', 'val': cover, 'alt': banner.get_attribute('alt')})
+                    alt = banner.get_attribute('alt')
+                    introduce += f"![{alt}]({cover} \"{alt}\")  "
+
                     paragraph = wb.find_elements(By.CLASS_NAME, "article-paragraph")
                     for p in paragraph:
                         childrenDom = p.get_attribute('innerHTML')
                         if re.compile(r'<b>.*?</b>').search(childrenDom):
-                            desc.append({'type': 'b', 'val': p.text})
+                            introduce += f"## {p.text}  "
                         elif re.compile(r'<img').search(childrenDom):
                             imgDom = p.find_element(By.TAG_NAME, 'img')
-                            desc.append({'type': 'img', 'val': imgDom.get_attribute('data-src'),
-                                         'alt': imgDom.get_attribute('alt')})
+                            cover = imgDom.get_attribute('data-src')
+                            alt = imgDom.get_attribute('alt')
+                            introduce += f"![{alt}]({cover} \"{alt}\")  "
                         else:
-                            desc.append({'type': 'text', 'val': p.text})
+                            introduce += f"\n{p.text}\n"
 
                     new = NewModel(title=title,
                                    cover=cover,
                                    full_title=main.find_element(By.CSS_SELECTOR, '.article-header h1').text,
                                    source_url=link,
-                                   content=json.dumps(desc),
-                                   introduce=self.j2m(desc),
+                                   introduce=introduce,
                                    source_id=8,
                                    category_id=1, )
                     db.session.add(new)
@@ -70,16 +71,3 @@ class News:
 
         wb.close()
 
-    def j2m(self,data, level=0):
-        if isinstance(data, dict):
-            markdown = ""
-            for key, value in data.items():
-                markdown += "  " * level + f"- **{key}**:\n" + self.j2m(value, level + 1)
-        elif isinstance(data, list):
-            markdown = ""
-            for item in data:
-                markdown += "  " * level + "- " + self.j2m(item, level + 1)
-        else:
-            markdown = str(data) + "\n"
-
-        return markdown
