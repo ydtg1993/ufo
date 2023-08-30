@@ -15,9 +15,23 @@ class News:
         url = self.config.get("App", "SOURCE_URL")
 
         self.wb.get(url)
-        self.wb.execute("")
+        self.wb.execute_script('''
+        window.scrollTo({top: 10000000,behavior: 'smooth'});
+            ''')
+        time.sleep(2)
         task_map = {}
 
+        t0 = self.wb.find_elements(By.CSS_SELECTOR, "h3.regularSummaryHeadline")
+        self.fill_task(task_map, t0)
+
+        t1 = self.wb.find_elements(By.CSS_SELECTOR, "ol.hotStoryList>li")
+        self.fill_task(task_map, t1)
+
+        t2 = self.wb.find_elements(By.CSS_SELECTOR, "ul.headlineOnlyList h3")
+        self.fill_task(task_map, t2)
+
+        t3 = self.wb.find_elements(By.CSS_SELECTOR, "#moth .cf h3")
+        self.fill_task(task_map, t3)
 
         t4 = self.wb.find_elements(By.CSS_SELECTOR, "#well h3")
         self.fill_task(task_map, t4)
