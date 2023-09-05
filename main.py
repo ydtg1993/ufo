@@ -15,12 +15,13 @@ def main():
     GB["mysql"] = MysqlConnector(config)
     GB["redis"] = RedisConnector(config)
     GB["bot"] = Bot(config)
+    GB["bot"].start_pool(int(config.get("Bot", "MAX_THREADS")))
     News()
 
-    schedule.every(6).hours.do(News)
+    schedule.every(3).minutes.do(News)
     while True:
         schedule.run_pending()
-        time.sleep(1200)
+        time.sleep(5)
 
 
 if __name__ == '__main__':

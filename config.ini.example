@@ -1,8 +1,8 @@
 [App]
-SOURCE_URL = https://cn.nytimes.com
-DEBUG = on
+DEBUG = on/off
 
 [Bot]
+MAX_THREADS = 1
 PROXY_URL = https://dvapi.doveproxy.net/cmapi.php?rq=distribute&user=onemanhua&token=OXBZTmJEL043clF4cmRRYW5sS3Fjdz09&auth=0&geo=all&city=all&agreement=1&timeout=30&num=10&rtype=0
 
 [Database]

@@ -5,11 +5,12 @@ from controller.reuter import Reuter
 
 class News:
     def __init__(self):
-        #thread1 = threading.Thread(target=Nytime)
-        thread2 = threading.Thread(target=Reuter)
+        ReuterThreads = []
+        for _ in range(2):
+            thread = threading.Thread(target=Reuter)
+            ReuterThreads.append(thread)
+            thread.start()
 
-        #thread1.start()
-        thread2.start()
+        for thread in ReuterThreads:
+            thread.join()
 
-        #thread1.join()
-        thread2.join()
