@@ -12,7 +12,7 @@ class Nytime:
     def __init__(self):
         self.db = GB['mysql']
         self.config = GB['config']
-        self.wb = GB['bot'].start()
+        self.wb = GB['bot'].get_pool()
         self.url = "https://cn.nytimes.com"
 
         self.wb.get(self.url)
@@ -38,15 +38,15 @@ class Nytime:
         self.fill_task(task_map, t4)
 
         self.run_task(task_map)
-
-        self.wb.close()
+        GB['bot'].return_pool(self.wb)
 
     @staticmethod
     def fill_task(task_map, doms):
         for t in doms:
             a = t.find_element(By.TAG_NAME, 'a')
             title = a.get_attribute("title")
-            if title == '' :continue
+            if title == '':
+                continue
             link = a.get_attribute("href")
             task_map[title] = link
 
