@@ -18,10 +18,10 @@ def main():
     GB["bot"].start_pool(int(config.get("Bot", "MAX_THREADS")))
     News()
 
-    schedule.every(3).minutes.do(News)
+    schedule.every(1).hours.do(News)
     while True:
         schedule.run_pending()
-        time.sleep(5)
+        time.sleep(60)
 
 
 if __name__ == '__main__':

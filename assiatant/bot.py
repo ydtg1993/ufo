@@ -17,7 +17,7 @@ class Bot(object):
     def __init__(self, config: ConfigParser):
         self._debug = True if config.get("App", "DEBUG") == 'on' else False
 
-    def proxy(self,config:configparser,rd:RedisConnector):
+    def proxy(self,config:ConfigParser,rd:RedisConnector):
         save_data = []
         proxy = ""
         cache = "proxy:" + config.get("Bot", "PROXY_URL")

@@ -1,3 +1,4 @@
+import json
 import time
 from selenium.webdriver.common.by import By
 from assiatant.downloader import ImageDownloader
@@ -41,7 +42,7 @@ class Nytime:
         self.wb.close()
 
     @staticmethod
-    def fill_task(task_map,doms):
+    def fill_task(task_map, doms):
         for t in doms:
             a = t.find_element(By.TAG_NAME, 'a')
             title = a.get_attribute("title")
@@ -61,30 +62,30 @@ class Nytime:
                     category = main.find_element(By.CSS_SELECTOR,".setting-bar>.section-title>h3").text
                     categoryId = CateModel.get_or_create_id_by_name(self.db.session,category)
 
-                    introduce = ""
+                    introduce = []
                     banner = main.find_element(By.CSS_SELECTOR, "figure.article-span-photo img")
                     cover = banner.get_attribute('src')
                     alt = banner.get_attribute('alt')
-                    introduce += f"![{alt}]({cover} \"{alt}\")  "
+                    introduce.append({'type': 'img', 'val': cover, 'alt': alt})
 
                     paragraph = self.wb.find_elements(By.CLASS_NAME, "article-paragraph")
                     for p in paragraph:
                         childrenDom = p.get_attribute('innerHTML')
                         if re.compile(r'<b>.*?</b>').search(childrenDom):
-                            introduce += f"## {p.text}  "
+                            introduce.append({'type': 'b', 'val': p.text})
                         elif re.compile(r'<img').search(childrenDom):
                             imgDom = p.find_element(By.TAG_NAME, 'img')
                             cover = imgDom.get_attribute('data-src')
                             alt = imgDom.get_attribute('alt')
-                            introduce += f"![{alt}]({cover} \"{alt}\")  "
+                            introduce.append({'type': 'img', 'val': cover, 'alt': alt})
                         else:
-                            introduce += f"\n{p.text}\n"
+                            introduce.append({'type': 'text', 'val': p.text})
 
                     new = NewModel(title=title,
                                    cover=cover,
                                    full_title=main.find_element(By.CSS_SELECTOR, '.article-header h1').text,
                                    source_url=link,
-                                   introduce=introduce,
+                                   introduce=json.dumps(introduce),
                                    source_id=8,
                                    category_id=categoryId, )
                     self.db.session.add(new)
