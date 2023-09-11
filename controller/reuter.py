@@ -3,6 +3,10 @@ from selenium.webdriver.common.by import By
 from assiatant.globe import GB
 import re
 
+from model.cate_model import CateModel
+from model.new_model import NewModel
+
+
 class Reuter:
     type_list = {
         "World":22,
@@ -73,6 +77,7 @@ class Reuter:
                     link = title_dom.get_attribute("href")
                     task_map[link] = {"title": title, 'cover': cover}
 
+            self.run_task(task_map)
 
         except BaseException as e:
             print(e)
@@ -93,3 +98,41 @@ class Reuter:
         time.sleep(1)
         self.wb.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
         time.sleep(3)
+
+    def run_task(self, task_map):
+        for task, link in task_map.items():
+            self.wb.get(link)
+            time.sleep(3)
+            try:
+                main = self.wb.find_element(By.ID,'main-content')
+                exist = self.db.session.query(NewModel.media_id).filter(NewModel.link == link).first()
+                if exist is None:
+                    cover = task.cover
+                    tag = main.find_element(By.CSS_SELECTOR,'nav[aria-label="Tags"] li:first-child')
+                    category = tag.text
+                    categoryId = CateModel.get_or_create_id_by_name(self.db.session, category)
+                    full_title = main.find_element(By.CSS_SELECTOR,'h1[data-testid="Heading"]').text
+
+                    introduce = []
+                    content_dom = main.find_element(By.CSS_SELECTOR,'div.article-body__container__3ypuX over-6-para')
+                    if content_dom.find_element(By.CSS_SELECTOR,'div:first-child').get_attribute('data-testid') == 'Image':
+                        img_dom = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child img')
+                        cover = img_dom.get_attribute('src')
+                        alt = img_dom.get_attribute('alt')
+                        introduce.append({'type': 'img', 'val': cover, 'alt': alt})
+
+                    paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
+                    for p in paragraph:
+                        if p.tag_name == 'figure':
+                            img_dom = p.find_element(By.TAG_NAME,'img')
+                            cover = img_dom.get_attribute('src')
+                            alt = img_dom.get_attribute('alt')
+                            introduce.append({'type': 'img', 'val': cover, 'alt': alt})
+                        else:
+                            introduce.append({'type': 'text', 'val': p.text})
+
+                    self.db.session.add(new)
+                    self.db.session.commit()
+            except Exception as e:
+                print(e)
+                continue
