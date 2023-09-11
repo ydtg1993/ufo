@@ -4,6 +4,19 @@ from assiatant.globe import GB
 import re
 
 class Reuter:
+    type_list = {
+        "World":22,
+        "Technology":29,
+        "Business":18,
+        "Retail & Consumer":18,
+        "Markets": 18,
+        "Insight": 18,
+        "Charged":23,
+        "Americas":24,
+        "United States":24,
+        "Lifestyle":32,
+    }
+
     def __init__(self):
         self.db = GB['mysql']
         self.config = GB['config']
@@ -15,24 +28,38 @@ class Reuter:
         time.sleep(3)
         try:
             self.login()
-
+            self.wb.execute_script('''
+            window.scrollTo({top: 10000000,behavior: 'smooth'});
+                ''')
+            time.sleep(2)
             task_map = {}
-            t0 = self.wb.find_elements(By.CSS_SELECTOR, "ul.home-page-grid__left-col__2K7_S a")
-            self.fill_task(task_map,t0)
 
-            t0[0].click()
+            t0 = self.wb.find_elements(By.CSS_SELECTOR, 'ul.home-page-grid__left-col__2K7_S a[data-testid="Heading"]')
+            for t in t0:
+                title = t.text
+                if title == '': continue
+                link = t.get_attribute("href")
+                task_map[link] = {"title":title,'cover':''}
+
+            t1 = self.wb.find_elements(By.CSS_SELECTOR,'div[data-testid="Topic"] li')
+            for t in t1:
+                titleDOM = t.find_element(By.CSS_SELECTOR,'h3[data-testid="Heading"] a')
+                title = titleDOM.text
+                if title == '': continue
+                coverDOM = t.find_element(By.CSS_SELECTOR, 'div[data-testid="Image"]')
+                coverHMTL = coverDOM.get_attribute('innerHTML')
+                match = re.search(r'src="([^"]*)"', coverHMTL)
+                cover = ''
+                if match:
+                    cover = match.group(1)
+                link = titleDOM.get_attribute("href")
+                task_map[link] = {"title": title, 'cover': cover}
+
+            print(task_map)
 
         except BaseException as e:
             print(e)
         GB['bot'].return_pool(self.wb)
-
-    @staticmethod
-    def fill_task(task_map,doms):
-        for t in doms:
-            title = t.text
-            if title == '' :continue
-            link = t.get_attribute("href")
-            task_map[title] = link
 
     def login(self):
         btn = self.wb.find_element(By.CLASS_NAME,"site-header__button-group__5IlZj")

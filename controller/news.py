@@ -7,7 +7,7 @@ class News:
     def __init__(self):
         threads = []
         for _ in range(1):
-            thread = threading.Thread(target=Nytime)
+            thread = threading.Thread(target=Reuter)
             threads.append(thread)
             thread.start()
 
