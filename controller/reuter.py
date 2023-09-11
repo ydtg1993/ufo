@@ -43,28 +43,46 @@ class Reuter:
 
             t1 = self.wb.find_elements(By.CSS_SELECTOR,'div[data-testid="Topic"] li')
             for t in t1:
-                titleDOM = t.find_element(By.CSS_SELECTOR,'h3[data-testid="Heading"] a')
-                title = titleDOM.text
+                title_dom = t.find_element(By.CSS_SELECTOR,'h3[data-testid="Heading"] a')
+                title = title_dom.text
                 if title == '': continue
-                coverDOM = t.find_element(By.CSS_SELECTOR, 'div[data-testid="Image"]')
-                coverHMTL = coverDOM.get_attribute('innerHTML')
-                match = re.search(r'src="([^"]*)"', coverHMTL)
+                cover_html = t.get_attribute('innerHTML')
+                match = re.search(r'src="([^"]*)"', cover_html)
                 cover = ''
                 if match:
                     cover = match.group(1)
-                link = titleDOM.get_attribute("href")
+                link = title_dom.get_attribute("href")
                 task_map[link] = {"title": title, 'cover': cover}
 
-            print(task_map)
+            box = self.wb.find_element(By.CSS_SELECTOR,'div.section-selector-tabs__selector-tab-wrapper__2WxjR')
+            tabs = box.find_elements(By.CSS_SELECTOR,'div:first-child div[role="tab"]')
+            for tab in tabs:
+                tab_id = tab.get_attribute('id')
+                self.wb.execute_script(f'document.getElementById("{tab_id}").click();')
+                time.sleep(2)
+                t2 = box.find_elements(By.CSS_SELECTOR,'div[role="tabpanel"] li')
+                for t in t2:
+                    title_dom = t.find_element(By.CSS_SELECTOR,'a[data-testid="Heading"]')
+                    title = title_dom.text
+                    if title == '': continue
+                    cover_html = t.get_attribute('innerHTML')
+                    match = re.search(r'src="([^"]*)"', cover_html)
+                    cover = ''
+                    if match:
+                        cover = match.group(1)
+                    link = title_dom.get_attribute("href")
+                    task_map[link] = {"title": title, 'cover': cover}
+
 
         except BaseException as e:
             print(e)
         GB['bot'].return_pool(self.wb)
 
     def login(self):
+        return
         btn = self.wb.find_element(By.CLASS_NAME,"site-header__button-group__5IlZj")
-        btnHtml = btn.get_attribute("innerHTML")
-        if re.compile(r'hk').search(btnHtml):
+        btn_html = btn.get_attribute("innerHTML")
+        if re.compile(r'hk').search(btn_html):
             return
 
         self.wb.get(f"{self.url}/account/sign-in/?redirect=https%3A%2F%2Fwww.reuters.com%2F")
