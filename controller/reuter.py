@@ -1,4 +1,7 @@
+import json
 import time
+from datetime import datetime
+
 from selenium.webdriver.common.by import By
 from assiatant.globe import GB
 import re
@@ -8,19 +11,6 @@ from model.new_model import NewModel
 
 
 class Reuter:
-    type_list = {
-        "World":22,
-        "Technology":29,
-        "Business":18,
-        "Retail & Consumer":18,
-        "Markets": 18,
-        "Insight": 18,
-        "Charged":23,
-        "Americas":24,
-        "United States":24,
-        "Lifestyle":32,
-    }
-
     def __init__(self):
         self.db = GB['mysql']
         self.config = GB['config']
@@ -100,21 +90,24 @@ class Reuter:
         time.sleep(3)
 
     def run_task(self, task_map):
-        for task, link in task_map.items():
+        for link,task in task_map.items():
             self.wb.get(link)
             time.sleep(3)
             try:
                 main = self.wb.find_element(By.ID,'main-content')
-                exist = self.db.session.query(NewModel.media_id).filter(NewModel.link == link).first()
+                exist = self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
                 if exist is None:
-                    cover = task.cover
+                    cover = task['cover']
                     tag = main.find_element(By.CSS_SELECTOR,'nav[aria-label="Tags"] li:first-child')
                     category = tag.text
                     categoryId = CateModel.get_or_create_id_by_name(self.db.session, category)
                     full_title = main.find_element(By.CSS_SELECTOR,'h1[data-testid="Heading"]').text
+                    date_str = main.find_element(By.CSS_SELECTOR,'time[data-testid="Text"] span:first-child').text
+                    parsed_date = datetime.strptime(date_str, "%B %d, %Y")
+                    formatted_date = parsed_date.strftime("%Y-%m-%d")
 
                     introduce = []
-                    content_dom = main.find_element(By.CSS_SELECTOR,'div.article-body__container__3ypuX over-6-para')
+                    content_dom = main.find_element(By.CSS_SELECTOR,'div.article-body__container__3ypuX')
                     if content_dom.find_element(By.CSS_SELECTOR,'div:first-child').get_attribute('data-testid') == 'Image':
                         img_dom = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child img')
                         cover = img_dom.get_attribute('src')
@@ -124,13 +117,23 @@ class Reuter:
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
                     for p in paragraph:
                         if p.tag_name == 'figure':
-                            img_dom = p.find_element(By.TAG_NAME,'img')
-                            cover = img_dom.get_attribute('src')
-                            alt = img_dom.get_attribute('alt')
-                            introduce.append({'type': 'img', 'val': cover, 'alt': alt})
+                            match = re.match(r'src="([^"]*)"', p.get_attribute('innerHTML'))
+                            if match:
+                                img_dom = p.find_element(By.TAG_NAME, 'img')
+                                cover = img_dom.get_attribute('src')
+                                alt = img_dom.get_attribute('alt')
+                                introduce.append({'type': 'img', 'val': cover, 'alt': alt})
                         else:
                             introduce.append({'type': 'text', 'val': p.text})
 
+                    new = NewModel(title=task['title'],
+                                   cover=cover,
+                                   full_title=full_title,
+                                   source_url=link,
+                                   introduce=json.dumps(introduce),
+                                   source_id=6,
+                                   category_id=categoryId,
+                                   publish_at=formatted_date)
                     self.db.session.add(new)
                     self.db.session.commit()
             except Exception as e:

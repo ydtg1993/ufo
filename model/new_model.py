@@ -14,4 +14,5 @@ class NewModel(Base):
     category_id = Column(Integer)
     source_id = Column(Integer)
     source_url = Column(String)
+    publish_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
