@@ -59,8 +59,9 @@ class Nytime:
                 main = self.wb.find_element(By.CLASS_NAME, 'article-area')
                 exist = self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
                 if exist is None:
-                    category = main.find_element(By.CSS_SELECTOR,".setting-bar>.section-title>h3").text
-                    categoryId = CateModel.get_or_create_id_by_name(self.db.session,category)
+                    category = main.find_element(By.CSS_SELECTOR, ".setting-bar>.section-title>h3").text
+                    categoryId = CateModel.get_or_create_id_by_name(self.db.session, category)
+                    publish_at = main.find_element(By.CSS_SELECTOR, "div.article-header time").get_attribute('datetime')
 
                     introduce = []
                     banner = main.find_element(By.CSS_SELECTOR, "figure.article-span-photo img")
@@ -87,7 +88,8 @@ class Nytime:
                                    source_url=link,
                                    introduce=json.dumps(introduce),
                                    source_id=8,
-                                   category_id=categoryId, )
+                                   category_id=categoryId,
+                                   publish_at=publish_at)
                     self.db.session.add(new)
                     self.db.session.commit()
             except Exception as e:
