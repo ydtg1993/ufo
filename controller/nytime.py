@@ -3,7 +3,6 @@ import time
 from selenium.webdriver.common.by import By
 from assiatant.downloader import ImageDownloader
 from assiatant.globe import GB
-from model.cate_model import CateModel
 from model.new_model import NewModel
 import re
 
@@ -59,8 +58,9 @@ class Nytime:
                 main = self.wb.find_element(By.CLASS_NAME, 'article-area')
                 exist = self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
                 if exist is None:
+                    categories = []
                     category = main.find_element(By.CSS_SELECTOR, ".setting-bar>.section-title>h3").text
-                    categoryId = CateModel.get_or_create_id_by_name(self.db.session, category)
+                    categories.append(category)
                     publish_at = main.find_element(By.CSS_SELECTOR, "div.article-header time").get_attribute('datetime')
 
                     introduce = []
@@ -88,7 +88,7 @@ class Nytime:
                                    source_url=link,
                                    introduce=json.dumps(introduce),
                                    source_id=8,
-                                   category_id=categoryId,
+                                   categories=json.dumps(categories),
                                    publish_at=publish_at)
                     self.db.session.add(new)
                     self.db.session.commit()

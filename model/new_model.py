@@ -11,7 +11,7 @@ class NewModel(Base):
     cover = Column(String)
     full_title = Column(String)
     introduce = Column(String)
-    category_id = Column(Integer)
+    categories = Column(String)
     source_id = Column(Integer)
     source_url = Column(String)
     publish_at = Column(DateTime, default=datetime.utcnow)

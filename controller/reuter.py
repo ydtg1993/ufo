@@ -1,12 +1,9 @@
 import json
 import time
 from datetime import datetime
-
 from selenium.webdriver.common.by import By
 from assiatant.globe import GB
 import re
-
-from model.cate_model import CateModel
 from model.new_model import NewModel
 
 
@@ -97,9 +94,11 @@ class Reuter:
                 exist = self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
                 if exist is None:
                     cover = task['cover']
-                    tag = main.find_element(By.CSS_SELECTOR,'nav[aria-label="Tags"] li:first-child')
-                    category = tag.text
-                    categoryId = CateModel.get_or_create_id_by_name(self.db.session, category)
+                    tags = main.find_elements(By.CSS_SELECTOR,'nav[aria-label="Tags"] li')
+                    categories = []
+                    for tag in tags:
+                        categories.append(tag.text)
+
                     full_title = main.find_element(By.CSS_SELECTOR,'h1[data-testid="Heading"]').text
                     date_str = main.find_element(By.CSS_SELECTOR,'time[data-testid="Text"] span:first-child').text
                     parsed_date = datetime.strptime(date_str, "%B %d, %Y")
@@ -131,7 +130,7 @@ class Reuter:
                                    source_url=link,
                                    introduce=json.dumps(introduce),
                                    source_id=6,
-                                   category_id=categoryId,
+                                   categories=json.dumps(categories),
                                    publish_at=formatted_date)
                     self.db.session.add(new)
                     self.db.session.commit()
