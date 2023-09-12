@@ -5,7 +5,7 @@ Base = declarative_base()
 
 
 class NewModel(Base):
-    __tablename__ = 'media'
+    __tablename__ = 'source_media'
     media_id = Column(Integer, primary_key=True)
     title = Column(String)
     cover = Column(String)

@@ -5,7 +5,7 @@ Base = declarative_base()
 
 
 class CateModel(Base):
-    __tablename__ = 'media_category'
+    __tablename__ = 'source_media_category'
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
