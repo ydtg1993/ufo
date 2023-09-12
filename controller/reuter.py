@@ -74,7 +74,6 @@ class Reuter:
         GB['bot'].return_pool(self.wb)
 
     def login(self):
-        return
         btn = self.wb.find_element(By.CLASS_NAME,"site-header__button-group__5IlZj")
         btn_html = btn.get_attribute("innerHTML")
         if re.compile(r'hk').search(btn_html):
