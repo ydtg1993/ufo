@@ -55,16 +55,21 @@ class Nytime:
             self.wb.get(link)
             time.sleep(3)
             try:
-                main = self.wb.find_element(By.CLASS_NAME, 'article-area')
+                main = self.wb.find_element(By.TAG_NAME, 'main')
+                match = re.match(r'class="article-area"', main.get_attribute('innerHTML'))
+                if not match:
+                    continue
+
+                area = self.wb.find_element(By.CLASS_NAME, 'article-area')
                 exist = self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
                 if exist is None:
                     categories = []
-                    category = main.find_element(By.CSS_SELECTOR, ".setting-bar>.section-title>h3").text
+                    category = area.find_element(By.CSS_SELECTOR, ".setting-bar>.section-title>h3").text
                     categories.append(category)
-                    publish_at = main.find_element(By.CSS_SELECTOR, "div.article-header time").get_attribute('datetime')
+                    publish_at = area.find_element(By.CSS_SELECTOR, "div.article-header time").get_attribute('datetime')
 
                     introduce = []
-                    banner = main.find_element(By.CSS_SELECTOR, "figure.article-span-photo img")
+                    banner = area.find_element(By.CSS_SELECTOR, "figure.article-span-photo img")
                     cover = banner.get_attribute('src')
                     alt = banner.get_attribute('alt')
                     introduce.append({'type': 'img', 'val': cover, 'alt': alt})
@@ -84,7 +89,7 @@ class Nytime:
 
                     new = NewModel(title=title,
                                    cover=cover,
-                                   full_title=main.find_element(By.CSS_SELECTOR, '.article-header h1').text,
+                                   full_title=area.find_element(By.CSS_SELECTOR, '.article-header h1').text,
                                    source_url=link,
                                    introduce=json.dumps(introduce),
                                    source_id=8,
