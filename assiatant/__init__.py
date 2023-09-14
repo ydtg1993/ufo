@@ -1,4 +1,5 @@
 import configparser
+import time
 from assiatant.globe import GB
 from assiatant.bot import Bot
 from assiatant.db import MysqlConnector

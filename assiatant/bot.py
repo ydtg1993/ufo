@@ -1,61 +1,49 @@
-import configparser
-import json
+import cachetools
 import random
 import time
 import requests
 import undetected_chromedriver as uc
 from configparser import ConfigParser
-from assiatant.rd import RedisConnector
 import queue
-
 
 class Bot(object):
     _debug = None
     _proxy = None
+    _mitm = None
     _pool = queue.Queue()
+    cache = cachetools.TTLCache(maxsize=100, ttl=1200)
 
     def __init__(self, config: ConfigParser):
         self._debug = True if config.get("App", "DEBUG") == 'on' else False
+        if config.get("Bot", "PROXY_URL") :
+            self._proxy = config.get("Bot", "PROXY_URL")
+        if config.get("Bot", "MITM_PROXY") :
+            self._mitm = config.get("Bot", "MITM_PROXY")
 
-    def proxy(self,config:ConfigParser,rd:RedisConnector):
-        save_data = []
-        proxy = ""
-        cache = "proxy:" + config.get("Bot", "PROXY_URL")
-        cache_proxy = rd.get_cache(cache)
-        if cache_proxy:
-            try:
-                save_data = json.loads(cache_proxy)
-                if save_data:
-                    random_index = random.randint(0, len(save_data) - 1)
-                    self._proxy = save_data[random_index]
-                    return self
-            except Exception as e:
-                raise e
-
+    @cachetools.cached(cache)
+    def fetch_proxy_data(self, url):
+        proxy_pool = []
         for try_count in range(10):
-            response = requests.get(config.get("Bot", "PROXY_URL"))
+            response = requests.get(url)
             if response.status_code == 200:
                 json_data = response.json()
                 for entry in json_data.get("data"):
-                    save_data.append(f"http://{entry['ip']}:{str(entry['port'])}")
-                break
+                    proxy_pool.append(f"http://{entry['ip']}:{str(entry['port'])}")
+                return proxy_pool
             else:
                 time.sleep(5)
-
-        if len(save_data) > 0:
-            random_index = random.randint(0, len(save_data) - 1)
-            proxy = save_data[random_index]
-            rd.set_cache(cache, json.dumps(save_data))
-
-        self._proxy = proxy
-        return self
 
     def start(self):
         try:
             options = uc.ChromeOptions()
             if self._proxy is not None:
-                options.add_argument(f"--proxy-server={self._proxy}")
-                self._proxy = None
+                proxy_pool = self.fetch_proxy_data(self._proxy)
+                random_index = random.randint(0, len(proxy_pool) - 1)
+                proxy = proxy_pool[random_index]
+                options.add_argument(f"--proxy-server={proxy}")
+
+            if self._mitm is not None:
+                options.add_argument(f"--proxy-server={self._mitm}")
 
             if not self._debug:
                 options.add_argument("--blink-settings=imagesEnabled=false")
