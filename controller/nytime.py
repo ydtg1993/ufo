@@ -55,8 +55,8 @@ class Nytime:
             self.wb.get(link)
             time.sleep(3)
             try:
-                main = self.wb.find_element(By.TAG_NAME, 'main')
-                match = re.match(r'.*class="article-area".*', main.get_attribute('innerHTML'))
+                body = self.wb.find_element(By.TAG_NAME, 'body')
+                match = re.match(r'.*class="article-area".*', body.get_attribute('innerHTML'))
                 if not match:
                     continue
 
