@@ -2,6 +2,8 @@ import json
 import time
 from datetime import datetime
 from selenium.webdriver.common.by import By
+
+from assiatant.downloader import M3u8Downloader
 from assiatant.globe import GB
 import re
 from model.new_model import NewModel
@@ -123,6 +125,7 @@ class Reuter:
                         # 打印匹配结果
                         if match:
                             m3u8 = match.group()
+                            M3u8Downloader()
 
 
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
