@@ -1,4 +1,6 @@
+import hashlib
 import json
+import random
 import time
 from datetime import datetime
 from selenium.webdriver.common.by import By
@@ -125,7 +127,17 @@ class Reuter:
                         # 打印匹配结果
                         if match:
                             m3u8 = match.group()
-                            M3u8Downloader()
+                            cookies = self.wb.get_cookies()
+                            combined_cookies = {}
+                            for cookie in cookies:
+                                combined_cookies[cookie["name"]] = cookie["value"]
+
+                            md5_hash = hashlib.md5()
+                            md5_hash.update(link.encode('utf-8'))
+                            img_downLoader = M3u8Downloader(str(random.randint(0, 256)), {
+                                "Referer": "https://www.reuters.com",
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+                            }, combined_cookies).download_image(m3u8,md5_hash.hexdigest())
 
 
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
