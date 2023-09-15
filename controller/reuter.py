@@ -14,7 +14,8 @@ class Reuter:
         self.rd = GB["redis"]
         self.wb = GB['bot'].get_pool()
         self.url = "https://www.reuters.com"
-
+        self.run_task({"https://www.reuters.com/business/autos-transportation/us-auto-union-strike-three-detroit-three-factories-2023-09-15/":{"title": '22', 'cover': '22'}})
+        time.sleep(30000000)
         self.wb.get(self.url)
         time.sleep(3)
         try:
@@ -110,11 +111,19 @@ class Reuter:
 
                     introduce = []
                     content_dom = main.find_element(By.CSS_SELECTOR,'div.article-body__container__3ypuX')
-                    if content_dom.find_element(By.CSS_SELECTOR,'div:first-child').get_attribute('data-testid') == 'Image':
+                    testid = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child').get_attribute('data-testid')
+                    if testid == 'Image':
                         img_dom = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child img')
                         cover = img_dom.get_attribute('src')
                         alt = img_dom.get_attribute('alt')
                         introduce.append({'type': 'img', 'val': cover, 'alt': alt})
+                    elif testid == 'primary-video':
+                        script = self.wb.find_element(By.CSS_SELECTOR,'head > script[type="application/ld+json"]').get_attribute('innerHTML')
+                        match = re.search(r'https://[^"]+master\.m3u8', script)
+                        # 打印匹配结果
+                        if match:
+                            m3u8 = match.group()
+
 
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
                     for p in paragraph:
