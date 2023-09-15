@@ -91,6 +91,10 @@ class Reuter:
             time.sleep(3)
             try:
                 main = self.wb.find_element(By.ID,'main-content')
+                match = re.match(r'.*data-testid="Heading".*', main.get_attribute('innerHTML'))
+                if not match:
+                    continue
+
                 exist = self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
                 if exist is None:
                     cover = task['cover']
