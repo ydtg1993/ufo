@@ -28,14 +28,12 @@ class Reuter:
             self.wb = GB['bot'].get_pool()
 
         try:
-            #self.login()
+            self.login()
             self.wb.execute_script('''
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
             time.sleep(2)
-            task_map = {"https://www.reuters.com/business/autos-transportation/us-auto-union-strike-three-detroit-three-factories-2023-09-15/":{"title": "UAW, automakers to resume talks as strike starts to create parts shortage", 'cover': ''}}
-
-            a='''
+            task_map = {}
             t = self.wb.find_element(By.CSS_SELECTOR, 'ul.home-page-grid__home-hero__N90H7 a[data-testid="Heading"]')
             if t.text != '':
                 link = t.get_attribute("href")
@@ -79,7 +77,6 @@ class Reuter:
                         cover = match.group(1)
                     link = title_dom.get_attribute("href")
                     task_map[link] = {"title": title, 'cover': cover}
-'''
 
             self.run_task(task_map)
 
@@ -148,11 +145,9 @@ class Reuter:
                             today = datetime.today()
                             path = f"vd/{today.strftime('%m')}"
                             file = f"{md5_hash.hexdigest()}.mp4"
+                            print(uri)
                             os.makedirs("./" + path, exist_ok=True)
-                            try:
-                                ffmpeg.input(uri).output(f"./{path}/{file}").run()
-                            except ffmpeg.Error as e:
-                                print(f"Error: {e.stderr.decode('utf-8')}")
+                            ffmpeg.input(uri).output(f"./{path}/{file}").run()
                             introduce.append({'type': 'video', 'val': f"{path}/{file}"})
 
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
