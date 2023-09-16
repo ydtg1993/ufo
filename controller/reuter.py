@@ -122,7 +122,7 @@ class Reuter:
                     introduce = []
                     content_dom = main.find_element(By.CSS_SELECTOR,'div.article-body__container__3ypuX')
                     testid = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child').get_attribute('data-testid')
-                    if testid == 'Image':
+                    if testid == 'primary-image':
                         img_dom = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child img')
                         cover = img_dom.get_attribute('src')
                         alt = img_dom.get_attribute('alt')
