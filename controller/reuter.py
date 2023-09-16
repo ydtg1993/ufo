@@ -33,8 +33,9 @@ class Reuter:
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
             time.sleep(2)
-            task_map = {}
+            task_map = {"https://www.reuters.com/business/autos-transportation/us-auto-union-strike-three-detroit-three-factories-2023-09-15/":{"title": "UAW, automakers to resume talks as strike starts to create parts shortage", 'cover': ''}}
 
+            a='''
             t = self.wb.find_element(By.CSS_SELECTOR, 'ul.home-page-grid__home-hero__N90H7 a[data-testid="Heading"]')
             if t.text != '':
                 link = t.get_attribute("href")
@@ -78,6 +79,7 @@ class Reuter:
                         cover = match.group(1)
                     link = title_dom.get_attribute("href")
                     task_map[link] = {"title": title, 'cover': cover}
+'''
 
             self.run_task(task_map)
 
@@ -135,7 +137,6 @@ class Reuter:
                     elif testid == 'primary-video':
                         script = self.wb.find_element(By.CSS_SELECTOR,'head > script[type="application/ld+json"]').get_attribute('innerHTML')
                         match = re.search(r'https://[^"]+master\.m3u8', script)
-                        # 打印匹配结果
                         if match:
                             md5_hash = hashlib.md5()
                             md5_hash.update(link.encode('utf-8'))
