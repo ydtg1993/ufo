@@ -28,12 +28,17 @@ class Reuter:
             self.wb = GB['bot'].get_pool()
 
         try:
-            self.login()
+            #self.login()
             self.wb.execute_script('''
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
             time.sleep(2)
             task_map = {}
+
+            t = self.wb.find_element(By.CSS_SELECTOR, 'ul.home-page-grid__home-hero__N90H7 a[data-testid="Heading"]')
+            if t.text != '':
+                link = t.get_attribute("href")
+                task_map[link] = {"title": t.text, 'cover': ''}
 
             t0 = self.wb.find_elements(By.CSS_SELECTOR, 'ul.home-page-grid__left-col__2K7_S a[data-testid="Heading"]')
             for t in t0:
@@ -122,7 +127,7 @@ class Reuter:
                     introduce = []
                     content_dom = main.find_element(By.CSS_SELECTOR,'div.article-body__container__3ypuX')
                     testid = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child').get_attribute('data-testid')
-                    if testid == 'primary-image':
+                    if testid == 'primary-image' or testid == 'primary-gallery':
                         img_dom = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child img')
                         cover = img_dom.get_attribute('src')
                         alt = img_dom.get_attribute('alt')
