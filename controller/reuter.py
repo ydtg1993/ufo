@@ -149,7 +149,10 @@ class Reuter:
                             path = f"vd/{today.strftime('%m')}"
                             file = f"{md5_hash.hexdigest()}.mp4"
                             os.makedirs("./" + path, exist_ok=True)
-                            ffmpeg.input(uri).output(f"./{path}/{file}").run()
+                            try:
+                                ffmpeg.input(uri).output(f"./{path}/{file}").run()
+                            except ffmpeg.Error as e:
+                                print(f"Error: {e.stderr.decode('utf-8')}")
                             introduce.append({'type': 'video', 'val': f"{path}/{file}"})
 
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
