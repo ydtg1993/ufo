@@ -14,7 +14,15 @@ class Nytime:
         self.wb = GB['bot'].get_pool()
         self.url = "https://cn.nytimes.com"
 
-        self.wb.get(self.url)
+        try:
+            self.wb.get(self.url)
+            time.sleep(3)
+        except BaseException:
+            self.wb.quit()
+            self.wb.close()
+            GB['bot'].start_pool()
+            self.wb = GB['bot'].get_pool()
+
         self.wb.execute_script('''
         window.scrollTo({top: 10000000,behavior: 'smooth'});
             ''')

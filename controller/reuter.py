@@ -1,11 +1,11 @@
 import hashlib
 import json
-import random
+import os
 import time
 from datetime import datetime
+import ffmpeg
+import m3u8
 from selenium.webdriver.common.by import By
-
-from assiatant.downloader import M3u8Downloader
 from assiatant.globe import GB
 import re
 from model.new_model import NewModel
@@ -18,10 +18,15 @@ class Reuter:
         self.rd = GB["redis"]
         self.wb = GB['bot'].get_pool()
         self.url = "https://www.reuters.com"
-        self.run_task({"https://www.reuters.com/business/autos-transportation/us-auto-union-strike-three-detroit-three-factories-2023-09-15/":{"title": '22', 'cover': '22'}})
-        time.sleep(30000000)
-        self.wb.get(self.url)
-        time.sleep(3)
+        try:
+            self.wb.get(self.url)
+            time.sleep(3)
+        except BaseException:
+            self.wb.quit()
+            self.wb.close()
+            GB['bot'].start_pool()
+            self.wb = GB['bot'].get_pool()
+
         try:
             self.login()
             self.wb.execute_script('''
@@ -73,6 +78,7 @@ class Reuter:
 
         except BaseException as e:
             print(e)
+
         GB['bot'].return_pool(self.wb)
 
     def login(self):
@@ -126,19 +132,19 @@ class Reuter:
                         match = re.search(r'https://[^"]+master\.m3u8', script)
                         # 打印匹配结果
                         if match:
-                            m3u8 = match.group()
-                            cookies = self.wb.get_cookies()
-                            combined_cookies = {}
-                            for cookie in cookies:
-                                combined_cookies[cookie["name"]] = cookie["value"]
-
                             md5_hash = hashlib.md5()
                             md5_hash.update(link.encode('utf-8'))
-                            img_downLoader = M3u8Downloader(str(random.randint(0, 256)), {
+                            playlist = m3u8.load(match.group(),30,{
                                 "Referer": "https://www.reuters.com",
                                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-                            }, combined_cookies).download_image(m3u8,md5_hash.hexdigest())
-
+                            })
+                            uri = playlist.data.get('playlists')[5]['uri']
+                            today = datetime.today()
+                            path = f"vd/{today.strftime('%m')}"
+                            file = f"{md5_hash.hexdigest()}.mp4"
+                            os.makedirs("./" + path, exist_ok=True)
+                            ffmpeg.input(uri).output(f"./{path}/{file}").run()
+                            introduce.append({'type': 'video', 'val': f"{path}/{file}"})
 
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
                     for p in paragraph:

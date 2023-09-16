@@ -1,7 +1,6 @@
 import hashlib
 import os
 import time
-
 import requests
 
 
@@ -38,23 +37,3 @@ class ImageDownloader:
                 print(f"Error while downloading image: {e}. Retrying...")
 
         return relative_path.replace('\\', '/')
-
-class M3u8Downloader:
-    def __init__(self, save_directory, headers=dict, cookies=dict):
-        self.save_root = "./m3u8/"
-        self.save_directory = save_directory
-        self.max_retries = 12
-        self.headers = headers
-        self.cookies = cookies
-        os.makedirs(self.save_root + self.save_directory, exist_ok=True)
-
-    def download_image(self, url, rename=""):
-        for retry in range(self.max_retries):
-            try:
-                response = requests.get(url, headers=self.headers, cookies=self.cookies, timeout=30)
-                if response.status_code == 200:
-                    print(response.content)
-                else:
-                    time.sleep(1)
-            except Exception as e:
-                print(f"Error while downloading image: {e}. Retrying...")
