@@ -24,8 +24,9 @@ class Reuter:
         except BaseException:
             self.wb.quit()
             self.wb.close()
-            GB['bot'].start_pool()
-            self.wb = GB['bot'].get_pool()
+            self.wb = GB['bot'].start()
+            time.sleep(3)
+
 
         try:
             self.login()

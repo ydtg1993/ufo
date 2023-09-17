@@ -21,7 +21,8 @@ class Nytime:
             self.wb.quit()
             self.wb.close()
             GB['bot'].start_pool()
-            self.wb = GB['bot'].get_pool()
+            self.wb = GB['bot'].start()
+            time.sleep(3)
 
         self.wb.execute_script('''
         window.scrollTo({top: 10000000,behavior: 'smooth'});
