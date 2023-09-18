@@ -16,19 +16,10 @@ class Reuter:
         self.db = GB['mysql']
         self.config = GB['config']
         self.rd = GB["redis"]
-        self.wb = GB['bot'].get_pool()
-        self.url = "https://www.reuters.com"
+
         try:
-            self.wb.get(self.url)
-            time.sleep(3)
-        except BaseException:
-            self.wb.quit()
-            self.wb.close()
             self.wb = GB['bot'].start()
-            time.sleep(3)
-
-
-        try:
+            self.url = "https://www.reuters.com"
             self.login()
             self.wb.execute_script('''
             window.scrollTo({top: 10000000,behavior: 'smooth'});
@@ -81,10 +72,11 @@ class Reuter:
 
             self.run_task(task_map)
 
+            self.wb.quit()
+            self.wb.close()
         except BaseException as e:
             print(e)
 
-        GB['bot'].return_pool(self.wb)
 
     def login(self):
         btn = self.wb.find_element(By.CLASS_NAME,"site-header__button-group__5IlZj")
@@ -100,6 +92,7 @@ class Reuter:
         time.sleep(1)
         self.wb.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
         time.sleep(3)
+
 
     def run_task(self, task_map):
         for link,task in task_map.items():

@@ -11,42 +11,37 @@ class Nytime:
     def __init__(self):
         self.db = GB['mysql']
         self.config = GB['config']
-        self.wb = GB['bot'].get_pool()
-        self.url = "https://cn.nytimes.com"
 
         try:
-            self.wb.get(self.url)
-            time.sleep(3)
-        except BaseException:
+            self.wb = GB['bot'].start()
+            self.url = "https://cn.nytimes.com"
+
+            self.wb.execute_script('''
+            window.scrollTo({top: 10000000,behavior: 'smooth'});
+                ''')
+            time.sleep(2)
+            task_map = {}
+
+            t0 = self.wb.find_elements(By.CSS_SELECTOR, "h3.regularSummaryHeadline")
+            self.fill_task(task_map, t0)
+
+            t1 = self.wb.find_elements(By.CSS_SELECTOR, "ol.hotStoryList>li")
+            self.fill_task(task_map, t1)
+
+            t2 = self.wb.find_elements(By.CSS_SELECTOR, "ul.headlineOnlyList h3")
+            self.fill_task(task_map, t2)
+
+            t3 = self.wb.find_elements(By.CSS_SELECTOR, "#moth .cf h3")
+            self.fill_task(task_map, t3)
+
+            t4 = self.wb.find_elements(By.CSS_SELECTOR, "#well h3")
+            self.fill_task(task_map, t4)
+
+            self.run_task(task_map)
             self.wb.quit()
             self.wb.close()
-            GB['bot'].start_pool()
-            self.wb = GB['bot'].start()
-            time.sleep(3)
-
-        self.wb.execute_script('''
-        window.scrollTo({top: 10000000,behavior: 'smooth'});
-            ''')
-        time.sleep(2)
-        task_map = {}
-
-        t0 = self.wb.find_elements(By.CSS_SELECTOR, "h3.regularSummaryHeadline")
-        self.fill_task(task_map, t0)
-
-        t1 = self.wb.find_elements(By.CSS_SELECTOR, "ol.hotStoryList>li")
-        self.fill_task(task_map, t1)
-
-        t2 = self.wb.find_elements(By.CSS_SELECTOR, "ul.headlineOnlyList h3")
-        self.fill_task(task_map, t2)
-
-        t3 = self.wb.find_elements(By.CSS_SELECTOR, "#moth .cf h3")
-        self.fill_task(task_map, t3)
-
-        t4 = self.wb.find_elements(By.CSS_SELECTOR, "#well h3")
-        self.fill_task(task_map, t4)
-
-        self.run_task(task_map)
-        GB['bot'].return_pool(self.wb)
+        except BaseException as e:
+            print(e)
 
     @staticmethod
     def fill_task(task_map, doms):

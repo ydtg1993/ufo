@@ -5,7 +5,7 @@ from controller.news import News
 
 def main():
     News()
-    schedule.every(1).hours.do(News)
+    schedule.every(2).hours.do(News)
     while True:
         schedule.run_pending()
         time.sleep(60)
