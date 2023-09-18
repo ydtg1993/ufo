@@ -10,7 +10,6 @@ from assiatant.globe import GB
 import re
 from model.new_model import NewModel
 
-
 class Reuter:
     def __init__(self):
         self.db = GB['mysql']
@@ -74,25 +73,23 @@ class Reuter:
             self.run_task(task_map)
 
             self.wb.quit()
-            self.wb.close()
         except BaseException as e:
             print(e)
 
-
     def login(self):
-        btn = self.wb.find_element(By.CLASS_NAME,"site-header__button-group__5IlZj")
-        btn_html = btn.get_attribute("innerHTML")
-        if re.compile(r'hk').search(btn_html):
-            return
-
-        self.wb.get(f"{self.url}/account/sign-in/?redirect=https%3A%2F%2Fwww.reuters.com%2F")
-        time.sleep(3)
-        self.wb.find_element(By.CSS_SELECTOR, 'input#email').send_keys("ydtg19930330@gmail.com")
-        time.sleep(1)
-        self.wb.find_element(By.CSS_SELECTOR, 'input#password').send_keys("Susanoo&87350100")
-        time.sleep(1)
-        self.wb.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
-        time.sleep(3)
+        #cookies = self.rd.get_cache("reuter:cookies")
+        #if not cookies :
+            self.wb.get(f"{self.url}/account/sign-in/?redirect=https%3A%2F%2Fwww.reuters.com%2F")
+            time.sleep(3)
+            self.wb.find_element(By.CSS_SELECTOR, 'input#email').send_keys("ydtg19930330@gmail.com")
+            time.sleep(1)
+            self.wb.find_element(By.CSS_SELECTOR, 'input#password').send_keys("Susanoo&87350100")
+            time.sleep(1)
+            self.wb.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
+            time.sleep(3)
+            cookies = self.wb.get_cookies()
+            self.rd.set_cache("reuter:cookies",json.dumps(cookies))
+        #return json.loads(cookies)
 
 
     def run_task(self, task_map):

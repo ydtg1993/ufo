@@ -39,7 +39,6 @@ class Nytime:
 
             self.run_task(task_map)
             self.wb.quit()
-            self.wb.close()
         except BaseException as e:
             print(e)
 
