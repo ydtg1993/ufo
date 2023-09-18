@@ -141,8 +141,17 @@ class Reuter:
                             file = f"{md5_hash.hexdigest()}.mp4"
                             print(uri)
                             os.makedirs("./" + path, exist_ok=True)
-                            ffmpeg.input(uri).output(f"./{path}/{file}").run()
-                            introduce.append({'type': 'video', 'val': f"{path}/{file}"})
+                            try:
+                                ffmpeg.input(uri).output(f"./{path}/{file}").run(capture_stdout=True, capture_stderr=True)
+                                introduce.append({'type': 'video', 'val': f"{path}/{file}"})
+                            except ffmpeg.Error as e:
+                                print("FFmpeg error:" + e.stderr.decode('utf-8'))
+                                try:
+                                    ffmpeg.input(playlist.data.get('playlists')[4]['uri']).output(f"./{path}/{file}").run()
+                                    introduce.append({'type': 'video', 'val': f"{path}/{file}"})
+                                except ffmpeg.Error as e:
+                                    print("FFmpeg -2- error:" + e.stderr.decode('utf-8'))
+
 
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
                     for p in paragraph:
@@ -167,5 +176,5 @@ class Reuter:
                     self.db.session.add(new)
                     self.db.session.commit()
             except Exception as e:
-                print(e)
+                print(e,link)
                 continue
