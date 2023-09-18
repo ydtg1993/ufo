@@ -20,6 +20,7 @@ class Reuter:
         try:
             self.wb = GB['bot'].start()
             self.url = "https://www.reuters.com"
+            self.wb.get(self.url)
             self.login()
             self.wb.execute_script('''
             window.scrollTo({top: 10000000,behavior: 'smooth'});

@@ -15,7 +15,7 @@ class Nytime:
         try:
             self.wb = GB['bot'].start()
             self.url = "https://cn.nytimes.com"
-
+            self.wb.get(self.url)
             self.wb.execute_script('''
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
