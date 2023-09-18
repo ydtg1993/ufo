@@ -25,6 +25,8 @@ class Reuter:
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
             time.sleep(2)
+            self.wb.quit()
+            return
             task_map = {}
             t = self.wb.find_element(By.CSS_SELECTOR, 'ul.home-page-grid__home-hero__N90H7 a[data-testid="Heading"]')
             if t.text != '':
@@ -87,9 +89,12 @@ class Reuter:
             time.sleep(1)
             self.wb.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
             time.sleep(3)
-            cookies = self.wb.get_cookies()
-            self.rd.set_cache("reuter:cookies",json.dumps(cookies))
-        #return json.loads(cookies)
+        #    cookies = self.wb.get_cookies()
+        #    self.rd.set_cache("reuter:cookies",json.dumps(cookies))
+        #else:
+        #    for cookie in json.loads(cookies):
+        #        self.wb.add_cookie(cookie)
+        #    self.wb.refresh()
 
 
     def run_task(self, task_map):
