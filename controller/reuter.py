@@ -21,12 +21,10 @@ class Reuter:
             self.url = "https://www.reuters.com"
             self.wb.get(self.url)
             self.login()
+            self.wb.get(self.url)
             self.wb.execute_script('''
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
-            time.sleep(2)
-            self.wb.quit()
-            return
             task_map = {}
             t = self.wb.find_element(By.CSS_SELECTOR, 'ul.home-page-grid__home-hero__N90H7 a[data-testid="Heading"]')
             if t.text != '':
@@ -103,7 +101,7 @@ class Reuter:
             time.sleep(3)
             try:
                 main = self.wb.find_element(By.ID,'main-content')
-                match = re.match(r'.*data-testid="Heading".*', main.get_attribute('innerHTML'))
+                match = re.match(r'.*<h1 data-testid="Heading".*', main.get_attribute('innerHTML'))
                 if not match:
                     continue
 
@@ -144,16 +142,16 @@ class Reuter:
                             file = f"{md5_hash.hexdigest()}.mp4"
                             print(uri)
                             os.makedirs("./" + path, exist_ok=True)
-                            try:
-                                ffmpeg.input(uri).output(f"./{path}/{file}").run(capture_stdout=True, capture_stderr=True)
-                                introduce.append({'type': 'video', 'val': f"{path}/{file}"})
-                            except ffmpeg.Error as e:
-                                print("FFmpeg error:" + e.stderr.decode('utf-8'))
+                            for i in range(6):
                                 try:
-                                    ffmpeg.input(playlist.data.get('playlists')[4]['uri']).output(f"./{path}/{file}").run()
-                                    introduce.append({'type': 'video', 'val': f"{path}/{file}"})
+                                    ffmpeg.input(uri).output(f"./{path}/{file}").run(capture_stdout=True, capture_stderr=True)
+                                    introduce.append({'type': 'video', 'val': f"{path}/{file}" ,'m3u8':uri})
+                                    break
                                 except ffmpeg.Error as e:
-                                    print("FFmpeg -2- error:" + e.stderr.decode('utf-8'))
+                                    if i == 4:
+                                        uri = playlist.data.get('playlists')[4]['uri']
+                                    if i == 5:
+                                        print("FFmpeg error:" + e.stderr.decode('utf-8'))
 
 
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
