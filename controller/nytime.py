@@ -1,5 +1,7 @@
 import json
 import time
+from datetime import datetime
+
 from selenium.webdriver.common.by import By
 from assiatant.downloader import ImageDownloader
 from assiatant.globe import GB
@@ -20,6 +22,9 @@ class Nytime:
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
             time.sleep(2)
+            current_time = datetime.now()
+            formatted_time = current_time.strftime("%Y-%m-%d %H")
+            print("纽约时报开始任务------------" + formatted_time)
             task_map = {}
 
             t0 = self.wb.find_elements(By.CSS_SELECTOR, "h3.regularSummaryHeadline")

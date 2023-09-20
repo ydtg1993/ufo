@@ -25,6 +25,10 @@ class Reuter:
             self.wb.execute_script('''
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
+            time.sleep(2)
+            current_time = datetime.now()
+            formatted_time = current_time.strftime("%Y-%m-%d %H")
+            print("纽约时报开始任务------------" + formatted_time)
             task_map = {}
             t = self.wb.find_element(By.CSS_SELECTOR, 'ul.home-page-grid__home-hero__N90H7 a[data-testid="Heading"]')
             if t.text != '':
