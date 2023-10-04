@@ -4,13 +4,11 @@ import time
 import requests
 import undetected_chromedriver as uc
 from configparser import ConfigParser
-import queue
 
 class Bot(object):
     _debug = None
     _proxy = None
     _mitm = None
-    _pool = queue.Queue()
     cache = cachetools.TTLCache(maxsize=100, ttl=1200)
 
     def __init__(self, config: ConfigParser):
@@ -57,20 +55,9 @@ class Bot(object):
                 options.add_argument("--disable-setuid-sandbox")
 
             driver = uc.Chrome(options=options)
-            self._pool.put(driver)
 
             return driver
         except BaseException as e:
             print(f'webview开启失败{e}')
-
-    def return_pool(self, driver:uc.Chrome):
-        self._pool.put(driver)
-
-    def start_pool(self, number = 1):
-        for _ in range(number):
-            self.start()
-
-    def get_pool(self) -> uc.Chrome:
-        return self._pool.get()
 
 
