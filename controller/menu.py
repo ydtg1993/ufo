@@ -1,14 +1,13 @@
 import time
 from selenium.webdriver.common.by import By
-from assiatant.globe import GB
+from assiatant import GB
 from model.source_comic_model import SourceComicModel
 
 
 class Menu:
     def __init__(self):
-        db = GB['mysql']
-        config = GB['config']
-        wb = GB['bot'].start()
+        config = GB.config
+        wb = GB.bot.start()
         url = config.get("App", "SOURCE_URL")
 
         wb.get(url + "/allmanga/")
