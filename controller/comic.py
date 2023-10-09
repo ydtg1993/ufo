@@ -39,4 +39,16 @@ class Comic:
                     continue
                 tags.append(dom.text.strip())
 
+            comic = SourceComicModel(title=task['title'],
+                                     source_url=task['link'],
+                                     source=3,
+                                     cover=task['cover'],
+                                     region=task['region'],
+                                     category=task['category'],
+                                     label=json.dumps(tags),
+                                     is_finish=is_finish,
+                                     description=description,
+                                     author=author)
+            GB.mysql.session.add(comic)
+            GB.mysql.session.commit()
         wb.quit()

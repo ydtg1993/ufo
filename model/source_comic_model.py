@@ -8,11 +8,12 @@ class SourceComicModel(Base):
     __tablename__ = 'source_comic'
     id = Column(Integer, primary_key=True)
     source_url = Column(String)
+    source = Column(Integer, default=0)
     title = Column(String)
     author = Column(String, default='')
     cover = Column(String, default='')
     label = Column(String, default='[]')
-    category = Column(String, default='[]')
+    category = Column(String, default='')
     region = Column(String, default='')
     chapter_count = Column(Integer, default=0)
     is_finish = Column(Integer, default=0)

@@ -40,3 +40,7 @@ class Comic:
                                          )
                 db.session.add(comic)
                 db.session.commit()
+
+match = re.match(r'.*class="article-area".*', body.get_attribute('innerHTML'))
+            if not match:
+                continue
