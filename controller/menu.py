@@ -1,3 +1,4 @@
+import json
 import time
 from selenium.webdriver.common.by import By
 from assiatant import GB
@@ -6,7 +7,6 @@ from model.source_comic_model import SourceComicModel
 
 class Menu:
     def __init__(self):
-        self.url = "https://www.baozimh.com/"
         categories = {"恋爱": "lianai", "纯爱": "chunai"}
         regions = {"国漫": "cn", "韩漫": "kr"}
 
@@ -16,11 +16,10 @@ class Menu:
                                {"name": region_name, "value": regions[region_name]})
 
     def scan_list(self, category: dict, region: dict):
-        list_url = self.url + 'classify?type={category}&region={region}&state=all&filter=%2a'.format(
+        list_url = GB.config.get("App", "URL") + 'classify?type={category}&region={region}&state=all&filter=%2a'.format(
             category=category['value'], region=region['value'])
-        url = "https://www.baozimh.com/"
         wb = GB.bot.start()
-        wb.get(url)
+        wb.get(GB.config.get("App", "URL"))
         time.sleep(5)
 
         wb.get(list_url)
@@ -44,6 +43,10 @@ class Menu:
 
                 GB.redis.set_hash(GB.config.get("Redis", "PREFIX") + "unique:comic:link", link, "0")
                 cover = a.find_element(By.TAG_NAME, "amp-img").get_attribute("src")
-
-                print(title)
+                GB.redis.enqueue(GB.config.get("Redis", "PREFIX") + "comic:task",
+                                 json.dumps(
+                                     {"title": title, "link": link, "cover": cover, "category": category['name'],
+                                      "region": region['name']}))
             time.sleep(2)
+
+        wb.quit()

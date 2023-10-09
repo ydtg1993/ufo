@@ -1,10 +1,13 @@
 import time
 import schedule
+
+from controller.comic import Comic
 from controller.menu import Menu
 
 
 def main():
-    Menu()
+    #Menu()
+    Comic()
 
 
 

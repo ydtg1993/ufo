@@ -17,8 +17,6 @@ class SourceComicModel(Base):
     chapter_count = Column(Integer, default=0)
     is_finish = Column(Integer, default=0)
     description = Column(String, default='')
-    source_data = Column(String, default='')
-    retry = Column(Integer, default=0)
     status = Column(Integer, default=0)
     last_chapter_update_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow)
