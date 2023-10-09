@@ -38,5 +38,5 @@ class Comic:
                 elif index == 1:
                     continue
                 tags.append(dom.text.strip())
-            
+
         wb.quit()
