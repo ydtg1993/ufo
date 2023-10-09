@@ -1,14 +1,11 @@
 import time
 import schedule
-from controller.news import News
+from controller.menu import Menu
 
 
 def main():
-    News()
-    schedule.every(2).hours.do(News)
-    while True:
-        schedule.run_pending()
-        time.sleep(60)
+    Menu()
+
 
 
 if __name__ == '__main__':

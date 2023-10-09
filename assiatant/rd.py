@@ -32,3 +32,19 @@ class RedisConnector:
     def set_cache(self, key, val):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.set(key, val)
+
+    def get_hash(self, hash_name, field):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.hget(hash_name, field)
+
+    def set_hash(self, hash_name, field, value):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.hset(hash_name, field, value)
+
+    def enqueue(self, queue_name, item):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.lpush(queue_name, item)
+
+    def dequeue(self, queue_name):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.rpop(queue_name)
