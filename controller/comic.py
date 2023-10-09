@@ -51,4 +51,5 @@ class Comic:
                                      author=author)
             GB.mysql.session.add(comic)
             GB.mysql.session.commit()
+            GB.redis.enqueue(GB.config.get("Redis", "PREFIX") + "chapter:task", comic.id)
         wb.quit()
