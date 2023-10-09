@@ -11,10 +11,9 @@ from model.source_comic_model import SourceComicModel
 class Comic:
     def __init__(self):
         wb = GB.bot.start()
+        wb.get(GB.config.get("App", "URL"))
+        time.sleep(3)
         for _ in range(12):
-            wb.get(GB.config.get("App", "URL"))
-            time.sleep(3)
-
             task = GB.redis.dequeue(GB.config.get("Redis", "PREFIX") + "comic:task")
             if task is None:
                 return
@@ -24,6 +23,7 @@ class Comic:
             if exist is not None:
                 return
             wb.get(task['link'])
+            time.sleep(3)
             info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
             author = info_dom.find_element(By.CSS_SELECTOR, "h2.comics-detail__author").text
             description = info_dom.find_element(By.CSS_SELECTOR, "p.comics-detail__desc").text.strip()
