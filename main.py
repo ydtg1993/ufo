@@ -8,8 +8,8 @@ from controller.menu import Menu
 
 def main():
     #Menu()
-    Comic()
-    #Chapter()
+    #Comic()
+    Chapter()
 
 
 
