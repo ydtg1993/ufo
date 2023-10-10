@@ -10,6 +10,7 @@ from assiatant.globe import GB
 import re
 from model.new_model import NewModel
 
+
 class Reuter:
     def __init__(self):
         self.db = GB['mysql']
@@ -40,11 +41,11 @@ class Reuter:
                 title = t.text
                 if title == '': continue
                 link = t.get_attribute("href")
-                task_map[link] = {"title":title,'cover':''}
+                task_map[link] = {"title": title, 'cover': ''}
 
-            t1 = self.wb.find_elements(By.CSS_SELECTOR,'div[data-testid="Topic"] li')
+            t1 = self.wb.find_elements(By.CSS_SELECTOR, 'div[data-testid="Topic"] li')
             for t in t1:
-                title_dom = t.find_element(By.CSS_SELECTOR,'h3[data-testid="Heading"] a')
+                title_dom = t.find_element(By.CSS_SELECTOR, 'h3[data-testid="Heading"] a')
                 title = title_dom.text
                 if title == '': continue
                 cover_html = t.get_attribute('innerHTML')
@@ -55,15 +56,15 @@ class Reuter:
                 link = title_dom.get_attribute("href")
                 task_map[link] = {"title": title, 'cover': cover}
 
-            box = self.wb.find_element(By.CSS_SELECTOR,'div.section-selector-tabs__selector-tab-wrapper__2WxjR')
-            tabs = box.find_elements(By.CSS_SELECTOR,'div:first-child div[role="tab"]')
+            box = self.wb.find_element(By.CSS_SELECTOR, 'div.section-selector-tabs__selector-tab-wrapper__2WxjR')
+            tabs = box.find_elements(By.CSS_SELECTOR, 'div:first-child div[role="tab"]')
             for tab in tabs:
                 tab_id = tab.get_attribute('id')
                 self.wb.execute_script(f'document.getElementById("{tab_id}").click();')
                 time.sleep(2)
-                t2 = box.find_elements(By.CSS_SELECTOR,'div[role="tabpanel"] li')
+                t2 = box.find_elements(By.CSS_SELECTOR, 'div[role="tabpanel"] li')
                 for t in t2:
-                    title_dom = t.find_element(By.CSS_SELECTOR,'a[data-testid="Heading"]')
+                    title_dom = t.find_element(By.CSS_SELECTOR, 'a[data-testid="Heading"]')
                     title = title_dom.text
                     if title == '': continue
                     cover_html = t.get_attribute('innerHTML')
@@ -81,30 +82,30 @@ class Reuter:
             print(e)
 
     def login(self):
-        #cookies = self.rd.get_cache("reuter:cookies")
-        #if not cookies :
-            self.wb.get(f"{self.url}/account/sign-in/?redirect=https%3A%2F%2Fwww.reuters.com%2F")
-            time.sleep(3)
-            self.wb.find_element(By.CSS_SELECTOR, 'input#email').send_keys("ydtg19930330@gmail.com")
-            time.sleep(1)
-            self.wb.find_element(By.CSS_SELECTOR, 'input#password').send_keys("Susanoo&87350100")
-            time.sleep(1)
-            self.wb.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
-            time.sleep(3)
-        #    cookies = self.wb.get_cookies()
-        #    self.rd.set_cache("reuter:cookies",json.dumps(cookies))
-        #else:
-        #    for cookie in json.loads(cookies):
-        #        self.wb.add_cookie(cookie)
-        #    self.wb.refresh()
+        # cookies = self.rd.get_cache("reuter:cookies")
+        # if not cookies :
+        self.wb.get(f"{self.url}/account/sign-in/?redirect=https%3A%2F%2Fwww.reuters.com%2F")
+        time.sleep(3)
+        self.wb.find_element(By.CSS_SELECTOR, 'input#email').send_keys("ydtg19930330@gmail.com")
+        time.sleep(1)
+        self.wb.find_element(By.CSS_SELECTOR, 'input#password').send_keys("Susanoo&87350100")
+        time.sleep(1)
+        self.wb.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
+        time.sleep(3)
 
+    #    cookies = self.wb.get_cookies()
+    #    self.rd.set_cache("reuter:cookies",json.dumps(cookies))
+    # else:
+    #    for cookie in json.loads(cookies):
+    #        self.wb.add_cookie(cookie)
+    #    self.wb.refresh()
 
     def run_task(self, task_map):
-        for link,task in task_map.items():
+        for link, task in task_map.items():
             self.wb.get(link)
             time.sleep(3)
             try:
-                main = self.wb.find_element(By.ID,'main-content')
+                main = self.wb.find_element(By.ID, 'main-content')
                 match = re.match(r'.*<h1 data-testid="Heading".*', main.get_attribute('innerHTML'))
                 if not match:
                     continue
@@ -112,18 +113,18 @@ class Reuter:
                 exist = self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
                 if exist is None:
                     cover = task['cover']
-                    tags = main.find_elements(By.CSS_SELECTOR,'nav[aria-label="Tags"] li')
+                    tags = main.find_elements(By.CSS_SELECTOR, 'nav[aria-label="Tags"] li')
                     categories = []
                     for tag in tags:
                         categories.append(tag.text)
 
-                    full_title = main.find_element(By.CSS_SELECTOR,'h1[data-testid="Heading"]').text
-                    date_str = main.find_element(By.CSS_SELECTOR,'time[data-testid="Text"] span:first-child').text
+                    full_title = main.find_element(By.CSS_SELECTOR, 'h1[data-testid="Heading"]').text
+                    date_str = main.find_element(By.CSS_SELECTOR, 'time[data-testid="Text"] span:first-child').text
                     parsed_date = datetime.strptime(date_str, "%B %d, %Y")
                     formatted_date = parsed_date.strftime("%Y-%m-%d")
 
                     introduce = []
-                    content_dom = main.find_element(By.CSS_SELECTOR,'div.article-body__container__3ypuX')
+                    content_dom = main.find_element(By.CSS_SELECTOR, 'div.article-body__container__3ypuX')
                     testid = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child').get_attribute('data-testid')
                     if testid == 'primary-image' or testid == 'primary-gallery':
                         img_dom = content_dom.find_element(By.CSS_SELECTOR, 'div:first-child img')
@@ -131,12 +132,14 @@ class Reuter:
                         alt = img_dom.get_attribute('alt')
                         introduce.append({'type': 'img', 'val': cover, 'alt': alt})
                     elif testid == 'primary-video':
-                        script = self.wb.find_element(By.CSS_SELECTOR,'head > script[type="application/ld+json"]').get_attribute('innerHTML')
+                        script = self.wb.find_element(By.CSS_SELECTOR,
+                                                      'head > script[type="application/ld+json"]').get_attribute(
+                            'innerHTML')
                         match = re.search(r'https://[^"]+master\.m3u8', script)
                         if match:
                             md5_hash = hashlib.md5()
                             md5_hash.update(link.encode('utf-8'))
-                            playlist = m3u8.load(match.group(),30,{
+                            playlist = m3u8.load(match.group(), 30, {
                                 "Referer": "https://www.reuters.com",
                                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
                             })
@@ -148,15 +151,15 @@ class Reuter:
                             os.makedirs("./" + path, exist_ok=True)
                             for i in range(6):
                                 try:
-                                    ffmpeg.input(uri).output(f"./{path}/{file}").run(capture_stdout=True, capture_stderr=True)
-                                    introduce.append({'type': 'video', 'val': f"{path}/{file}" ,'m3u8':uri})
+                                    ffmpeg.input(uri).output(f"./{path}/{file}").run(capture_stdout=True,
+                                                                                     capture_stderr=True)
+                                    introduce.append({'type': 'video', 'val': f"{path}/{file}", 'm3u8': uri})
                                     break
                                 except ffmpeg.Error as e:
                                     if i == 4:
                                         uri = playlist.data.get('playlists')[4]['uri']
                                     if i == 5:
                                         print("FFmpeg error:" + e.stderr.decode('utf-8'))
-
 
                     paragraph = content_dom.find_elements(By.CSS_SELECTOR, 'div:nth-child(2) p,div:nth-child(2) figure')
                     for p in paragraph:
@@ -170,16 +173,15 @@ class Reuter:
                         else:
                             introduce.append({'type': 'text', 'val': p.text})
 
-                    new = NewModel(title=task['title'],
-                                   cover=cover,
-                                   full_title=full_title,
-                                   source_url=link,
-                                   introduce=json.dumps(introduce),
-                                   source_id=6,
-                                   categories=json.dumps(categories),
-                                   publish_at=formatted_date)
-                    self.db.session.add(new)
-                    self.db.session.commit()
+                    NewModel(title=task['title'],
+                             cover=cover,
+                             full_title=full_title,
+                             source_url=link,
+                             introduce=json.dumps(introduce),
+                             source_id=6,
+                             categories=json.dumps(categories),
+                             publish_at=formatted_date).insert()
+
             except Exception as e:
-                print(e,link)
+                print(e, link)
                 continue

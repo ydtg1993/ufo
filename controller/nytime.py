@@ -57,8 +57,7 @@ class Nytime:
             link = a.get_attribute("href")
             task_map[title] = link
 
-
-    def run_task(self,task_map):
+    def run_task(self, task_map):
         for title, link in task_map.items():
             self.wb.get(link)
             time.sleep(3)
@@ -95,18 +94,14 @@ class Nytime:
                         else:
                             introduce.append({'type': 'text', 'val': p.text})
 
-                    new = NewModel(title=title,
-                                   cover=cover,
-                                   full_title=area.find_element(By.CSS_SELECTOR, '.article-header h1').text,
-                                   source_url=link,
-                                   introduce=json.dumps(introduce),
-                                   source_id=8,
-                                   categories=json.dumps(categories),
-                                   publish_at=publish_at)
-                    self.db.session.add(new)
-                    self.db.session.commit()
+                    NewModel(title=title,
+                             cover=cover,
+                             full_title=area.find_element(By.CSS_SELECTOR, '.article-header h1').text,
+                             source_url=link,
+                             introduce=json.dumps(introduce),
+                             source_id=8,
+                             categories=json.dumps(categories),
+                             publish_at=publish_at).insert()
             except Exception as e:
                 print(e)
                 continue
-
-
