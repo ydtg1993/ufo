@@ -20,3 +20,15 @@ class MysqlConnector:
             print(f'{e}')
         else:
             print('mysql链接成功')
+
+    def reconnect(self):
+        try:
+            self.session.close()
+            self.engine.dispose()
+            self.engine.connect()
+            session = sessionmaker(bind=self.engine)
+            self.session = session()
+        except BaseException as e:
+            print(f'{e}')
+        else:
+            print('mysql重新链接成功')
