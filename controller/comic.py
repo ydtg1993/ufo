@@ -1,10 +1,7 @@
 import time
-
 from selenium.webdriver.common.by import By
-
 from assiatant import GB
 import json
-
 from model.source_comic_model import SourceComicModel
 
 
