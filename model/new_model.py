@@ -19,19 +19,18 @@ class NewModel(Base):
     publish_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    @classmethod
-    def insert(cls) -> int:
+    def insert(self) -> int:
         i = 0
         try:
-            news = cls(
-                title=cls.title,
-                cover=cls.cover,
-                full_title=cls.full_title,
-                source_url=cls.source_url,
-                introduce=cls.introduce,
-                source_id=cls.source_id,
-                categories=cls.categories,
-                publish_at=cls.publish_at
+            news = NewModel(
+                title=self.title,
+                cover=self.cover,
+                full_title=self.full_title,
+                source_url=self.source_url,
+                introduce=self.introduce,
+                source_id=self.source_id,
+                categories=self.categories,
+                publish_at=self.publish_at
             )
             GB.mysql.session.add(news)
             GB.mysql.session.commit()
