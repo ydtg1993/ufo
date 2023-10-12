@@ -27,7 +27,7 @@ class NewModel(Base):
                 title=cls.title,
                 cover=cls.cover,
                 full_title=cls.full_title,
-                source_url=cls.link,
+                source_url=cls.source_url,
                 introduce=cls.introduce,
                 source_id=cls.source_id,
                 categories=cls.categories,
