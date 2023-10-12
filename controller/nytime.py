@@ -68,7 +68,8 @@ class Nytime:
                     continue
 
                 area = self.wb.find_element(By.CLASS_NAME, 'article-area')
-                exist = self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
+                #exist = self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
+
                 if exist is None:
                     categories = []
                     category = area.find_element(By.CSS_SELECTOR, ".setting-bar>.section-title>h3").text
