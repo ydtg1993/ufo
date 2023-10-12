@@ -29,7 +29,7 @@ class Reuter:
             time.sleep(2)
             current_time = datetime.now()
             formatted_time = current_time.strftime("%Y-%m-%d %H")
-            print("纽约时报开始任务------------" + formatted_time)
+            print("路透社开始任务------------" + formatted_time)
             task_map = {}
             t = self.wb.find_element(By.CSS_SELECTOR, 'ul.home-page-grid__home-hero__N90H7 a[data-testid="Heading"]')
             if t.text != '':
@@ -119,7 +119,7 @@ class Reuter:
                         categories.append(tag.text)
 
                     full_title = main.find_element(By.CSS_SELECTOR, 'h1[data-testid="Heading"]').text
-                    date_str = main.find_element(By.CSS_SELECTOR, 'time[data-testid="Text"] span:first-child').text
+                    date_str = main.find_element(By.CSS_SELECTOR, 'time span:first-child').text
                     parsed_date = datetime.strptime(date_str, "%B %d, %Y")
                     formatted_date = parsed_date.strftime("%Y-%m-%d")
 
