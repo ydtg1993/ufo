@@ -182,6 +182,7 @@ class Reuter:
                              categories=json.dumps(categories),
                              publish_at=formatted_date).insert()
             except OperationalError as e:
+                print(e)
                 GB.mysql.reconnect()
             except Exception as e:
                 print(e, link)

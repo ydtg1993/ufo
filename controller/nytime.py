@@ -102,6 +102,7 @@ class Nytime:
                              categories=json.dumps(categories),
                              publish_at=publish_at).insert()
             except OperationalError as e:
+                print(e)
                 GB.mysql.reconnect()
             except Exception as e:
                 print(e)
