@@ -35,7 +35,7 @@ class NewModel(Base):
             )
             GB.mysql.session.add(news)
             GB.mysql.session.commit()
-            i = news.id
+            i = news.media_id
         except Exception as e:
             print(f"Database error: {e}")
             GB.mysql.reconnect()
