@@ -26,21 +26,21 @@ class SourceComicModel(Base):
     updated_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    @classmethod
-    def insert(cls) -> int:
+
+    def insert(self) -> int:
         i = 0
         try:
-            comic = cls(
-                title=cls.title,
-                source_url=cls.source_url,
-                source=cls.source,
-                cover=cls.cover,
-                region=cls.region,
-                category=cls.category,
-                label=cls.label,
-                is_finish=cls.is_finish,
-                description=cls.description,
-                author=cls.author
+            comic = SourceComicModel(
+                title=self.title,
+                source_url=self.source_url,
+                source=self.source,
+                cover=self.cover,
+                region=self.region,
+                category=self.category,
+                label=self.label,
+                is_finish=self.is_finish,
+                description=self.description,
+                author=self.author
             )
             GB.mysql.session.add(comic)
             GB.mysql.session.commit()
