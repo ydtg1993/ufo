@@ -1,21 +1,20 @@
 import json
 import time
 from datetime import datetime
-
 from selenium.webdriver.common.by import By
-from assiatant.downloader import ImageDownloader
-from assiatant.globe import GB
+
+from assiatant import GB
 from model.new_model import NewModel
 import re
 
 
 class Nytime:
     def __init__(self):
-        self.db = GB['mysql']
-        self.config = GB['config']
+        self.db = GB.mysql
+        self.config = GB.config
 
         try:
-            self.wb = GB['bot'].start()
+            self.wb = GB.bot.start()
             self.url = "https://cn.nytimes.com"
             self.wb.get(self.url)
             self.wb.execute_script('''
@@ -69,7 +68,7 @@ class Nytime:
 
                 area = self.wb.find_element(By.CLASS_NAME, 'article-area')
                 #exist = self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
-
+                exist = GB.mysql.try_reconnect(self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first())
                 if exist is None:
                     categories = []
                     category = area.find_element(By.CSS_SELECTOR, ".setting-bar>.section-title>h3").text

@@ -6,19 +6,19 @@ from datetime import datetime
 import ffmpeg
 import m3u8
 from selenium.webdriver.common.by import By
-from assiatant.globe import GB
 import re
+from assiatant import GB
 from model.new_model import NewModel
 
 
 class Reuter:
     def __init__(self):
-        self.db = GB['mysql']
-        self.config = GB['config']
-        self.rd = GB["redis"]
+        self.db = GB.mysql
+        self.config = GB.config
+        self.rd = GB.redis
 
         try:
-            self.wb = GB['bot'].start()
+            self.wb = GB.bot.start()
             self.url = "https://www.reuters.com"
             self.wb.get(self.url)
             self.login()
@@ -110,7 +110,8 @@ class Reuter:
                 if not match:
                     continue
 
-                exist = self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
+                #exist = self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
+                exist = GB.mysql.try_reconnect(self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first())
                 if exist is None:
                     cover = task['cover']
                     tags = main.find_elements(By.CSS_SELECTOR, 'nav[aria-label="Tags"] li')
