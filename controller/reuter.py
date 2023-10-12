@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 import re
 from assiatant import GB
 from model.new_model import NewModel
-
+from sqlalchemy.exc import OperationalError
 
 class Reuter:
     def __init__(self):
@@ -110,8 +110,7 @@ class Reuter:
                 if not match:
                     continue
 
-                #exist = self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
-                exist = GB.mysql.try_reconnect(self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first())
+                exist = self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
                 if exist is None:
                     cover = task['cover']
                     tags = main.find_elements(By.CSS_SELECTOR, 'nav[aria-label="Tags"] li')
@@ -182,7 +181,8 @@ class Reuter:
                              source_id=6,
                              categories=json.dumps(categories),
                              publish_at=formatted_date).insert()
-
+            except OperationalError as e:
+                GB.mysql.reconnect()
             except Exception as e:
                 print(e, link)
                 continue

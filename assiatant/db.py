@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import OperationalError
 from configparser import ConfigParser
 
 
@@ -40,13 +41,3 @@ class MysqlConnector:
             print(f'{e}')
         else:
             print('mysql重新链接成功')
-
-    def try_reconnect(self, func, *args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except OperationalError as e:
-            if "MySQL server has gone away" in str(e):
-                self.reconnect()
-                return self.try_reconnect(func, *args, **kwargs)
-            else:
-                raise

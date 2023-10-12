@@ -2,7 +2,7 @@ import json
 import time
 from datetime import datetime
 from selenium.webdriver.common.by import By
-
+from sqlalchemy.exc import OperationalError
 from assiatant import GB
 from model.new_model import NewModel
 import re
@@ -67,8 +67,7 @@ class Nytime:
                     continue
 
                 area = self.wb.find_element(By.CLASS_NAME, 'article-area')
-                #exist = self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
-                exist = GB.mysql.try_reconnect(self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first())
+                exist = self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
                 if exist is None:
                     categories = []
                     category = area.find_element(By.CSS_SELECTOR, ".setting-bar>.section-title>h3").text
@@ -102,6 +101,8 @@ class Nytime:
                              source_id=8,
                              categories=json.dumps(categories),
                              publish_at=publish_at).insert()
+            except OperationalError as e:
+                GB.mysql.reconnect()
             except Exception as e:
                 print(e)
                 continue
