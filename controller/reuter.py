@@ -186,4 +186,3 @@ class Reuter:
                 GB.mysql.reconnect()
             except Exception as e:
                 print(e, link)
-                continue

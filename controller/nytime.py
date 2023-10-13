@@ -106,4 +106,3 @@ class Nytime:
                 GB.mysql.reconnect()
             except Exception as e:
                 print(e)
-                continue
