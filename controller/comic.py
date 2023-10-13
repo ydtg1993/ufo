@@ -11,7 +11,7 @@ class Comic:
         wb.get(GB.config.get("App", "URL"))
         time.sleep(3)
         for _ in range(12):
-            task = GB.redis.dequeue(GB.config.get("Redis", "PREFIX") + "comic:task")
+            task = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":comic:task")
             if task is None:
                 return
             task = json.loads(task)

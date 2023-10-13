@@ -12,10 +12,33 @@ class Menu:
     def __init__(self):
         categories = [
             {"name": "恋爱", "value": "lianai"},
-            {"name": "纯爱", "value": "chunai"}
+            {"name": "纯爱", "value": "chunai"},
+            {"name": "古風", "value": "gufeng"},
+            {"name": "異能", "value": "yineng"},
+            {"name": "懸疑", "value": "xuanyi"},
+            {"name": "劇情", "value": "juqing"},
+            {"name": "科幻", "value": "kehuan"},
+            {"name": "奇幻", "value": "qihuan"},
+            {"name": "玄幻", "value": "xuanhuan"},
+            {"name": "穿越", "value": "chuanyue"},
+            {"name": "冒險", "value": "mouxian"},
+            {"name": "推理", "value": "tuili"},
+            {"name": "武俠", "value": "wuxia"},
+            {"name": "格鬥", "value": "gedou"},
+            {"name": "戰爭", "value": "zhanzheng"},
+            {"name": "熱血", "value": "rexie"},
+            {"name": "搞笑", "value": "gaoxiao"},
+            {"name": "大女主", "value": "danuzhu"},
+            {"name": "都市", "value": "dushi"},
+            {"name": "總裁", "value": "zongcai"},
+            {"name": "後宮", "value": "hougong"},
+            {"name": "日常", "value": "richang"},
+            {"name": "少年", "value": "shaonian"},
+            {"name": "其它", "value": "qita"},
         ]
         regions = [
             {"name": "国漫", "value": "cn"},
+            {"name": "日本", "value": "jp"},
             {"name": "韩漫", "value": "kr"}
         ]
 
@@ -62,7 +85,7 @@ class Menu:
 
                 GB.redis.set_hash(GB.config.get("Redis", "PREFIX") + "unique:comic:link", link, "0")
                 cover = a.find_element(By.TAG_NAME, "amp-img").get_attribute("src")
-                GB.redis.enqueue(GB.config.get("Redis", "PREFIX") + "comic:task",
+                GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":comic:task",
                                  json.dumps(
                                      {"title": title, "link": link, "cover": cover, "category": category['name'],
                                       "region": region['name']}))

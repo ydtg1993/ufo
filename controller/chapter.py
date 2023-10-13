@@ -13,7 +13,7 @@ class Chapter:
         wb.get(url)
         time.sleep(3)
         for _ in range(12):
-            comic_id = GB.redis.dequeue(GB.config.get("Redis", "PREFIX") + "chapter:task")
+            comic_id = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":chapter:task")
             if comic_id is None:
                 return
 
