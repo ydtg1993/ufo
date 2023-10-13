@@ -56,6 +56,7 @@ class Menu:
             category=category['value'], region=region['value'])
         if category['value'] not in self.Windows:
             wb.window_new()
+            wb.switch_to.window(wb.window_handles[-1])
             wb.get(list_url)
             self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "repeat": 10}
         else:

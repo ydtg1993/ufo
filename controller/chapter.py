@@ -35,15 +35,15 @@ class Chapter:
                 for sort, chapter in enumerate(chapters):
                     link = chapter.get_attribute('href')
                     title = chapter.get_attribute('textContent')
-                    if GB.redis.get_hash(GB.config.get("Redis", "PREFIX") + "unique:chapter:link", link) is not None:
+                    if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link", link) is not None:
                         continue
 
                     i = SourceChapterModel(title=title,
                                            comic_id=comic_id,
                                            source_url=link,
                                            sort=sort).insert()
-                    GB.redis.set_hash(GB.config.get("Redis", "PREFIX") + "unique:chapter:link", link, "0")
-                    GB.redis.enqueue(GB.config.get("Redis", "PREFIX") + "img:task", i)
+                    GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link", link, "0")
+                    GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", i)
             else:
                 pass
 

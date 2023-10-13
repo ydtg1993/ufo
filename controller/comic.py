@@ -46,5 +46,5 @@ class Comic:
                                  is_finish=is_finish,
                                  description=description,
                                  author=author).insert()
-            GB.redis.enqueue(GB.config.get("Redis", "PREFIX") + "chapter:task", i)
+            GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", i)
         wb.quit()

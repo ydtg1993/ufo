@@ -7,10 +7,9 @@ from controller.menu import Menu
 
 
 def main():
-    Menu()
+    #Menu()
     #Comic()
-    #Chapter()
-
+    Chapter()
 
 
 if __name__ == '__main__':
