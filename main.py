@@ -7,9 +7,9 @@ from controller.menu import Menu
 
 
 def main():
-    #Menu()
+    Menu()
     #Comic()
-    Chapter()
+    #Chapter()
 
 
 

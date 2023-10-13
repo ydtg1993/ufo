@@ -13,12 +13,12 @@ class Comic:
         for _ in range(12):
             task = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":comic:task")
             if task is None:
-                return
+                break
             task = json.loads(task)
 
             exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
             if exist is not None:
-                return
+                break
             wb.get(task['link'])
             time.sleep(3)
             info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")

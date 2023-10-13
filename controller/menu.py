@@ -79,11 +79,11 @@ class Menu:
                 a = comic_dom.find_element(By.CSS_SELECTOR, "a:first-child")
                 title = a.get_attribute('title')
                 link = a.get_attribute('href')
-                if GB.redis.get_hash(GB.config.get("Redis", "PREFIX") + "unique:comic:link", link) is not None:
+                if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:comic:link", link) is not None:
                     self.Windows[category['value']]["repeat"] -= 1
                     break
 
-                GB.redis.set_hash(GB.config.get("Redis", "PREFIX") + "unique:comic:link", link, "0")
+                GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:comic:link", link, "0")
                 cover = a.find_element(By.TAG_NAME, "amp-img").get_attribute("src")
                 GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":comic:task",
                                  json.dumps(
