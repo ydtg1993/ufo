@@ -8,6 +8,8 @@ from model.source_comic_model import SourceComicModel
 
 
 class Chapter:
+    chapter_limit = 30
+
     def __init__(self):
         wb = GB.bot.start()
         url = GB.config.get("App", "URL")
@@ -36,10 +38,15 @@ class Chapter:
                 chapters = chapter_dom.find_elements(By.CSS_SELECTOR, ".pure-g a")
                 chapters.reverse()
                 self.chapter_patch(comic_id, chapters)
+            record.source_chapter_count = len(chapters)
+            GB.mysql.session.commit()
         wb.quit()
 
     def chapter_patch(self, comic_id, chapters):
+        limit = 0
         for sort, chapter in enumerate(chapters):
+            if limit > self.chapter_limit:
+                break
             link = chapter.get_attribute('href')
             title = chapter.get_attribute('textContent')
             if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link", link) is not None:
@@ -52,3 +59,4 @@ class Chapter:
                                    sort=sort).insert()
             GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link", link, "0")
             GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", i)
+            limit += 1

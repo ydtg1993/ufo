@@ -58,7 +58,7 @@ class Menu:
             wb.window_new()
             wb.switch_to.window(wb.window_handles[-1])
             wb.get(list_url)
-            self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "repeat": 10}
+            self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "repeat": 5}
         else:
             handle = self.Windows[category['value']]["handle"]
             wb.switch_to.window(handle)

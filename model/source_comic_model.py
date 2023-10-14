@@ -18,6 +18,7 @@ class SourceComicModel(Base):
     label = Column(String, default='[]')
     category = Column(String, default='')
     region = Column(String, default='')
+    source_chapter_count = Column(Integer, default=0)
     chapter_count = Column(Integer, default=0)
     is_finish = Column(Integer, default=0)
     description = Column(String, default='')
