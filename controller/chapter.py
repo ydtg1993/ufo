@@ -48,6 +48,7 @@ class Chapter:
             i = SourceChapterModel(title=title,
                                    comic_id=comic_id,
                                    source_url=link,
+                                   images='[]',
                                    sort=sort).insert()
             GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link", link, "0")
             GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", i)
