@@ -42,11 +42,11 @@ class Menu:
             {"name": "韩漫", "value": "kr"}
         ]
 
-        for region in regions:
+        for category in categories:
             wb = GB.bot.start()
             wb.get(GB.config.get("App", "URL"))
             time.sleep(5)
-            for category in categories:
+            for region in regions:
                 self.scan_list(wb, category, region)
             self.Windows = {}
             wb.quit()
@@ -58,7 +58,7 @@ class Menu:
             wb.window_new()
             wb.switch_to.window(wb.window_handles[-1])
             wb.get(list_url)
-            self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "repeat": 5}
+            self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 10, "repeat": 5}
         else:
             handle = self.Windows[category['value']]["handle"]
             wb.switch_to.window(handle)
