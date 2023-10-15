@@ -1,3 +1,4 @@
+import random
 import time
 from selenium.webdriver.common.by import By
 from assiatant import GB
@@ -9,7 +10,6 @@ class Comic:
     def __init__(self):
         wb = GB.bot.start()
         wb.get(GB.config.get("App", "URL"))
-        time.sleep(3)
         for _ in range(12):
             task = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":comic:task")
             if task is None:
@@ -46,5 +46,5 @@ class Comic:
                                  description=description,
                                  author=author).insert()
             GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", i)
-            time.sleep(7)
+            time.sleep(random.randint(7, 15))
         wb.quit()

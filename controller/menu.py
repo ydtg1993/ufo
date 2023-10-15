@@ -1,4 +1,5 @@
 import json
+import random
 import time
 from selenium.webdriver.common.by import By
 from undetected_chromedriver import Chrome
@@ -63,7 +64,7 @@ class Menu:
             wb.switch_to.window(handle)
 
         limit = 1
-        time.sleep(3)
+        time.sleep(5)
         while True:
             if self.Windows[category['value']]["repeat"] < 0:
                 break
@@ -72,7 +73,7 @@ class Menu:
             limit += 1
 
             wb.execute_script("window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
-            time.sleep(7)
+            time.sleep(random.randint(7, 15))
             comic_doms = wb.find_elements(By.CSS_SELECTOR, 'div.comics-card')
             comic_doms.reverse()
             for _, comic_dom in enumerate(comic_doms):
