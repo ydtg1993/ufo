@@ -45,7 +45,6 @@ class Menu:
         for category in categories:
             wb = GB.bot.start()
             wb.get(GB.config.get("App", "URL"))
-            time.sleep(5)
             for region in regions:
                 self.scan_list(wb, category, region)
             self.Windows = {}
@@ -73,7 +72,7 @@ class Menu:
             limit += 1
 
             wb.execute_script("window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
-            time.sleep(3)
+            time.sleep(7)
             comic_doms = wb.find_elements(By.CSS_SELECTOR, 'div.comics-card')
             comic_doms.reverse()
             for _, comic_dom in enumerate(comic_doms):

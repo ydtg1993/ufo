@@ -62,3 +62,4 @@ class Chapter:
             GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + comic_id, link, "0")
             GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", i)
             limit += 1
+            time.sleep(7)

@@ -20,7 +20,6 @@ class Comic:
             if exist is not None:
                 break
             wb.get(task['link'])
-            time.sleep(3)
             info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
             author = info_dom.find_element(By.CSS_SELECTOR, "h2.comics-detail__author").text
             description = info_dom.find_element(By.CSS_SELECTOR, "p.comics-detail__desc").text.strip()
@@ -47,4 +46,5 @@ class Comic:
                                  description=description,
                                  author=author).insert()
             GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", i)
+            time.sleep(7)
         wb.quit()
