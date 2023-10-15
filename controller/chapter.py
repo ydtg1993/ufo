@@ -15,7 +15,6 @@ class Chapter:
         wb = GB.bot.start()
         url = GB.config.get("App", "URL")
         wb.get(url)
-        time.sleep(3)
         for _ in range(12):
             comic_id = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":chapter:task")
             if comic_id is None:
@@ -25,8 +24,6 @@ class Chapter:
             if record is None:
                 break
             wb.get(record.source_url)
-            time.sleep(3)
-
             chapter_dom = wb.find_element(By.CSS_SELECTOR, "div.comics-detail > div:nth-child(3)")
             if not re.match(r'.*class="pure-g".*', chapter_dom.get_attribute('innerHTML')):
                 continue
@@ -41,6 +38,7 @@ class Chapter:
                 self.chapter_patch(comic_id, chapters)
             record.source_chapter_count = len(chapters)
             GB.mysql.session.commit()
+            time.sleep(random.randint(7, 15))
         wb.quit()
 
     def chapter_patch(self, comic_id, chapters):
@@ -63,4 +61,3 @@ class Chapter:
             GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + comic_id, link, "0")
             GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", i)
             limit += 1
-            time.sleep(random.randint(7, 15))
