@@ -7,11 +7,11 @@ import threading
 
 
 def main():
-    t1 = threading.Thread(target=Menu)
-    t1.daemon = True
-    t1.start()
-    time.sleep(600)
-
+    #t1 = threading.Thread(target=Menu)
+    #t1.daemon = True
+    #t1.start()
+    #time.sleep(600)
+    deal_comic()
     t2 = threading.Thread(target=deal_comic)
     t2.daemon = True
     t2.start()
@@ -29,20 +29,29 @@ def main():
 
 def deal_comic():
     while True:
-        Comic()
-        time.sleep(30)
+        try:
+            Comic()
+            time.sleep(30)
+        except Exception:
+            pass
 
 
 def deal_chapter():
     while True:
-        Chapter()
-        time.sleep(30)
+        try:
+            Chapter()
+            time.sleep(30)
+        except Exception:
+            pass
 
 
 def deal_img():
     while True:
-        Img()
-        time.sleep(30)
+        try:
+            Img()
+            time.sleep(30)
+        except Exception:
+            pass
 
 
 if __name__ == '__main__':

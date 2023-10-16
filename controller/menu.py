@@ -43,18 +43,20 @@ class Menu:
             {"name": "韩漫", "value": "kr"}
         ]
 
+        num_per_group = 6
+        category_groups = [categories[i:i + num_per_group] for i in range(0, len(categories), num_per_group)]
+
         for region in regions:
-            try:
-                wb = GB.bot.start()
-                wb.get(GB.config.get("App", "URL"))
-                for category in categories:
-                    self.scan_list(wb, category, region)
-                self.Windows = {}
-                for handle in wb.window_handles:
-                    wb.switch_to.window(handle)
-                    wb.close()
-            except Exception:
-                pass
+            for category_group in category_groups:
+                try:
+                    wb = GB.bot.start()
+                    wb.get(GB.config.get("App", "URL"))
+                    for category in category_group:
+                        self.scan_list(wb, category, region)
+                    self.Windows = {}
+                    wb.quit()
+                except Exception:
+                    pass
 
     def scan_list(self, wb: Chrome, category: dict, region: dict):
         time.sleep(random.randint(7, 15))
@@ -63,7 +65,7 @@ class Menu:
         if category['value'] not in self.Windows:
             wb.switch_to.new_window()
             wb.get(list_url)
-            self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "repeat": 5}
+            self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "repeat": 2}
         else:
             handle = self.Windows[category['value']]["handle"]
             wb.switch_to.window(handle)

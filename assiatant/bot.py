@@ -9,7 +9,7 @@ class Bot(object):
     _debug = None
     _proxy = None
     _mitm = None
-    cache = cachetools.TTLCache(maxsize=100, ttl=1200)
+    cache = cachetools.TTLCache(maxsize=100, ttl=800)
 
     def __init__(self, config: ConfigParser):
         self._debug = True if config.get("App", "DEBUG") == 'on' else False

@@ -16,12 +16,12 @@ class Comic:
             if task is None:
                 break
             task = json.loads(task)
-
+            time.sleep(random.randint(7, 15))
             exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
             if exist is not None:
                 break
             wb.get(task['link'])
-            if not re.match(r'.*class="de-info-wr".*', wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML')):
+            if not re.match(r'.*class="de-info-wr".*', wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'), re.DOTALL):
                 continue
 
             info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
@@ -50,5 +50,4 @@ class Comic:
                                  description=description,
                                  author=author).insert()
             GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", i)
-            time.sleep(random.randint(7, 15))
         wb.quit()
