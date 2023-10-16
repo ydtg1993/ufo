@@ -4,50 +4,107 @@ import time
 from selenium.webdriver.common.by import By
 from assiatant import GB
 import json
+
+from model.source_chapter_model import SourceChapterModel
 from model.source_comic_model import SourceComicModel
 
 
 class Comic:
+    chapter_limit = 30
+
     def __init__(self):
         wb = GB.bot.start()
         wb.get(GB.config.get("App", "URL"))
         for _ in range(12):
-            task = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":comic:task")
-            if task is None:
+            try:
+                task = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":comic:task")
+                if task is None:
+                    break
+                task = json.loads(task)
+                time.sleep(random.randint(7, 30))
+                exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
+                if exist is not None:
+                    continue
+                wb.get(task['link'])
+                if not re.match(r'.*class="de-info-wr".*', wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
+                                re.DOTALL):
+                    continue
+
+                comic_id = self.comic_info(wb, task)
+                if comic_id:
+                    self.comic_chapter(wb, comic_id)
+            except Exception as e:
+                print(e)
+        wb.quit()
+
+    def comic_info(self, wb, task):
+        exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
+        if exist is not None:
+            return
+        info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
+        author = info_dom.find_element(By.CSS_SELECTOR, "h2.comics-detail__author").text
+        description = info_dom.find_element(By.CSS_SELECTOR, "p.comics-detail__desc").text.strip()
+        tag_doms = info_dom.find_elements(By.CSS_SELECTOR, "div.tag-list>span.tag")
+        is_finish = 0
+        tags = []
+        for index, dom in enumerate(tag_doms):
+            if index == 0:
+                if dom.text != "連載中":
+                    is_finish = 1
+                continue
+            elif index == 1:
+                continue
+            tags.append(dom.text.strip())
+
+        return SourceComicModel(title=task['title'],
+                                source_url=task['link'],
+                                source=3,
+                                cover=task['cover'],
+                                region=task['region'],
+                                category=task['category'],
+                                label=json.dumps(tags),
+                                is_finish=is_finish,
+                                description=description,
+                                author=author).insert()
+
+    def comic_chapter(self, wb, comic_id):
+        record = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
+        if record is None:
+            return
+        wb.get(record.source_url)
+        chapter_dom = wb.find_element(By.CSS_SELECTOR, "div.comics-detail > div:nth-child(3)")
+        if not re.match(r'.*class="pure-g".*', chapter_dom.get_attribute('innerHTML')):
+            return
+
+        if re.match(r'.*id="chapter-items".*', chapter_dom.get_attribute('innerHTML')):
+            chapters = chapter_dom.find_elements(By.CSS_SELECTOR, "#chapter-items a")
+            chapters.extend(chapter_dom.find_elements(By.CSS_SELECTOR, "#chapters_other_list a"))
+            self.chapter_patch(comic_id, chapters)
+        else:
+            chapters = chapter_dom.find_elements(By.CSS_SELECTOR, ".pure-g a")
+            chapters.reverse()
+            self.chapter_patch(comic_id, chapters)
+        record.source_chapter_count = len(chapters)
+        GB.mysql.session.commit()
+        time.sleep(random.randint(7, 15))
+
+    def chapter_patch(self, comic_id, chapters):
+        limit = 0
+        for sort, chapter in enumerate(chapters):
+            if limit > self.chapter_limit:
+                GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", comic_id)
                 break
-            task = json.loads(task)
-            time.sleep(random.randint(7, 15))
-            exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
-            if exist is not None:
-                break
-            wb.get(task['link'])
-            if not re.match(r'.*class="de-info-wr".*', wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'), re.DOTALL):
+            link = chapter.get_attribute('href')
+            title = chapter.get_attribute('textContent')
+            if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id),
+                                 link) is not None:
                 continue
 
-            info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
-            author = info_dom.find_element(By.CSS_SELECTOR, "h2.comics-detail__author").text
-            description = info_dom.find_element(By.CSS_SELECTOR, "p.comics-detail__desc").text.strip()
-            tag_doms = info_dom.find_elements(By.CSS_SELECTOR, "div.tag-list>span.tag")
-            is_finish = 0
-            tags = []
-            for index, dom in enumerate(tag_doms):
-                if index == 0:
-                    if dom.text != "連載中":
-                        is_finish = 1
-                    continue
-                elif index == 1:
-                    continue
-                tags.append(dom.text.strip())
-
-            i = SourceComicModel(title=task['title'],
-                                 source_url=task['link'],
-                                 source=3,
-                                 cover=task['cover'],
-                                 region=task['region'],
-                                 category=task['category'],
-                                 label=json.dumps(tags),
-                                 is_finish=is_finish,
-                                 description=description,
-                                 author=author).insert()
-            GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", i)
-        wb.quit()
+            i = SourceChapterModel(title=title,
+                                   comic_id=comic_id,
+                                   source_url=link,
+                                   images='[]',
+                                   sort=sort).insert()
+            GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id), link, "0")
+            GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", i)
+            limit += 1

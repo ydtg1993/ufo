@@ -54,7 +54,7 @@ class Bot(object):
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
 
-            driver = uc.Chrome(options=options)
+            driver = uc.Chrome(options=options,port=random.randint(20000,30000))
 
             return driver
         except BaseException as e:
