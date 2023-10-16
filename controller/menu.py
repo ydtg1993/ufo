@@ -44,14 +44,13 @@ class Menu:
         ]
 
         for region in regions:
-            wb = GB.bot.start()
-            wb.get(GB.config.get("App", "URL"))
-            for category in categories:
-                self.scan_list(wb, category, region)
-            self.Windows = {}
             try:
-                window_handles = wb.window_handles
-                for handle in window_handles:
+                wb = GB.bot.start()
+                wb.get(GB.config.get("App", "URL"))
+                for category in categories:
+                    self.scan_list(wb, category, region)
+                self.Windows = {}
+                for handle in wb.window_handles:
                     wb.switch_to.window(handle)
                     wb.close()
             except Exception:
