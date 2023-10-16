@@ -49,9 +49,16 @@ class Menu:
             for category in categories:
                 self.scan_list(wb, category, region)
             self.Windows = {}
-            wb.quit()
+            try:
+                window_handles = wb.window_handles
+                for handle in window_handles:
+                    wb.switch_to.window(handle)
+                    wb.close()
+            except Exception:
+                pass
 
     def scan_list(self, wb: Chrome, category: dict, region: dict):
+        time.sleep(random.randint(7, 15))
         list_url = GB.config.get("App", "URL") + 'classify?type={category}&region={region}&state=all&filter=%2a'.format(
             category=category['value'], region=region['value'])
         if category['value'] not in self.Windows:
@@ -63,7 +70,6 @@ class Menu:
             wb.switch_to.window(handle)
 
         limit = 1
-        time.sleep(5)
         while True:
             if self.Windows[category['value']]["repeat"] < 0:
                 break
@@ -72,7 +78,7 @@ class Menu:
             limit += 1
 
             wb.execute_script("window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
-            time.sleep(random.randint(7, 15))
+            time.sleep(random.randint(3, 9))
             comic_doms = wb.find_elements(By.CSS_SELECTOR, 'div.comics-card')
             comic_doms.reverse()
             for _, comic_dom in enumerate(comic_doms):

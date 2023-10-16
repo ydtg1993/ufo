@@ -1,4 +1,5 @@
 import random
+import re
 import time
 from selenium.webdriver.common.by import By
 from assiatant import GB
@@ -20,6 +21,9 @@ class Comic:
             if exist is not None:
                 break
             wb.get(task['link'])
+            if not re.match(r'.*class="de-info-wr".*', wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML')):
+                continue
+
             info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
             author = info_dom.find_element(By.CSS_SELECTOR, "h2.comics-detail__author").text
             description = info_dom.find_element(By.CSS_SELECTOR, "p.comics-detail__desc").text.strip()
