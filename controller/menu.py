@@ -43,10 +43,10 @@ class Menu:
             {"name": "韩漫", "value": "kr"}
         ]
 
-        for category in categories:
+        for region in regions:
             wb = GB.bot.start()
             wb.get(GB.config.get("App", "URL"))
-            for region in regions:
+            for category in categories:
                 self.scan_list(wb, category, region)
             self.Windows = {}
             wb.quit()
@@ -55,8 +55,7 @@ class Menu:
         list_url = GB.config.get("App", "URL") + 'classify?type={category}&region={region}&state=all&filter=%2a'.format(
             category=category['value'], region=region['value'])
         if category['value'] not in self.Windows:
-            wb.window_new()
-            wb.switch_to.window(wb.window_handles[-1])
+            wb.switch_to.new_window()
             wb.get(list_url)
             self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "repeat": 5}
         else:
@@ -90,3 +89,4 @@ class Menu:
                                  json.dumps(
                                      {"title": title, "link": link, "cover": cover, "category": category['name'],
                                       "region": region['name']}))
+        wb.switch_to.window(wb.window_handles[0])

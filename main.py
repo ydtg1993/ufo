@@ -10,12 +10,12 @@ def main():
     t1 = threading.Thread(target=Menu)
     t1.daemon = True
     t1.start()
-    time.sleep(60)
+    time.sleep(600)
 
     t2 = threading.Thread(target=deal_comic)
     t2.daemon = True
     t2.start()
-    time.sleep(60)
+    time.sleep(300)
 
     t3 = threading.Thread(target=deal_chapter)
     t3.daemon = True
