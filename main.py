@@ -5,6 +5,7 @@ from controller.menu import Menu
 import threading
 import sys
 
+
 def main():
     args = sys.argv
     if args[1] == 'menu':
@@ -13,7 +14,7 @@ def main():
     
     t2 = threading.Thread(target=deal_comic)
     t2.start()
-    time.sleep(3)
+    time.sleep(5)
 
     t3 = threading.Thread(target=deal_img)
     t3.start()
