@@ -90,7 +90,7 @@ class Comic:
             tags.append(dom.text.strip())
         return SourceComicModel(title=task['title'],
                                 source_url=task['link'],
-                                source=3,
+                                source=1,
                                 cover=task['cover'],
                                 region=task['region'],
                                 category=task['category'],
