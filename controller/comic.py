@@ -12,9 +12,16 @@ from model.source_comic_model import SourceComicModel
 class Comic:
     chapter_limit = 30
 
-    def __init__(self):
+    def __init__(self, is_update=False):
         wb = GB.bot.start()
         wb.get(GB.config.get("App", "URL"))
+        if is_update:
+            self.update_process(wb)
+        else:
+            self.insert_process(wb)
+        wb.quit()
+
+    def insert_process(self, wb):
         for _ in range(12):
             try:
                 task = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":comic:task")
@@ -22,11 +29,13 @@ class Comic:
                     break
                 task = json.loads(task)
                 time.sleep(random.randint(7, 30))
-                exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
+                exist = GB.mysql.session.query(SourceComicModel).filter(
+                    SourceComicModel.source_url == task['link']).first()
                 if exist is not None:
                     continue
                 wb.get(task['link'])
-                if not re.match(r'.*class="de-info-wr".*', wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
+                if not re.match(r'.*class="de-info-wr".*',
+                                wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
                                 re.DOTALL):
                     continue
 
@@ -35,7 +44,31 @@ class Comic:
                     self.comic_chapter(wb, comic_id)
             except Exception as e:
                 print(e)
-        wb.quit()
+
+    def update_process(self, wb):
+        for _ in range(12):
+            try:
+                comic_id = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":chapter:task")
+                if comic_id is None:
+                    break
+                time.sleep(random.randint(7, 30))
+                record = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
+                if record is None:
+                    continue
+                wb.get(record.source_url)
+                if not re.match(r'.*class="de-info-wr".*',
+                                wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
+                                re.DOTALL):
+                    continue
+                info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
+                tag_doms = info_dom.find_elements(By.CSS_SELECTOR, "div.tag-list>span.tag")
+                self.comic_chapter(wb, comic_id)
+                if tag_doms[0].text != "連載中" and record.is_finish == 0:
+                    record.is_finish = 1
+                    GB.mysql.session.commit()
+
+            except Exception as e:
+                print(e)
 
     def comic_info(self, wb, task):
         exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
@@ -55,7 +88,6 @@ class Comic:
             elif index == 1:
                 continue
             tags.append(dom.text.strip())
-
         return SourceComicModel(title=task['title'],
                                 source_url=task['link'],
                                 source=3,
@@ -85,8 +117,9 @@ class Comic:
             chapters.reverse()
             self.chapter_patch(comic_id, chapters)
         record.source_chapter_count = len(chapters)
+        record.chapter_count = GB.mysql.session.query(SourceChapterModel).filter(
+            SourceChapterModel.comic_id == comic_id).count()
         GB.mysql.session.commit()
-        time.sleep(random.randint(7, 15))
 
     def chapter_patch(self, comic_id, chapters):
         limit = 0

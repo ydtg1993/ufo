@@ -1,3 +1,4 @@
+import random
 import time
 from controller.comic import Comic
 from controller.img import Img
@@ -12,27 +13,38 @@ def main():
         Menu()
         return
     
-    t2 = threading.Thread(target=deal_comic)
+    t1 = threading.Thread(target=process_comic)
+    t1.start()
+    time.sleep(5)
+
+    t2 = threading.Thread(target=process_img)
     t2.start()
     time.sleep(5)
 
-    t3 = threading.Thread(target=deal_img)
+    t3 = threading.Thread(target=process_update_comic)
     t3.start()
 
+    t1.join()
     t2.join()
     t3.join()
 
 
-def deal_comic():
+def process_comic():
     while True:
         Comic()
-        time.sleep(120)
+        time.sleep(random.randint(60, 240))
 
 
-def deal_img():
+def process_img():
     while True:
         Img()
-        time.sleep(90)
+        time.sleep(random.randint(30, 240))
+
+
+def process_update_comic():
+    while True:
+        Comic(True)
+        time.sleep(random.randint(60, 300))
 
 
 if __name__ == '__main__':
