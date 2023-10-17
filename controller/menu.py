@@ -65,7 +65,7 @@ class Menu:
         if category['value'] not in self.Windows:
             wb.switch_to.new_window()
             wb.get(list_url)
-            self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "repeat": 2}
+            self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "start": 0, "repeat": 2}
         else:
             handle = self.Windows[category['value']]["handle"]
             wb.switch_to.window(handle)
@@ -78,7 +78,13 @@ class Menu:
                 break
             limit += 1
 
-            wb.execute_script("window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
+            if self.Windows[category['value']]['start'] > 0:
+                for _ in range(self.Windows[category['value']]['start']):
+                    wb.execute_script(
+                        "window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
+                    time.sleep(random.randint(3, 5))
+            else:
+                wb.execute_script("window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
             time.sleep(random.randint(3, 9))
             comic_doms = wb.find_elements(By.CSS_SELECTOR, 'div.comics-card')
             comic_doms.reverse()
