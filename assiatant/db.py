@@ -15,7 +15,7 @@ class MysqlConnector:
         self.DB_NAME = config.get("Database", "DB")
         try:
             self.engine = create_engine(
-                f"mysql+pymysql://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}",
+                f"mysql+mysqlconnector://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?auth_plugin=mysql_native_password&autocommit=true",
                 pool_size=20, max_overflow=10)
             self.connect()
         except BaseException as e:
@@ -34,7 +34,6 @@ class MysqlConnector:
 
     def reconnect(self):
         try:
-            self.session.close()
             self.engine.dispose()
             self.connect()
         except BaseException as e:

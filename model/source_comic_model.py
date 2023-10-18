@@ -44,7 +44,6 @@ class SourceComicModel(Base):
                 author=self.author
             )
             GB.mysql.session.add(comic)
-            GB.mysql.session.commit()
             i = comic.id
         except Exception as e:
             print(f"Database error: {e}")

@@ -65,7 +65,6 @@ class Comic:
                 self.comic_chapter(wb, comic_id)
                 if tag_doms[0].text != "連載中" and record.is_finish == 0:
                     record.is_finish = 1
-                    GB.mysql.session.commit()
 
             except Exception as e:
                 print(e)
@@ -119,7 +118,6 @@ class Comic:
         record.source_chapter_count = len(chapters)
         record.chapter_count = GB.mysql.session.query(SourceChapterModel).filter(
             SourceChapterModel.comic_id == comic_id).count()
-        GB.mysql.session.commit()
 
     def chapter_patch(self, comic_id, chapters):
         limit = 0

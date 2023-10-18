@@ -31,7 +31,6 @@ class SourceChapterModel(Base):
                 sort=self.sort
             )
             GB.mysql.session.add(chapter)
-            GB.mysql.session.commit()
             i = chapter.id
         except Exception as e:
             print(f"Database error: {e}")

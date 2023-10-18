@@ -73,7 +73,6 @@ class Img:
                         GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.id == record.comic_id).update(
                             {SourceComicModel.chapter_count: count,
                              SourceComicModel.last_chapter_update_at: record.created_at})
-                        GB.mysql.session.commit()
                     except Exception:
                         GB.mysql.session.rollback()
                         GB.mysql.reconnect()
