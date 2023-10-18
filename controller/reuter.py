@@ -45,16 +45,19 @@ class Reuter:
 
             t1 = self.wb.find_elements(By.CSS_SELECTOR, 'div[data-testid="Topic"] li')
             for t in t1:
-                title_dom = t.find_element(By.CSS_SELECTOR, 'h3[data-testid="Heading"] a')
-                title = title_dom.text
-                if title == '': continue
-                cover_html = t.get_attribute('innerHTML')
-                match = re.search(r'src="([^"]*)"', cover_html)
-                cover = ''
-                if match:
-                    cover = match.group(1)
-                link = title_dom.get_attribute("href")
-                task_map[link] = {"title": title, 'cover': cover}
+                try:
+                    title_dom = t.find_element(By.CSS_SELECTOR, 'h3[data-testid="Heading"] a')
+                    title = title_dom.text
+                    if title == '': continue
+                    cover_html = t.get_attribute('innerHTML')
+                    match = re.search(r'src="([^"]*)"', cover_html)
+                    cover = ''
+                    if match:
+                        cover = match.group(1)
+                    link = title_dom.get_attribute("href")
+                    task_map[link] = {"title": title, 'cover': cover}
+                except Exception:
+                    pass
 
             box = self.wb.find_element(By.CSS_SELECTOR, 'div.section-selector-tabs__selector-tab-wrapper__2WxjR')
             tabs = box.find_elements(By.CSS_SELECTOR, 'div:first-child div[role="tab"]')
