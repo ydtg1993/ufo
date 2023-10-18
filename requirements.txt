@@ -14,7 +14,6 @@ h11==0.14.0
 idna==3.4
 outcome==1.2.0
 pycparser==2.21
-PyMySQL==1.1.0
 PySocks==1.7.1
 redis==5.0.0
 requests==2.31.0
