@@ -6,7 +6,8 @@ from assiatant.rd import RedisConnector
 import logging
 import logging.handlers
 
-fh = logging.handlers.TimedRotatingFileHandler('./log/app.log', when='midnight', backupCount=7, encoding='utf8')
+fh = logging.handlers.TimedRotatingFileHandler('./log/app.log', when='midnight', backupCount=7, encoding='utf8',
+                                               delay=True)
 logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s",
                     level=logging.DEBUG,
                     datefmt="%Y-%m-%d %H:%M:%S",

@@ -23,7 +23,7 @@ class Img:
             try:
                 chapter_id = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":img:task")
                 if chapter_id is None:
-                    return
+                    break
 
                 record = GB.mysql.session.query(SourceChapterModel).filter(SourceChapterModel.id == chapter_id).first()
                 if record is None:
