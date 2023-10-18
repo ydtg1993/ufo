@@ -1,10 +1,10 @@
+import logging
 import random
 import re
 import time
 from selenium.webdriver.common.by import By
 from assiatant import GB
 import json
-
 from model.source_chapter_model import SourceChapterModel
 from model.source_comic_model import SourceComicModel
 
@@ -43,7 +43,8 @@ class Comic:
                 if comic_id:
                     self.comic_chapter(wb, comic_id)
             except Exception as e:
-                print(e)
+                logger = logging.getLogger(__name__)
+                logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
 
     def update_process(self, wb):
         for _ in range(12):
@@ -65,9 +66,9 @@ class Comic:
                 self.comic_chapter(wb, comic_id)
                 if tag_doms[0].text != "連載中" and record.is_finish == 0:
                     record.is_finish = 1
-
             except Exception as e:
-                print(e)
+                logger = logging.getLogger(__name__)
+                logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
 
     def comic_info(self, wb, task):
         exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()

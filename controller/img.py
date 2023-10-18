@@ -1,4 +1,5 @@
 import json
+import logging
 import math
 import re
 import time
@@ -73,9 +74,12 @@ class Img:
                         GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.id == record.comic_id).update(
                             {SourceComicModel.chapter_count: count,
                              SourceComicModel.last_chapter_update_at: record.created_at})
-                    except Exception:
+                    except Exception as e:
                         GB.mysql.session.rollback()
                         GB.mysql.reconnect()
-            except Exception:
-                pass
+                        logger = logging.getLogger(__name__)
+                        logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
+            except Exception as e:
+                logger = logging.getLogger(__name__)
+                logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
         wb.quit()

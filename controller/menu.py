@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import time
 from selenium.webdriver.common.by import By
@@ -51,11 +52,13 @@ class Menu:
                         wb.get(GB.config.get("App", "URL"))
                         for category in category_group:
                             self.scan_list(wb, category, region)
-                    except Exception:
-                        continue
+                    except Exception as e:
+                        logger = logging.getLogger(__name__)
+                        logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
             wb.quit()
-        except Exception:
-            pass
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
 
     def scan_list(self, wb: Chrome, category: dict, region: dict):
         time.sleep(random.randint(7, 15))

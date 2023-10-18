@@ -9,7 +9,7 @@ import threading
 def main():
     t0 = threading.Thread(target=process_menu)
     t0.start()
-    time.sleep(5)
+    time.sleep(300)
     
     t1 = threading.Thread(target=process_comic)
     t1.start()
