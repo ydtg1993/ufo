@@ -4,14 +4,12 @@ from controller.comic import Comic
 from controller.img import Img
 from controller.menu import Menu
 import threading
-import sys
 
 
 def main():
-    args = sys.argv
-    if args[1] == 'menu':
-        Menu()
-        return
+    t0 = threading.Thread(target=process_menu)
+    t0.start()
+    time.sleep(5)
     
     t1 = threading.Thread(target=process_comic)
     t1.start()
@@ -24,9 +22,16 @@ def main():
     t3 = threading.Thread(target=process_update_comic)
     t3.start()
 
+    t0.join()
     t1.join()
     t2.join()
     t3.join()
+
+
+def process_menu():
+    while True:
+        Menu()
+        time.sleep(random.randint(900, 1800))
 
 
 def process_comic():
