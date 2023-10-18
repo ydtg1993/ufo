@@ -13,13 +13,24 @@ class Comic:
     chapter_limit = 30
 
     def __init__(self, is_update=False):
-        wb = GB.bot.start()
-        wb.get(GB.config.get("App", "URL"))
-        if is_update:
-            self.update_process(wb)
-        else:
-            self.insert_process(wb)
-        wb.quit()
+        try:
+            if random.random() < 0.5:
+                wb = GB.bot.start()
+            else:
+                wb = GB.bot.start(proxy=True)
+        except Exception:
+            wb = GB.bot.start(proxy=True)
+
+        try:
+            wb.get(GB.config.get("App", "URL"))
+            if is_update:
+                self.update_process(wb)
+            else:
+                self.insert_process(wb)
+            wb.quit()
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
 
     def insert_process(self, wb):
         for _ in range(12):
