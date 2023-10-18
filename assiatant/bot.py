@@ -31,16 +31,16 @@ class Bot(object):
             else:
                 time.sleep(5)
 
-    def start(self):
+    def start(self, proxy=False, mitm=False):
         try:
             options = uc.ChromeOptions()
-            if self._proxy is not None:
+            if self._proxy is not None and proxy is True:
                 proxy_pool = self.fetch_proxy_data(self._proxy)
                 random_index = random.randint(0, len(proxy_pool) - 1)
                 proxy = proxy_pool[random_index]
                 options.add_argument(f"--proxy-server={proxy}")
 
-            if self._mitm is not None:
+            if self._mitm is not None and mitm is True:
                 options.add_argument(f"--proxy-server={self._mitm}")
 
             if not self._debug:

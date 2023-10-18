@@ -4,12 +4,10 @@ import time
 from selenium.webdriver.common.by import By
 from undetected_chromedriver import Chrome
 from assiatant import GB
-from model.source_comic_model import SourceComicModel
+from datetime import datetime, timedelta
 
 
 class Menu:
-    Windows = {}
-
     def __init__(self):
         categories = [
             {"name": "恋爱", "value": "lianai"},
@@ -45,44 +43,50 @@ class Menu:
 
         num_per_group = 6
         category_groups = [categories[i:i + num_per_group] for i in range(0, len(categories), num_per_group)]
-
-        for region in regions:
-            for category_group in category_groups:
-                try:
-                    wb = GB.bot.start()
-                    wb.get(GB.config.get("App", "URL"))
-                    for category in category_group:
-                        self.scan_list(wb, category, region)
-                    self.Windows = {}
-                    wb.quit()
-                except Exception:
-                    pass
+        try:
+            wb = GB.bot.start()
+            for region in regions:
+                for category_group in category_groups:
+                    try:
+                        wb.get(GB.config.get("App", "URL"))
+                        for category in category_group:
+                            self.scan_list(wb, category, region)
+                    except Exception:
+                        continue
+            wb.quit()
+        except Exception:
+            pass
 
     def scan_list(self, wb: Chrome, category: dict, region: dict):
         time.sleep(random.randint(7, 15))
         list_url = GB.config.get("App", "URL") + 'classify?type={category}&region={region}&state=all&filter=%2a'.format(
             category=category['value'], region=region['value'])
-        if category['value'] not in self.Windows:
+        unique_key = category['value'] + region['value']
+        if unique_key not in GB.menu_tick:
             wb.switch_to.new_window()
             wb.get(list_url)
-            self.Windows[category['value']] = {"handle": wb.current_window_handle, "limit": 5, "start": 0, "repeat": 3}
-        else:
-            handle = self.Windows[category['value']]["handle"]
-            wb.switch_to.window(handle)
+            GB.menu_tick[unique_key] = {"start": 0, "repeat": 5, "time": datetime.now()}
+        now = datetime.now()
+        if now - GB.menu_tick[unique_key]['time'] > timedelta(hours=72):
+            GB.menu_tick[unique_key] = {"start": 0, "repeat": 5, "time": now}
 
         limit = 1
         while True:
-            if self.Windows[category['value']]["repeat"] < 0:
+            if GB.menu_tick[unique_key]["repeat"] < 0:
                 break
-            if self.Windows[category['value']]["limit"] < limit:
+            if GB.menu_tick_limit < limit:
                 break
             limit += 1
 
-            if self.Windows[category['value']]['start'] > 0:
-                for _ in range(self.Windows[category['value']]['start']):
+            if GB.menu_tick[unique_key]['start'] > 0:
+                for _ in range(GB.menu_tick[unique_key]['start']):
                     wb.execute_script(
                         "window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
-                    time.sleep(random.randint(3, 5))
+                    time.sleep(random.randint(6, 12))
+                    is_bottom = wb.execute_script(
+                        "return (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2);")
+                    if is_bottom is True:
+                        break
             else:
                 wb.execute_script("window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
             time.sleep(random.randint(3, 9))
@@ -93,7 +97,7 @@ class Menu:
                 title = a.get_attribute('title')
                 link = a.get_attribute('href')
                 if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:comic:link", link) is not None:
-                    self.Windows[category['value']]["repeat"] -= 1
+                    GB.menu_tick[unique_key]["repeat"] -= 1
                     break
 
                 GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:comic:link", link, "0")
@@ -103,3 +107,4 @@ class Menu:
                                      {"title": title, "link": link, "cover": cover, "category": category['name'],
                                       "region": region['name']}))
         wb.switch_to.window(wb.window_handles[0])
+        GB.menu_tick[unique_key]['start'] += GB.menu_tick_limit

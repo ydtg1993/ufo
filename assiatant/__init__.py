@@ -7,3 +7,5 @@ from assiatant.rd import RedisConnector
 config = configparser.ConfigParser()
 config.read('config.ini')
 GB = Globe(config, MysqlConnector(config), RedisConnector(config), Bot(config))
+GB.menu_tick = {}
+GB.menu_tick_limit = 5
