@@ -56,7 +56,7 @@ class Menu:
                         self.browser(wb, category, region)
                 except Exception as e:
                     logger = logging.getLogger(__name__)
-                    logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
+                    logger.exception(str(e))
         wb.quit()
 
     def browser(self, wb: Chrome, category: dict, region: dict):

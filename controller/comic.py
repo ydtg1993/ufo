@@ -28,6 +28,8 @@ class Comic:
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
+        finally:
+            GB.mysql.session.commit()
 
     def insert_process(self, wb):
         for _ in range(12):
@@ -157,5 +159,3 @@ class Comic:
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
-        finally:
-            GB.mysql.session.commit()
