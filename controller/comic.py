@@ -74,10 +74,13 @@ class Comic:
                                 re.DOTALL):
                     continue
                 info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
-                tag_doms = info_dom.find_elements(By.CSS_SELECTOR, "div.tag-list>span.tag")
+                if re.match(r'.*class="tag-list".*',
+                            info_dom.get_attribute('innerHTML'),
+                            re.DOTALL):
+                    tag_doms = info_dom.find_elements(By.CSS_SELECTOR, "div.tag-list>span.tag")
+                    if tag_doms[0].text != "連載中" and record.is_finish == 0:
+                        record.is_finish = 1
                 self.comic_chapter(wb, comic_id)
-                if tag_doms[0].text != "連載中" and record.is_finish == 0:
-                    record.is_finish = 1
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))
