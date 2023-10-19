@@ -48,3 +48,11 @@ class RedisConnector:
     def dequeue(self, queue_name):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.rpop(queue_name)
+
+    def get_queue(self, queue_name, start: int, end: int):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.lrange(queue_name, start, end)
+
+    def delete(self, key):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.delete(key)

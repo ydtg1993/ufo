@@ -62,7 +62,7 @@ class Menu:
         wb.quit()
 
     def browser(self, wb: Chrome, category: dict, region: dict):
-        time.sleep(random.randint(7, 15))
+        time.sleep(random.randint(30, 150))
         list_url = GB.config.get("App", "URL") + 'classify?type={category}&region={region}&state=all&filter=%2a'.format(
             category=category['value'], region=region['value'])
         unique_key = category['value'] + region['value']
@@ -93,7 +93,7 @@ class Menu:
                         break
             else:
                 wb.execute_script("window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
-            time.sleep(random.randint(3, 9))
+            time.sleep(random.randint(10, 90))
             comic_doms = wb.find_elements(By.CSS_SELECTOR, 'div.comics-card')
             comic_doms.reverse()
             for _, comic_dom in enumerate(comic_doms):

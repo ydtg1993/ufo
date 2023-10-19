@@ -143,7 +143,6 @@ class Comic:
         try:
             for sort, chapter in enumerate(chapters):
                 if limit > self.chapter_limit:
-                    GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", comic_id)
                     break
                 link = chapter.get_attribute('href')
                 title = chapter.get_attribute('textContent')
