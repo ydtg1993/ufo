@@ -13,9 +13,11 @@ class Comic:
     chapter_limit = 30
 
     def __init__(self, is_update=False):
-        if random.random() < 0.5:
-            wb = GB.bot.start()
-        else:
+        wb = GB.bot.start()
+        try:
+            wb.get(GB.config.get("App", "URL"))
+        except Exception:
+            wb.quit()
             wb = GB.bot.start(proxy=True)
 
         try:

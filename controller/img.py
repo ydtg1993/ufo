@@ -16,9 +16,11 @@ from io import BytesIO
 
 class Img:
     def __init__(self):
-        if random.random() < 0.5:
-            wb = GB.bot.start()
-        else:
+        wb = GB.bot.start()
+        try:
+            wb.get(GB.config.get("App", "URL"))
+        except Exception:
+            wb.quit()
             wb = GB.bot.start(proxy=True)
 
         url = GB.config.get("App", "URL")
