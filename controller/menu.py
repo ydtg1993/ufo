@@ -44,26 +44,22 @@ class Menu:
 
         num_per_group = 6
         category_groups = [categories[i:i + num_per_group] for i in range(0, len(categories), num_per_group)]
-        try:
-            if random.random() < 0.5:
-                wb = GB.bot.start()
-            else:
-                wb = GB.bot.start(proxy=True)
-            for region in regions:
-                for category_group in category_groups:
-                    try:
-                        wb.get(GB.config.get("App", "URL"))
-                        for category in category_group:
-                            self.scan_list(wb, category, region)
-                    except Exception as e:
-                        logger = logging.getLogger(__name__)
-                        logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
-            wb.quit()
-        except Exception as e:
-            logger = logging.getLogger(__name__)
-            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
+        if random.random() < 0.5:
+            wb = GB.bot.start()
+        else:
+            wb = GB.bot.start(proxy=True)
+        for region in regions:
+            for category_group in category_groups:
+                try:
+                    wb.get(GB.config.get("App", "URL"))
+                    for category in category_group:
+                        self.browser(wb, category, region)
+                except Exception as e:
+                    logger = logging.getLogger(__name__)
+                    logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
+        wb.quit()
 
-    def scan_list(self, wb: Chrome, category: dict, region: dict):
+    def browser(self, wb: Chrome, category: dict, region: dict):
         time.sleep(random.randint(7, 15))
         list_url = GB.config.get("App", "URL") + 'classify?type={category}&region={region}&state=all&filter=%2a'.format(
             category=category['value'], region=region['value'])
@@ -74,7 +70,7 @@ class Menu:
             GB.menu_tick[unique_key] = {"start": 0, "repeat": 5, "time": datetime.now()}
         now = datetime.now()
         if now - GB.menu_tick[unique_key]['time'] > timedelta(hours=72):
-            GB.menu_tick[unique_key] = {"start": 0, "repeat": 5, "time": now}
+            GB.menu_tick[unique_key] = {"start": 0, "repeat": 3, "time": now}
 
         limit = 1
         while True:
@@ -103,7 +99,10 @@ class Menu:
                 title = a.get_attribute('title')
                 link = a.get_attribute('href')
                 if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:comic:link", link) is not None:
-                    GB.menu_tick[unique_key]["repeat"] -= 1
+                    is_bottom = wb.execute_script(
+                        "return (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2);")
+                    if is_bottom is True:
+                        GB.menu_tick[unique_key]["repeat"] -= 1
                     break
 
                 GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:comic:link", link, "0")
