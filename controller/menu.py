@@ -64,7 +64,7 @@ class Menu:
             wb.quit()
         except Exception as e:
             logger = logging.getLogger(__name__)
-            logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
+            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
 
     def scan_list(self, wb: Chrome, category: dict, region: dict):
         time.sleep(random.randint(7, 15))
