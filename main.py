@@ -1,3 +1,5 @@
+import json
+import logging
 import random
 import time
 from controller.comic import Comic
@@ -30,25 +32,41 @@ def main():
 
 def process_menu():
     while True:
-        Menu()
+        try:
+            Menu()
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
         time.sleep(random.randint(900, 3600))
 
 
 def process_comic():
     while True:
-        Comic()
+        try:
+            Comic()
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
         time.sleep(random.randint(120, 420))
 
 
 def process_img():
     while True:
-        Img()
+        try:
+            Img()
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
         time.sleep(random.randint(60, 420))
 
 
 def process_update_comic():
     while True:
-        Comic(True)
+        try:
+            Comic(True)
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
         time.sleep(random.randint(600, 2200))
 
 

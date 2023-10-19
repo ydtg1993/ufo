@@ -13,12 +13,9 @@ class Comic:
     chapter_limit = 30
 
     def __init__(self, is_update=False):
-        try:
-            if random.random() < 0.5:
-                wb = GB.bot.start()
-            else:
-                wb = GB.bot.start(proxy=True)
-        except Exception:
+        if random.random() < 0.5:
+            wb = GB.bot.start()
+        else:
             wb = GB.bot.start(proxy=True)
 
         try:
@@ -30,7 +27,7 @@ class Comic:
             wb.quit()
         except Exception as e:
             logger = logging.getLogger(__name__)
-            logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
+            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
 
     def insert_process(self, wb):
         for _ in range(12):
@@ -55,7 +52,7 @@ class Comic:
                     self.comic_chapter(wb, comic_id)
             except Exception as e:
                 logger = logging.getLogger(__name__)
-                logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
+                logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
 
     def update_process(self, wb):
         for _ in range(12):
@@ -79,7 +76,7 @@ class Comic:
                     record.is_finish = 1
             except Exception as e:
                 logger = logging.getLogger(__name__)
-                logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
+                logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
 
     def comic_info(self, wb, task):
         exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()

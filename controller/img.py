@@ -15,12 +15,9 @@ from io import BytesIO
 
 class Img:
     def __init__(self):
-        try:
-            if random.random() < 0.5:
-                wb = GB.bot.start()
-            else:
-                wb = GB.bot.start(proxy=True)
-        except Exception:
+        if random.random() < 0.5:
+            wb = GB.bot.start()
+        else:
             wb = GB.bot.start(proxy=True)
 
         try:
@@ -32,7 +29,8 @@ class Img:
                     if chapter_id is None:
                         break
 
-                    record = GB.mysql.session.query(SourceChapterModel).filter(SourceChapterModel.id == chapter_id).first()
+                    record = GB.mysql.session.query(SourceChapterModel).filter(
+                        SourceChapterModel.id == chapter_id).first()
                     if record is None:
                         continue
                     wb.get(record.source_url)
@@ -78,7 +76,8 @@ class Img:
                             record.img_count = len(img_list)
                             count = GB.mysql.session.query(SourceChapterModel).filter(
                                 SourceChapterModel.comic_id == record.comic_id).count()
-                            GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.id == record.comic_id).update(
+                            GB.mysql.session.query(SourceComicModel).filter(
+                                SourceComicModel.id == record.comic_id).update(
                                 {SourceComicModel.chapter_count: count,
                                  SourceComicModel.last_chapter_update_at: record.created_at})
                         except Exception as e:
@@ -92,4 +91,4 @@ class Img:
             wb.quit()
         except Exception as e:
             logger = logging.getLogger(__name__)
-            logger.error(json.dumps({'message': e, 'args': e.args, 'traceback': e.__traceback__}))
+            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))

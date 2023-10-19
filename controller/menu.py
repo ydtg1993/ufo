@@ -45,12 +45,9 @@ class Menu:
         num_per_group = 6
         category_groups = [categories[i:i + num_per_group] for i in range(0, len(categories), num_per_group)]
         try:
-            try:
-                if random.random() < 0.5:
-                    wb = GB.bot.start()
-                else:
-                    wb = GB.bot.start(proxy=True)
-            except Exception:
+            if random.random() < 0.5:
+                wb = GB.bot.start()
+            else:
                 wb = GB.bot.start(proxy=True)
             for region in regions:
                 for category_group in category_groups:
