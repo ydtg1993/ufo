@@ -15,7 +15,7 @@ class MysqlConnector:
         self.DB_NAME = config.get("Database", "DB")
         try:
             self.engine = create_engine(
-                f"mysql+mysqlconnector://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?auth_plugin=mysql_native_password&autocommit=true",
+                f"mysql+mysqlconnector://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}",
                 pool_size=20, max_overflow=10)
             self.connect()
         except BaseException as e:

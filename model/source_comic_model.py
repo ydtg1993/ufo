@@ -26,27 +26,3 @@ class SourceComicModel(Base):
     last_chapter_update_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
-
-
-    def insert(self) -> int:
-        i = 0
-        try:
-            comic = SourceComicModel(
-                title=self.title,
-                source_url=self.source_url,
-                source=self.source,
-                cover=self.cover,
-                region=self.region,
-                category=self.category,
-                label=self.label,
-                is_finish=self.is_finish,
-                description=self.description,
-                author=self.author
-            )
-            GB.mysql.session.add(comic)
-            i = comic.id
-        except Exception as e:
-            print(f"Database error: {e}")
-            GB.mysql.reconnect()
-
-        return i

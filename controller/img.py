@@ -79,6 +79,7 @@ class Img:
                         SourceComicModel.id == record.comic_id).update(
                         {SourceComicModel.chapter_count: count,
                          SourceComicModel.last_chapter_update_at: record.created_at})
+                    GB.mysql.session.flush()
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))

@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
-
 from assiatant import GB
 
 Base = declarative_base()
@@ -19,21 +18,3 @@ class SourceChapterModel(Base):
     status = Column(Integer, default=0)
     updated_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
-
-    def insert(self) -> int:
-        i = 0
-        try:
-            chapter = SourceChapterModel(
-                title=self.title,
-                comic_id=self.comic_id,
-                images=self.images,
-                source_url=self.source_url,
-                sort=self.sort
-            )
-            GB.mysql.session.add(chapter)
-            i = chapter.id
-        except Exception as e:
-            print(f"Database error: {e}")
-            GB.mysql.reconnect()
-
-        return i

@@ -52,7 +52,7 @@ class Comic:
                     self.comic_chapter(wb, comic_id)
             except Exception as e:
                 logger = logging.getLogger(__name__)
-                logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
+                logger.exception(str(e))
 
     def update_process(self, wb):
         for _ in range(12):
@@ -96,16 +96,19 @@ class Comic:
             elif index == 1:
                 continue
             tags.append(dom.text.strip())
-        return SourceComicModel(title=task['title'],
-                                source_url=task['link'],
-                                source=1,
-                                cover=task['cover'],
-                                region=task['region'],
-                                category=task['category'],
-                                label=json.dumps(tags),
-                                is_finish=is_finish,
-                                description=description,
-                                author=author).insert()
+        comic = SourceComicModel(title=task['title'],
+                                 source_url=task['link'],
+                                 source=1,
+                                 cover=task['cover'],
+                                 region=task['region'],
+                                 category=task['category'],
+                                 label=json.dumps(tags),
+                                 is_finish=is_finish,
+                                 description=description,
+                                 author=author)
+        GB.mysql.session.add(comic)
+        GB.mysql.session.flush()
+        return comic.id
 
     def comic_chapter(self, wb, comic_id):
         record = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
@@ -130,21 +133,28 @@ class Comic:
 
     def chapter_patch(self, comic_id, chapters):
         limit = 0
-        for sort, chapter in enumerate(chapters):
-            if limit > self.chapter_limit:
-                GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", comic_id)
-                break
-            link = chapter.get_attribute('href')
-            title = chapter.get_attribute('textContent')
-            if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id),
-                                 link) is not None:
-                continue
+        try:
+            for sort, chapter in enumerate(chapters):
+                if limit > self.chapter_limit:
+                    GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", comic_id)
+                    break
+                link = chapter.get_attribute('href')
+                title = chapter.get_attribute('textContent')
+                if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id),
+                                     link) is not None:
+                    continue
 
-            i = SourceChapterModel(title=title,
-                                   comic_id=comic_id,
-                                   source_url=link,
-                                   images='[]',
-                                   sort=sort).insert()
-            GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id), link, "0")
-            GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", i)
-            limit += 1
+                chapter = SourceChapterModel(title=title,
+                                             comic_id=comic_id,
+                                             source_url=link,
+                                             images='[]',
+                                             sort=sort)
+                GB.mysql.session.add(chapter)
+                GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id), link, "0")
+                GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", chapter.id)
+                limit += 1
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.exception(str(e))
+        finally:
+            GB.mysql.session.commit()
