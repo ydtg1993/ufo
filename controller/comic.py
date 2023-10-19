@@ -27,7 +27,7 @@ class Comic:
             wb.quit()
         except Exception as e:
             logger = logging.getLogger(__name__)
-            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
+            logger.exception(str(e))
 
     def insert_process(self, wb):
         for _ in range(12):
@@ -76,7 +76,7 @@ class Comic:
                     record.is_finish = 1
             except Exception as e:
                 logger = logging.getLogger(__name__)
-                logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
+                logger.exception(str(e))
 
     def comic_info(self, wb, task):
         exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()

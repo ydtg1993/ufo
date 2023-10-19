@@ -36,7 +36,7 @@ def process_menu():
             Menu()
         except Exception as e:
             logger = logging.getLogger(__name__)
-            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
+            logger.exception(str(e))
         time.sleep(random.randint(900, 3600))
 
 
@@ -46,7 +46,7 @@ def process_comic():
             Comic()
         except Exception as e:
             logger = logging.getLogger(__name__)
-            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
+            logger.exception(str(e))
         time.sleep(random.randint(120, 420))
 
 
@@ -56,7 +56,7 @@ def process_img():
             Img()
         except Exception as e:
             logger = logging.getLogger(__name__)
-            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
+            logger.exception(str(e))
         time.sleep(random.randint(60, 420))
 
 
@@ -66,7 +66,7 @@ def process_update_comic():
             Comic(True)
         except Exception as e:
             logger = logging.getLogger(__name__)
-            logger.error(json.dumps({'message': str(e), 'args': e.args if hasattr(e, 'args') else None}))
+            logger.exception(str(e))
         time.sleep(random.randint(600, 2200))
 
 
