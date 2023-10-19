@@ -150,6 +150,7 @@ class Comic:
                                              images='[]',
                                              sort=sort)
                 GB.mysql.session.add(chapter)
+                GB.mysql.session.flush()
                 GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id), link, "0")
                 GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", chapter.id)
                 limit += 1
