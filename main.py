@@ -1,9 +1,6 @@
-import json
 import logging
 import random
 import time
-
-from assiatant import GB
 from controller.comic import Comic
 from controller.img import Img
 from controller.menu import Menu
@@ -39,8 +36,6 @@ def process_menu():
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
-        finally:
-            GB.mysql.session.commit()
         time.sleep(random.randint(900, 3600))
 
 
@@ -51,8 +46,6 @@ def process_comic():
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
-        finally:
-            GB.mysql.session.commit()
         time.sleep(random.randint(120, 420))
 
 
@@ -63,8 +56,6 @@ def process_img():
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
-        finally:
-            GB.mysql.session.commit()
         time.sleep(random.randint(60, 420))
 
 
@@ -75,8 +66,6 @@ def process_update_comic():
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
-        finally:
-            GB.mysql.session.commit()
         time.sleep(random.randint(600, 2200))
 
 
