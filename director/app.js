@@ -20,16 +20,16 @@ function process_board(){
             return;
         }
 
-        let data = response.data;
+        let processes = response.data.process;
         let html = '';
-        for (const d in data){
+        for (const d in processes){
             let panel = `<div class="box"><div class="process"><span class="letters">{message}</span><i class="{type}"></i></div></div>`;
-            panel = panel.replace("{message}", d + ' --- ' + data[d]['time']);
+            panel = panel.replace("{message}", d + ' --- ' + processes[d]['time']);
             let type = 'running';
-            if(!data[d]['live']){
+            if(!processes[d]['live']){
                 type = 'stop';
             }
-            panel = panel.replace("{type}", d + ' --- ' + type)
+            panel = panel.replace("{type}", d + ' --- ' + type);
             html += panel
         }
         dom.innerHTML = html;

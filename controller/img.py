@@ -7,6 +7,7 @@ import time
 from selenium.common import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from assiatant import GB
+from director.info import Info
 from model.source_chapter_model import SourceChapterModel
 from model.source_comic_model import SourceComicModel
 from PIL import Image
@@ -26,6 +27,8 @@ class Img:
         url = GB.config.get("App", "URL")
         wb.get(url)
         for _ in range(20):
+            i = Info()
+            i.check_stop_signal()
             try:
                 chapter_id = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":img:task")
                 if chapter_id is None:

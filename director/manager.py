@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler
 from assiatant import GB
+from director.info import Info
 from model.source_chapter_model import SourceChapterModel
 from model.source_comic_model import SourceComicModel
 
@@ -29,9 +30,11 @@ class Manager(BaseHTTPRequestHandler):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length).decode('utf-8')
         data = {'code': 0, 'data': {}, 'message': 'success'}
+        i = Info()
         try:
             parsed_data = json.loads(post_data)
             if parsed_data['command'] == 'process-board':
+                data['data']['process'] = {}
                 processes = GB.redis.get_hash_keys(GB.config.get("App", "PROJECT") + ':process:board')
                 for _, process in enumerate(processes):
                     msg = GB.redis.get_hash(GB.config.get("App", "PROJECT") + ':process:board', process)
@@ -39,11 +42,16 @@ class Manager(BaseHTTPRequestHandler):
                     live = False
                     if datetime.now() - datetime.strptime(msg[0], "%Y-%m-%d %H:%M:%S") <= timedelta(seconds=msg[1]):
                         live = True
-                    data['data'][process] = {'time': msg[0], 'live': live}
+                    data['data']['process'][process] = {'time': msg[0], 'live': live}
+                data['data']['stop_signal'] = i.stop_task_num
+
             elif parsed_data['command'] == 'command_reset_comic':
                 Manager.reset_comic_update_queue()
             elif parsed_data['command'] == 'command_reset_chapter':
                 Manager.reset_chapter_img_queue()
+            elif parsed_data['command'] == 'command_stop':
+                i.set_stop_signal()
+
         except json.JSONDecodeError as e:
             data = {'code': 1, 'data': {}, 'message': str(e)}
         self.send_response(200)

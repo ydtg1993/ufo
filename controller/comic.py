@@ -5,6 +5,8 @@ import time
 from selenium.webdriver.common.by import By
 from assiatant import GB
 import json
+
+from director.info import Info
 from model.source_chapter_model import SourceChapterModel
 from model.source_comic_model import SourceComicModel
 
@@ -35,6 +37,8 @@ class Comic:
 
     def insert_process(self, wb):
         for _ in range(12):
+            i = Info()
+            i.check_stop_signal()
             try:
                 task = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":comic:task")
                 if task is None:
@@ -60,6 +64,8 @@ class Comic:
 
     def update_process(self, wb):
         for _ in range(12):
+            i = Info()
+            i.check_stop_signal()
             try:
                 comic_id = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":chapter:task")
                 if comic_id is None:
