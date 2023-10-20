@@ -34,7 +34,7 @@ class Img:
                 if chapter_id is None:
                     break
 
-                record = GB.mysql.session.query(SourceChapterModel).filter(
+                record = GB.mysql['img'].session.query(SourceChapterModel).filter(
                     SourceChapterModel.id == chapter_id).first()
                 if record is None:
                     continue
@@ -78,9 +78,9 @@ class Img:
                 if len(img_list) > 0:
                     record.images = json.dumps(img_list)
                     record.img_count = len(img_list)
-                    count = GB.mysql.session.query(SourceChapterModel).filter(
+                    count = GB.mysql['img'].session.query(SourceChapterModel).filter(
                         SourceChapterModel.comic_id == record.comic_id).count()
-                    GB.mysql.session.query(SourceComicModel).filter(
+                    GB.mysql['img'].session.query(SourceComicModel).filter(
                         SourceComicModel.id == record.comic_id).update(
                         {SourceComicModel.chapter_count: count,
                          SourceComicModel.last_chapter_update_at: record.created_at})
@@ -88,5 +88,5 @@ class Img:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))
             finally:
-                GB.mysql.session.commit()
+                GB.mysql['img'].session.commit()
         wb.quit()

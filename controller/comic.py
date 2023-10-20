@@ -33,7 +33,7 @@ class Comic:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
         finally:
-            GB.mysql.session.commit()
+            GB.mysql['comic'].session.commit()
 
     def insert_process(self, wb):
         for _ in range(12):
@@ -45,7 +45,7 @@ class Comic:
                     break
                 task = json.loads(task)
                 time.sleep(random.randint(7, 30))
-                exist = GB.mysql.session.query(SourceComicModel).filter(
+                exist = GB.mysql['comic'].session.query(SourceComicModel).filter(
                     SourceComicModel.source_url == task['link']).first()
                 if exist is not None:
                     continue
@@ -71,7 +71,7 @@ class Comic:
                 if comic_id is None:
                     break
                 time.sleep(random.randint(7, 30))
-                record = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
+                record = GB.mysql['comic'].session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
                 if record is None:
                     continue
                 wb.get(record.source_url)
@@ -92,7 +92,7 @@ class Comic:
                 logger.exception(str(e))
 
     def comic_info(self, wb, task):
-        exist = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
+        exist = GB.mysql['comic'].session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
         if exist is not None:
             return
         info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
@@ -119,12 +119,12 @@ class Comic:
                                  is_finish=is_finish,
                                  description=description,
                                  author=author)
-        GB.mysql.session.add(comic)
-        GB.mysql.session.flush()
+        GB.mysql['comic'].session.add(comic)
+        GB.mysql['comic'].session.flush()
         return comic.id
 
     def comic_chapter(self, wb, comic_id):
-        record = GB.mysql.session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
+        record = GB.mysql['comic'].session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
         if record is None:
             return
         wb.get(record.source_url)
@@ -141,7 +141,7 @@ class Comic:
             chapters.reverse()
             self.chapter_patch(comic_id, chapters)
         record.source_chapter_count = len(chapters)
-        record.chapter_count = GB.mysql.session.query(SourceChapterModel).filter(
+        record.chapter_count = GB.mysql['comic'].session.query(SourceChapterModel).filter(
             SourceChapterModel.comic_id == comic_id).count()
 
     def chapter_patch(self, comic_id, chapters):
@@ -161,8 +161,8 @@ class Comic:
                                              source_url=link,
                                              images='[]',
                                              sort=sort)
-                GB.mysql.session.add(chapter)
-                GB.mysql.session.flush()
+                GB.mysql['comic'].session.add(chapter)
+                GB.mysql['comic'].session.flush()
                 GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id), link, "0")
                 GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", chapter.id)
                 limit += 1

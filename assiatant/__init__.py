@@ -15,6 +15,13 @@ logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s",
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-GB = Globe(config, MysqlConnector(config), RedisConnector(config), Bot(config))
+GB = Globe(config, {
+    'comic': MysqlConnector(config),
+    'img': MysqlConnector(config),
+    'reset_comic_update_queue': MysqlConnector(config),
+    'reset_chapter_img_queue': MysqlConnector(config),
+},
+           RedisConnector(config),
+           Bot(config))
 GB.menu_tick = {}
 GB.menu_tick_limit = 5

@@ -93,7 +93,7 @@ def reset_comic_update_queue():
             offset = 0
             tasks = GB.redis.get_queue(GB.config.get("App", "PROJECT") + ":chapter:task", 0, -1)
             while True:
-                results = GB.mysql.session.query(SourceComicModel.id).filter(
+                results = GB.mysql['reset_comic_update_queue'].session.query(SourceComicModel.id).filter(
                     SourceComicModel.source_chapter_count != SourceComicModel.chapter_count).offset(offset).limit(
                     batch_size).all()
                 for result in results:
@@ -119,7 +119,7 @@ def reset_chapter_img_queue():
             offset = 0
             tasks = GB.redis.get_queue(GB.config.get("App", "PROJECT") + ":img:task", 0, -1)
             while True:
-                results = GB.mysql.session.query(SourceChapterModel.id).filter(
+                results = GB.mysql['reset_chapter_img_queue'].session.query(SourceChapterModel.id).filter(
                     SourceChapterModel.img_count == 0).offset(offset).limit(
                     batch_size).all()
                 for result in results:

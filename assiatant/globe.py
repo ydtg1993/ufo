@@ -1,12 +1,11 @@
 from configparser import ConfigParser
 from assiatant.bot import Bot
-from assiatant.db import MysqlConnector
 from assiatant.rd import RedisConnector
 
 
 class Globe:
-    def __init__(self, config: ConfigParser, mysql: MysqlConnector, redis: RedisConnector, bot: Bot):
+    def __init__(self, config: ConfigParser, connects: dict, redis: RedisConnector, bot: Bot):
         self.config = config
-        self.mysql = mysql
+        self.mysql = connects
         self.redis = redis
         self.bot = bot
