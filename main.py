@@ -19,15 +19,10 @@ i = Info()
 def main():
     i.set_stop_num(3)
     threading.Thread(target=HttpService).start()
-    fill_task(process_menu)
-    time.sleep(3)
 
-    fill_task(process_comic)
-    time.sleep(3)
-
-    fill_task(process_img)
-    time.sleep(3)
-
+    fill_task(process_menu, 600)
+    fill_task(process_comic, 180)
+    fill_task(process_img, 30)
     fill_task(process_update_comic)
     fill_task(reset_comic_update_queue)
     fill_task(reset_chapter_img_queue)
@@ -36,10 +31,12 @@ def main():
         t.join()
 
 
-def fill_task(func):
+def fill_task(func, delay: int = 0):
     t = threading.Thread(target=func)
     t.start()
     tt.append(t)
+    if delay > 0:
+        time.sleep(delay)
 
 
 def process_menu():
