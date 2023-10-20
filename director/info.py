@@ -8,3 +8,6 @@ class Info:
 
     def insert_process(self, name, time, life: int):
         GB.redis.set_hash(self.process_key, name, json.dumps([time, life]))
+
+    def clear_cache(self):
+        GB.redis.delete(self.process_key)

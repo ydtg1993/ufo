@@ -60,3 +60,12 @@ class RedisConnector:
     def delete(self, key):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.delete(key)
+
+    def delete_keys_pattern(self, pattern):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        keys_to_delete = channel.keys(pattern)
+        deleted_keys_count = 0
+        for key in keys_to_delete:
+            result = channel.delete(key)
+            deleted_keys_count += result
+        return deleted_keys_count
