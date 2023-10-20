@@ -2,6 +2,7 @@ function request(data, callback) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", window.location.href, true);
     xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.timeout = 60000;
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let response = xhr.responseText;
@@ -32,6 +33,21 @@ function process_board(){
             html += panel
         }
         dom.innerHTML = html;
+    });
+}
+
+let block = {command_stop:false,command_reset_comic:false,command_reset_chapter:false};
+
+function buttonEvent(name) {
+    let dom = document.getElementById(name);
+    dom.addEventListener('click', function () {
+        if (block[name]) return;
+        block[name] = true;
+        dom.setAttribute('disabled', '');
+        request({command: name}, function (response) {
+            block[name] = false;
+            dom.removeAttribute('disabled');
+        });
     });
 }
 

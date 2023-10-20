@@ -45,7 +45,3 @@ class Manager(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json; charset=utf-8')
         self.end_headers()
         self.wfile.write(json.dumps(data).encode('utf-8'))
-
-    def do_PUT(self):
-        self.send_response(200)
-        self.end_headers()
