@@ -43,7 +43,8 @@ class Manager(BaseHTTPRequestHandler):
                     if datetime.now() - datetime.strptime(msg[0], "%Y-%m-%d %H:%M:%S") <= timedelta(seconds=msg[1]):
                         live = True
                     data['data']['process'][process] = {'time': msg[0], 'live': live}
-                data['data']['stop_signal'] = i.stop_task_num
+                full_num, num = i.get_stop_num()
+                data['data']['stop_signal'] = {'full_num': full_num, 'num': num}
 
             elif parsed_data['command'] == 'command_reset_comic':
                 Manager.reset_comic_update_queue()

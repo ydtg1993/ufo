@@ -16,7 +16,7 @@ tt = []
 i = Info()
 
 def main():
-    i.stop_task_num = 3
+    i.set_stop_num(3)
     threading.Thread(target=HttpService).start()
     fill_task(process_menu)
     time.sleep(3)
