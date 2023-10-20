@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from assiatant import GB
@@ -32,8 +33,12 @@ class Manager(BaseHTTPRequestHandler):
             if parsed_data['command'] == 'process-board':
                 processes = GB.redis.get_hash_keys(GB.config.get("App", "PROJECT") + ':process:board')
                 for _, process in enumerate(processes):
-                    time = GB.redis.get_hash(GB.config.get("App", "PROJECT") + ':process:board', process)
-                    data['data'][process] = time
+                    msg = GB.redis.get_hash(GB.config.get("App", "PROJECT") + ':process:board', process)
+                    msg = json.loads(msg)
+                    live = False
+                    if datetime.now() - datetime.strptime(msg[0], "%Y-%m-%d %H:%M:%S") <= timedelta(seconds=msg[1]):
+                        live = True
+                    data['data'][process] = {'time': msg[0], 'live': live}
         except json.JSONDecodeError as e:
             data = {'code': 1, 'data': {}, 'message': str(e)}
         self.send_response(200)

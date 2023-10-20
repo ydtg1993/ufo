@@ -2,11 +2,11 @@ import logging
 import random
 import threading
 import time
-import schedule
 from assiatant import GB
 from controller.comic import Comic
 from controller.img import Img
 from controller.menu import Menu
+from director.info import Info
 from director.service import HttpService
 from model.source_chapter_model import SourceChapterModel
 from model.source_comic_model import SourceComicModel
@@ -19,13 +19,13 @@ def main():
     threading.Thread(target=HttpService).start()
     time.sleep(300000)
     fill_task(process_menu)
-    time.sleep(300)
+    time.sleep(3)
 
     fill_task(process_comic)
-    time.sleep(30)
+    time.sleep(3)
 
     fill_task(process_img)
-    time.sleep(30)
+    time.sleep(3)
 
     fill_task(process_update_comic)
     fill_task(reset_comic_update_queue)
@@ -44,8 +44,7 @@ def fill_task(func):
 def process_menu():
     while True:
         try:
-            GB.redis.set_hash(GB.config.get("App", "PROJECT") + ':process:board', '分类页列表',
-                              datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            Info().insert_process('分类页列表', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600)
             Menu()
         except Exception as e:
             logger = logging.getLogger(__name__)
@@ -56,8 +55,7 @@ def process_menu():
 def process_comic():
     while True:
         try:
-            GB.redis.set_hash(GB.config.get("App", "PROJECT") + ':process:board', '漫画详情页',
-                              datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            Info().insert_process('漫画详情页', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 420)
             Comic()
         except Exception as e:
             logger = logging.getLogger(__name__)
@@ -68,8 +66,7 @@ def process_comic():
 def process_img():
     while True:
         try:
-            GB.redis.set_hash(GB.config.get("App", "PROJECT") + ':process:board', '章节图片页',
-                              datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            Info().insert_process('章节图片页', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 420)
             Img()
         except Exception as e:
             logger = logging.getLogger(__name__)
@@ -80,8 +77,7 @@ def process_img():
 def process_update_comic():
     while True:
         try:
-            GB.redis.set_hash(GB.config.get("App", "PROJECT") + ':process:board', '漫画章节更新',
-                              datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            Info().insert_process('漫画章节更新', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 1800)
             Comic(True)
         except Exception as e:
             logger = logging.getLogger(__name__)
@@ -92,8 +88,7 @@ def process_update_comic():
 def reset_comic_update_queue():
     while True:
         try:
-            GB.redis.set_hash(GB.config.get("App", "PROJECT") + ':process:board', '重置漫画更新队列',
-                              datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            GB.info.insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600*9)
             batch_size = 500
             offset = 0
             tasks = GB.redis.get_queue(GB.config.get("App", "PROJECT") + ":chapter:task", 0, -1)
@@ -119,8 +114,7 @@ def reset_comic_update_queue():
 def reset_chapter_img_queue():
     while True:
         try:
-            GB.redis.set_hash(GB.config.get("App", "PROJECT") + ':process:board', '重置章节图片抓取队列',
-                              datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            Info().insert_process('重置章节图片抓取队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 6)
             batch_size = 500
             offset = 0
             tasks = GB.redis.get_queue(GB.config.get("App", "PROJECT") + ":img:task", 0, -1)

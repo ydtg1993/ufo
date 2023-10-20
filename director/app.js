@@ -23,7 +23,13 @@ function process_board(){
         let html = '';
         for (const d in data){
             let panel = `<div class="box"><div class="process"><span class="letters">{message}</span><i class="{type}"></i></div></div>`;
-            html += panel.replace("{message}", d + ' --- ' + data[d])
+            panel = panel.replace("{message}", d + ' --- ' + data[d]['time']);
+            let type = 'running';
+            if(!data[d]['live']){
+                type = 'stop';
+            }
+            panel = panel.replace("{type}", d + ' --- ' + type)
+            html += panel
         }
         dom.innerHTML = html;
     });
