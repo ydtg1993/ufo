@@ -56,4 +56,4 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 setInterval(()=>{
     process_board();
-},30000);
+},8000);
