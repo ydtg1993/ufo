@@ -37,7 +37,7 @@ class Img:
                     continue
                 wb.get(record.source_url)
                 vh = wb.execute_script('return document.body.scrollHeight')
-                h = 5000
+                h = 1200
                 second = math.ceil(vh / h)
                 wb.execute_script('''
     let f1 = setInterval(()=>{
@@ -46,7 +46,7 @@ class Img:
      const clientHeight = dom.clientHeight; 
      const scrollHeight = dom.scrollHeight; 
      if (scrollHeight+10 > currentScroll + clientHeight) {
-         dom.scrollTo({'left':0,'top': currentScroll + 5000,behavior: 'smooth'})
+         dom.scrollTo({'left':0,'top': currentScroll + 1200,behavior: 'smooth'})
       }else{
          clearInterval(f1);			
       }

@@ -41,6 +41,10 @@ class RedisConnector:
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.hset(hash_name, field, value)
 
+    def get_hash_keys(self, hash_name):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.hkeys(hash_name)
+
     def enqueue(self, queue_name, item):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.lpush(queue_name, item)
