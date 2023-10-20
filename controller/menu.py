@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 
 
 class Menu:
+    page_limit = 5
+
     def __init__(self):
         categories = [
             {"name": "恋爱", "value": "lianai"},
@@ -78,7 +80,7 @@ class Menu:
         while True:
             if GB.menu_tick[unique_key]["repeat"] < 0:
                 break
-            if GB.menu_tick_limit < limit:
+            if self.page_limit < limit:
                 break
             limit += 1
 
@@ -114,4 +116,4 @@ class Menu:
                                      {"title": title, "link": link, "cover": cover, "category": category['name'],
                                       "region": region['name']}))
         wb.switch_to.window(wb.window_handles[0])
-        GB.menu_tick[unique_key]['start'] += GB.menu_tick_limit
+        GB.menu_tick[unique_key]['start'] += self.page_limit

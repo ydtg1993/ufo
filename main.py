@@ -15,6 +15,7 @@ from datetime import datetime
 tt = []
 i = Info()
 
+
 def main():
     i.set_stop_num(3)
     threading.Thread(target=HttpService).start()
@@ -88,7 +89,7 @@ def process_update_comic():
 def reset_comic_update_queue():
     while True:
         try:
-            i.insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600*9)
+            i.insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 9)
             batch_size = 500
             offset = 0
             tasks = GB.redis.get_queue(GB.config.get("App", "PROJECT") + ":chapter:task", 0, -1)
@@ -108,7 +109,7 @@ def reset_comic_update_queue():
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
-        time.sleep(3600*9)
+        time.sleep(3600 * 9)
 
 
 def reset_chapter_img_queue():
