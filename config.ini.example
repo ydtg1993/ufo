@@ -1,8 +1,8 @@
 [App]
 DEBUG = on/off
+PROJECT =
 
 [Bot]
-MAX_THREADS = 1
 PROXY_URL = https://dvapi.doveproxy.net/cmapi.php?rq=distribute&user=onemanhua&token=OXBZTmJEL043clF4cmRRYW5sS3Fjdz09&auth=0&geo=all&city=all&agreement=1&timeout=30&num=10&rtype=0
 MITM_PROXY = http://127.0.0.1:8080
 
@@ -19,4 +19,8 @@ PORT = 6379
 USER = root
 PASS = 123456
 INDEX = 1
+
+[Http]
+HOST = localhost
+PORT = 8990
 

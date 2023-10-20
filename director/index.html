@@ -1,0 +1,43 @@
+<html>
+<head>
+    <title>爬虫控制台</title>
+    <link rel="stylesheet" type="text/css" href="app.css">
+    <link rel="icon" type="image/png"
+          href="https://img.icons8.com/external-flaticons-lineal-color-flat-icons/24/external-bug-mobile-app-development-flaticons-lineal-color-flat-icons-6.png"
+          alt="external-bug-mobile-app-development-flaticons-lineal-color-flat-icons-6">
+</head>
+<body>
+<div class="section-1">
+    <div id="process-board" class="container scroll">
+
+    </div>
+    <div id="task-board" class="container scroll">
+
+    </div>
+</div>
+<div class="section-1">
+    <div id="control-board" class="container scroll">
+
+    </div>
+</div>
+<script type="text/javascript">
+    document.getElementById("c").addEventListener('click', () => {
+        function sendData() {
+            let data = {"a": 1};
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", window.location.href, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let response = xhr.responseText;
+                    console.log(response)
+                }
+            };
+            xhr.send(JSON.stringify(data));
+        }
+
+        sendData()
+    })
+</script>
+</body>
+</html>

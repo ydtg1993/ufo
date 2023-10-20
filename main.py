@@ -1,22 +1,26 @@
 import logging
 import random
+import threading
 import time
 import schedule
 from assiatant import GB
 from controller.comic import Comic
 from controller.img import Img
 from controller.menu import Menu
+from director.service import HttpService
 from model.source_chapter_model import SourceChapterModel
 from model.source_comic_model import SourceComicModel
 
 
 def main():
-    schedule.every(15).minutes.do(process_menu)
-    schedule.every(3).minutes.do(process_comic).tag('enabled')
-    schedule.every(2).minutes.do(process_img).tag('enabled')
-    schedule.every(45).minutes.do(process_update_comic).tag('enabled')
-    schedule.every(3).hours.do(reset_comic_update_queue).tag('enabled')
+    #schedule.every(15).minutes.do(process_menu)
+    #schedule.every(3).minutes.do(process_comic).tag('enabled')
+    #schedule.every(2).minutes.do(process_img).tag('enabled')
+    #schedule.every(45).minutes.do(process_update_comic).tag('enabled')
+    #schedule.every(3).hours.do(reset_comic_update_queue).tag('enabled')
     schedule.every(12).hours.do(reset_chapter_img_queue).tag('enabled')
+
+    threading.Thread(target=HttpService).start()
     while True:
         schedule.run_pending()
         time.sleep(5)
