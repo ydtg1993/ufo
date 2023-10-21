@@ -18,8 +18,15 @@ function process_board(){
             alert(response.message);
             return;
         }
-        let process_dom = document.querySelector('#process-board>div:first-child');
         let html = '';
+        let current_task_dom = document.querySelector('#current-task-board');
+        response.data.current_task.forEach(function(item) {
+            html += `<button class="dlp-button dlp-button-green">${item}</button>`;
+        });
+        current_task_dom.innerHTML = html;
+
+        html = '';
+        let process_dom = document.querySelector('#process-board>div:first-child');
         for (const d in response.data.process){
             let panel = `<div class="box"><div class="process"><span class="letters">{message}</span><i class="tag {type}"></i></div></div>`;
             panel = panel.replace("{message}", d + ' --- ' + response.data.process[d]['time']);
@@ -28,7 +35,7 @@ function process_board(){
                 type = 'red square';
             }
             panel = panel.replace("{type}", d + ' --- ' + type);
-            html += panel
+            html += panel;
         }
         process_dom.innerHTML = html;
 
