@@ -13,26 +13,35 @@ function request(data, callback) {
 }
 
 function process_board(){
-    let dom = document.getElementById('process-board');
     request({command:'process-board'},function (response) {
         if(response.code !== 0){
             alert(response.message);
             return;
         }
-
-        let processes = response.data.process;
+        let process_dom = document.querySelector('#process-board>div:first-child');
         let html = '';
-        for (const d in processes){
-            let panel = `<div class="box"><div class="process"><span class="letters">{message}</span><i class="{type}"></i></div></div>`;
-            panel = panel.replace("{message}", d + ' --- ' + processes[d]['time']);
-            let type = 'running';
-            if(!processes[d]['live']){
-                type = 'stop';
+        for (const d in response.data.process){
+            let panel = `<div class="box"><div class="process"><span class="letters">{message}</span><i class="tag {type}"></i></div></div>`;
+            panel = panel.replace("{message}", d + ' --- ' + response.data.process[d]['time']);
+            let type = 'green';
+            if(!response.data.process[d]['live']){
+                type = 'red square';
             }
             panel = panel.replace("{type}", d + ' --- ' + type);
             html += panel
         }
-        dom.innerHTML = html;
+        process_dom.innerHTML = html;
+
+        let process_stop_dom = document.querySelector('#process-board>div:nth-child(2)');
+        html = '';
+        for (let i=1;i<=response.data.stop_signal.full_num;i++){
+            if(i > response.data.stop_signal.num){
+                  html += '<i class="tag red square" style="margin-right: 3px"></i>';
+            }else{
+                 html += '<i class="tag green square" style="margin-right: 3px"></i>';
+            }
+        }
+        process_stop_dom.innerHTML = html;
     });
 }
 
@@ -56,4 +65,4 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 setInterval(()=>{
     process_board();
-},8000);
+},80000);

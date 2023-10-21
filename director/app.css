@@ -40,7 +40,7 @@ body {
     background-color: rgba(0, 0, 0, 0);
 }
 
-.section-1 {
+.section {
     display: -webkit-flex;
     display: flex;
     justify-content: center;
@@ -52,11 +52,22 @@ body {
     width: 480px;
     height: 640px;
     margin-right: 12px;
+    display: grid;
+    grid-template-rows: auto 30px;
+}
+
+#process-board>div:first-child{
     display: flex;
     flex-direction: column;
 }
+#process-board>div:nth-child(2){
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 0 3px 0;
+}
 
-#process-board > .box {
+#process-board .box {
     height: 40px;
     background: #ffffff;
     padding: 0 5px 0;
@@ -81,22 +92,31 @@ body {
     flex-grow: 1;
 }
 
-.process > i {
+i.tag {
     width: 16px;
     height: 16px;
     background: green;
     border-radius: 8px;
 }
-.process > i.running{
+i.tag.square{
+    border-radius: 3px;
+}
+i.tag.green{
     background: green;
 }
-.process > i.stop{
+i.tag.red{
     background: red;
 }
 
 #task-board {
     width: 100%;
     height: 640px;
+    display: grid;
+    grid-template-rows: auto 45px;
+}
+#task-board>div:nth-child(2){
+    display: flex;
+    align-items: center;
 }
 
 #control-board {
