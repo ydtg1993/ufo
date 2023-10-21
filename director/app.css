@@ -59,6 +59,8 @@ body {
     height: 30px;
     margin-right: 5px;
     margin-bottom: 5px;
+    -webkit-animation: fadein .5s;
+    animation: fadein .5s;
 }
 
 #process-board {
@@ -76,8 +78,9 @@ body {
 #process-board>div:nth-child(2){
     display: flex;
     align-items: center;
-    background: white;
+    background: #bcbcbc;
     padding: 0 3px 0;
+    border-radius: 3px;
 }
 
 #process-board .box {
