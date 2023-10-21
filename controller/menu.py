@@ -111,7 +111,7 @@ class Menu:
 
                 GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:comic:link", link, "0")
                 cover = a.find_element(By.TAG_NAME, "amp-img").get_attribute("src")
-                GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":comic:task",
+                GB.redis.enqueue(GB.process_cache_conf['comic']['key'],
                                  json.dumps(
                                      {"title": title, "link": link, "cover": cover, "category": category['name'],
                                       "region": region['name']}))

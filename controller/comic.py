@@ -40,7 +40,7 @@ class Comic:
             i = Info()
             i.check_stop_signal()
             try:
-                task = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":comic:task")
+                task = GB.redis.dequeue(GB.process_cache_conf['comic']['key'])
                 if task is None:
                     break
                 task = json.loads(task)
@@ -70,7 +70,7 @@ class Comic:
             i = Info()
             i.check_stop_signal()
             try:
-                comic_id = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":chapter:task")
+                comic_id = GB.redis.dequeue(GB.process_cache_conf['chapter']['key'])
                 if comic_id is None:
                     break
                 time.sleep(random.randint(7, 30))
@@ -124,7 +124,7 @@ class Comic:
                                  description=description,
                                  author=author)
         GB.mysql['comic'].session.add(comic)
-        GB.mysql['comic'].session.flush()
+        GB.mysql['comic'].session.commit()
         return comic.id
 
     def comic_chapter(self, wb, comic_id):
@@ -168,7 +168,7 @@ class Comic:
                 GB.mysql['comic'].session.add(chapter)
                 GB.mysql['comic'].session.commit()
                 GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id), link, "0")
-                GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", chapter.id)
+                GB.redis.enqueue(GB.process_cache_conf['img']['key'], chapter.id)
                 limit += 1
         except Exception as e:
             logger = logging.getLogger(__name__)

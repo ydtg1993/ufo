@@ -30,7 +30,7 @@ class Img:
             i = Info()
             i.check_stop_signal()
             try:
-                chapter_id = GB.redis.dequeue(GB.config.get("App", "PROJECT") + ":img:task")
+                chapter_id = GB.redis.dequeue(GB.process_cache_conf['img']['key'])
                 if chapter_id is None:
                     break
 

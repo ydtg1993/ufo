@@ -13,9 +13,11 @@ logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s",
                     level=logging.DEBUG,
                     datefmt="%Y-%m-%d %H:%M:%S",
                     handlers=[fh])
+
 # config setting
 config = configparser.ConfigParser()
 config.read('config.ini')
+
 # globe setting
 GB = Globe(config, {
     'comic': MysqlConnector(config),
@@ -26,3 +28,10 @@ GB = Globe(config, {
            RedisConnector(config),
            Bot(config))
 GB.menu_tick = {}
+
+# step cache key setting
+GB.process_cache_conf = {
+    'comic': {'key': GB.config.get("App", "PROJECT") + ":comic:task", 'name': '漫画队列', 'type': 'info'},
+    'img': {'key': GB.config.get("App", "PROJECT") + ":img:task", 'name': '章节抓图队列', 'type': 'info'},
+    'chapter': {'key': GB.config.get("App", "PROJECT") + ":chapter:task", 'name': '章节更新队列', 'type': 'info'},
+}
