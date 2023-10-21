@@ -25,43 +25,47 @@ class RedisConnector:
         else:
             print('redis链接成功')
 
-    def get_cache(self, key):
+    def get_cache(self, key: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.get(key)
 
-    def set_cache(self, key, val):
-        channel = redis.Redis(connection_pool=self.redis_pool)
-        return channel.set(key, val)
+    def set_cache(self, key: str, val: str, expire_time: int = 0):
+        if expire_time > 0:
+            channel = redis.Redis(connection_pool=self.redis_pool)
+            return channel.setex(key, expire_time, val)
+        else:
+            channel = redis.Redis(connection_pool=self.redis_pool)
+            return channel.set(key, val)
 
-    def get_hash(self, hash_name, field):
+    def get_hash(self, hash_name: str, field: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.hget(hash_name, field)
 
-    def set_hash(self, hash_name, field, value):
+    def set_hash(self, hash_name: str, field: str, value: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.hset(hash_name, field, value)
 
-    def get_hash_keys(self, hash_name):
+    def get_hash_keys(self, hash_name: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.hkeys(hash_name)
 
-    def enqueue(self, queue_name, item):
+    def enqueue(self, queue_name: str, item: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.lpush(queue_name, item)
 
-    def dequeue(self, queue_name):
+    def dequeue(self, queue_name: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.rpop(queue_name)
 
-    def get_queue(self, queue_name, start: int, end: int):
+    def get_queue(self, queue_name: str, start: int, end: int):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.lrange(queue_name, start, end)
 
-    def delete(self, key):
+    def delete(self, key: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.delete(key)
 
-    def delete_keys_pattern(self, pattern):
+    def delete_keys_pattern(self, pattern: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         keys_to_delete = channel.keys(pattern)
         deleted_keys_count = 0
