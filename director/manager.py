@@ -35,16 +35,10 @@ class Manager(BaseHTTPRequestHandler):
             parsed_data = json.loads(post_data)
             if parsed_data['command'] == 'process-board':
                 data['data']['process'] = {}
-                processes = GB.redis.get_hash_keys(GB.config.get("App", "PROJECT") + ':process:board')
-                for _, process in enumerate(processes):
-                    msg = GB.redis.get_hash(GB.config.get("App", "PROJECT") + ':process:board', process)
-                    msg = json.loads(msg)
-                    live = False
-                    if datetime.now() - datetime.strptime(msg[0], "%Y-%m-%d %H:%M:%S") <= timedelta(seconds=msg[1]):
-                        live = True
-                    data['data']['process'][process] = {'time': msg[0], 'live': live}
+                data['data']['process'] = i.get_process()
                 full_num, num = i.get_stop_num()
                 data['data']['stop_signal'] = {'full_num': full_num, 'num': num}
+                data['data']['current_task'] = i.get_current_task()
 
             elif parsed_data['command'] == 'command_reset_comic':
                 Manager.reset_comic_update_queue()

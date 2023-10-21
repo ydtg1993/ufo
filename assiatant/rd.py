@@ -65,6 +65,14 @@ class RedisConnector:
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.delete(key)
 
+    def get_keys_pattern(self, pattern)->list:
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        matched_keys = channel.keys(pattern)
+        result = []
+        for _,key in enumerate(matched_keys):
+            result.append(self.get_cache(key))
+        return result
+
     def delete_keys_pattern(self, pattern: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         keys_to_delete = channel.keys(pattern)

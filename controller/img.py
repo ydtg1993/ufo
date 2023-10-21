@@ -38,6 +38,7 @@ class Img:
                     SourceChapterModel.id == chapter_id).first()
                 if record is None:
                     continue
+                i.insert_current_task('img', f'章节{record.title} - {chapter_id}图片处理')
                 wb.get(record.source_url)
                 vh = wb.execute_script('return document.body.scrollHeight')
                 h = 1200

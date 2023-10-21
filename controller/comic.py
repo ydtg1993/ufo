@@ -45,6 +45,9 @@ class Comic:
                     break
                 task = json.loads(task)
                 time.sleep(random.randint(7, 30))
+                title = task['title']
+                link = task['link']
+                i.insert_current_task('img', f'漫画导入《{title}》-{link}')
                 exist = GB.mysql['comic'].session.query(SourceComicModel).filter(
                     SourceComicModel.source_url == task['link']).first()
                 if exist is not None:
@@ -74,6 +77,7 @@ class Comic:
                 record = GB.mysql['comic'].session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
                 if record is None:
                     continue
+                i.insert_current_task('img', f'漫画更新《{record.title}》-{comic_id}')
                 wb.get(record.source_url)
                 if not re.match(r'.*class="de-info-wr".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -162,7 +166,7 @@ class Comic:
                                              images='[]',
                                              sort=sort)
                 GB.mysql['comic'].session.add(chapter)
-                GB.mysql['comic'].session.flush()
+                GB.mysql['comic'].session.commit()
                 GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id), link, "0")
                 GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", chapter.id)
                 limit += 1
