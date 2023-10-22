@@ -54,7 +54,7 @@ class Manager(BaseHTTPRequestHandler):
     def reset_comic_update_queue():
         batch_size = 500
         offset = 0
-        tasks = GB.redis.get_queue(GB.config.get("App", "PROJECT") + ":chapter:task", 0, -1)
+        tasks = GB.redis.get_queue(GB.process_cache_conf['chapter']['key'], 0, -1)
         while True:
             results = GB.mysql.session.query(SourceComicModel.id).filter(
                 SourceComicModel.source_chapter_count != SourceComicModel.chapter_count).offset(
@@ -65,16 +65,16 @@ class Manager(BaseHTTPRequestHandler):
             tasks = list(set(tasks))
             offset += batch_size
             if len(results) < batch_size:
-                GB.redis.delete(GB.config.get("App", "PROJECT") + ":chapter:task")
+                GB.redis.delete(GB.process_cache_conf['chapter']['key'])
                 for _, comic_id in enumerate(tasks):
-                    GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":chapter:task", comic_id)
+                    GB.redis.enqueue(GB.process_cache_conf['chapter']['key'], comic_id)
                 break
 
     @staticmethod
     def reset_chapter_img_queue():
         batch_size = 500
         offset = 0
-        tasks = GB.redis.get_queue(GB.config.get("App", "PROJECT") + ":img:task", 0, -1)
+        tasks = GB.redis.get_queue(GB.process_cache_conf['img']['key'], 0, -1)
         while True:
             results = GB.mysql.session.query(SourceChapterModel.id).filter(
                 SourceChapterModel.img_count == 0).offset(offset).limit(
@@ -84,7 +84,7 @@ class Manager(BaseHTTPRequestHandler):
             tasks = list(set(tasks))
             offset += batch_size
             if len(results) < batch_size:
-                GB.redis.delete(GB.config.get("App", "PROJECT") + ":img:task")
+                GB.redis.delete(GB.process_cache_conf['img']['key'])
                 for _, chapter_id in enumerate(tasks):
-                    GB.redis.enqueue(GB.config.get("App", "PROJECT") + ":img:task", chapter_id)
+                    GB.redis.enqueue(GB.process_cache_conf['img']['key'], chapter_id)
                 break
