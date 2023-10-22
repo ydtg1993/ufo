@@ -31,7 +31,7 @@ GB.menu_tick = {}
 
 # step cache key setting
 GB.process_cache_conf = {
-    'comic': {'key': GB.config.get("App", "PROJECT") + ":comic:task", 'name': '漫画队列', 'type': 'info'},
-    'img': {'key': GB.config.get("App", "PROJECT") + ":img:task", 'name': '章节抓图队列', 'type': 'info'},
-    'chapter': {'key': GB.config.get("App", "PROJECT") + ":chapter:task", 'name': '章节更新队列', 'type': 'info'},
+    'comic': {'key': GB.config.get("App", "PROJECT") + ":comic:task", 'name': '漫画队列', 'type': 'queue'},
+    'img': {'key': GB.config.get("App", "PROJECT") + ":img:task", 'name': '章节抓图队列', 'type': 'queue'},
+    'chapter': {'key': GB.config.get("App", "PROJECT") + ":chapter:task", 'name': '章节更新队列', 'type': 'queue'},
 }

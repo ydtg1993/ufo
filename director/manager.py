@@ -14,11 +14,8 @@ class Manager(BaseHTTPRequestHandler):
         self.end_headers()
         uri = self.path
         script_dir = os.path.dirname(__file__)
-        if uri == '/app.css':
-            with open(os.path.join(script_dir, "app.css"), 'r', encoding='utf-8') as file:
-                content = file.read()
-        elif uri == '/app.js':
-            with open(os.path.join(script_dir, "app.js"), 'r', encoding='utf-8') as file:
+        if uri == '/app.css' or uri == '/component.min.css' or uri == '/app.js' or uri == '/component.min.js':
+            with open(os.path.join(script_dir, uri.lstrip("/")), 'r', encoding='utf-8') as file:
                 content = file.read()
         else:
             with open(os.path.join(script_dir, "index.html"), 'r', encoding='utf-8') as file:
