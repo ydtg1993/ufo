@@ -8,7 +8,7 @@ function process_board() {
             let html = '';
             let current_task_dom = document.querySelector('#current-task-board');
             response.data.current_task.forEach(function (item) {
-                html += `<button class="dlp-button dlp-button-blue" disabled>${item}</button>`;
+                html += `<div class="dlp-button">${item}</div>`;
             });
             current_task_dom.innerHTML = html;
 
@@ -61,7 +61,15 @@ function process_board() {
          _component.request({url: window.location.href,method:'POST', data: {command: 'process_cache',cache:cache,type:type},callback:function (response) {
             block.process_cache = false;
             let dom = document.querySelector('#task-board>div:nth-child(2)');
-
+            html = '';
+            dom.innerHTML = html;
+            response.data.forEach((item)=>{
+                html += `<div class="dlp-button dlp-button-blue">${JSON.stringify(JSON.parse(item), null, 2)}</div>`;
+            });
+            if (response.data.length === 200){
+                html += '......';
+            }
+            dom.innerHTML = html;
         }});
     }
 }

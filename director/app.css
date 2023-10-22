@@ -143,8 +143,12 @@ i.tag.red{
 
 #task-board>div:nth-child(2){
     display: flex;
-    align-items: center;
     padding: 5px;
+    flex-wrap: wrap;
+}
+#task-board>div:nth-child(2)>.dlp-button{
+    margin-bottom: 5px;
+    margin-right: 5px;
 }
 
 #control-board {
