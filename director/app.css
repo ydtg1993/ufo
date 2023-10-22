@@ -78,7 +78,7 @@ body {
 #process-board>div:nth-child(2){
     display: flex;
     align-items: center;
-    background: rgba(102,175,233,.6);
+    background: rgb(222 222 153);
     padding: 0 3px 0;
     border-radius: 3px;
 }
@@ -131,13 +131,20 @@ i.tag.red{
     grid-template-columns: 200px auto;
 }
 #task-board>div:first-child{
-    background: #316cb3;
+    background: #fbfdff;
     border-radius: 6px;
     box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.4);
+    padding: 5px;
 }
+#task-board>div:first-child>.dlp-button{
+    width: 100%;
+    margin-bottom: 5px;
+}
+
 #task-board>div:nth-child(2){
     display: flex;
     align-items: center;
+    padding: 5px;
 }
 
 #control-board {

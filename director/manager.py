@@ -35,7 +35,12 @@ class Manager(BaseHTTPRequestHandler):
                 full_num, num = i.get_stop_num()
                 data['data']['stop_signal'] = {'full_num': full_num, 'num': num}
                 data['data']['current_task'] = i.get_current_task()
-
+                data['data']['process_cache_conf'] = GB.process_cache_conf
+            elif parsed_data['command'] == 'process_cache':
+                if parsed_data['type'] == 'queue':
+                    data['data'] = GB.redis.get_queue(parsed_data['cache'], 0, 200)
+                elif parsed_data['type'] == 'hash':
+                    pass
             elif parsed_data['command'] == 'command_reset_comic':
                 Manager.reset_comic_update_queue()
             elif parsed_data['command'] == 'command_reset_chapter':

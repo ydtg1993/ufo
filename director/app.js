@@ -8,7 +8,7 @@ function process_board() {
             let html = '';
             let current_task_dom = document.querySelector('#current-task-board');
             response.data.current_task.forEach(function (item) {
-                html += `<button class="dlp-button dlp-button-green">${item}</button>`;
+                html += `<button class="dlp-button dlp-button-blue" disabled>${item}</button>`;
             });
             current_task_dom.innerHTML = html;
 
@@ -36,11 +36,37 @@ function process_board() {
                 }
             }
             process_stop_dom.innerHTML = html;
+
+            let process_task_menu_dom = document.querySelector('#task-board>div:first-child');
+            process_task_menu_dom.innerHTML = '';
+            for(let i in response.data.process_cache_conf){
+                let menu_dom = document.createElement('button');
+                menu_dom.className = 'dlp-button dlp-button-green';
+                menu_dom.textContent = response.data.process_cache_conf[i]['name'];
+                menu_dom.addEventListener('click',()=>{
+                    if (response.data.process_cache_conf[i]['type'] === 'queue'){
+                        taskQueueEvent(response.data.process_cache_conf[i]['key'],response.data.process_cache_conf[i]['type'])
+                    }else{
+
+                    }
+                });
+                process_task_menu_dom.insertAdjacentElement('afterbegin',menu_dom)
+            }
         }
     });
+
+    function taskQueueEvent(cache,type) {
+        if (block.process_cache) return;
+        block.process_cache = true;
+         _component.request({url: window.location.href,method:'POST', data: {command: 'process_cache',cache:cache,type:type},callback:function (response) {
+            block.process_cache = false;
+            let dom = document.querySelector('#task-board>div:nth-child(2)');
+
+        }});
+    }
 }
 
-let block = {command_stop: false, command_reset_comic: false, command_reset_chapter: false};
+let block = {command_stop: false, command_reset_comic: false, command_reset_chapter: false,process_cache:false};
 
 function buttonEvent(name) {
     let dom = document.getElementById(name);
@@ -51,7 +77,7 @@ function buttonEvent(name) {
         _component.request({url: window.location.href,method:'POST', data: {command: name},callback:function (response) {
             block[name] = false;
             dom.removeAttribute('disabled');
-        }})
+        }});
     });
 }
 
