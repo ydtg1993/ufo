@@ -41,7 +41,7 @@ class Img:
                 i.insert_current_task('img', f'章节{record.title} - {chapter_id}图片处理')
                 wb.get(record.source_url)
                 vh = wb.execute_script('return document.body.scrollHeight')
-                h = 1200
+                h = 2200
                 second = math.ceil(vh / h)
                 wb.execute_script('''
     let f1 = setInterval(()=>{
@@ -50,7 +50,7 @@ class Img:
      const clientHeight = dom.clientHeight; 
      const scrollHeight = dom.scrollHeight; 
      if (scrollHeight+10 > currentScroll + clientHeight) {
-         dom.scrollTo({'left':0,'top': currentScroll + 1200,behavior: 'smooth'})
+         dom.scrollTo({'left':0,'top': currentScroll + 2200,behavior: 'smooth'})
       }else{
          clearInterval(f1);			
       }
@@ -82,13 +82,13 @@ class Img:
                     record.img_count = len(img_list)
                     count = GB.mysql['img'].session.query(SourceChapterModel).filter(
                         SourceChapterModel.comic_id == record.comic_id).count()
+
                     GB.mysql['img'].session.query(SourceComicModel).filter(
                         SourceComicModel.id == record.comic_id).update(
                         {SourceComicModel.chapter_count: count,
                          SourceComicModel.last_chapter_update_at: record.created_at})
+                    GB.mysql['img'].session.commit()
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))
-            finally:
-                GB.mysql['img'].session.commit()
         wb.quit()

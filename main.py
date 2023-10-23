@@ -2,7 +2,6 @@ import logging
 import random
 import threading
 import time
-from assiatant import GB
 from controller.comic import Comic
 from controller.img import Img
 from controller.menu import Menu
@@ -23,8 +22,6 @@ def main():
     fill_task(process_comic, 120)
     fill_task(process_img, 30)
     fill_task(process_update_comic)
-    fill_task(reset_comic_update_queue)
-    fill_task(reset_chapter_img_queue)
 
     for _, t in enumerate(tt):
         t.join()
@@ -68,7 +65,7 @@ def process_img():
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
-        time.sleep(random.randint(60, 420))
+        time.sleep(random.randint(60, 180))
 
 
 def process_update_comic():
@@ -80,58 +77,6 @@ def process_update_comic():
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
         time.sleep(random.randint(600, 1800))
-
-
-def reset_comic_update_queue():
-    while True:
-        try:
-            i.insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 9)
-            batch_size = 500
-            offset = 0
-            tasks = GB.redis.get_queue(GB.process_cache_conf['chapter']['key'], 0, -1)
-            while True:
-                results = GB.mysql['reset_comic_update_queue'].session.query(SourceComicModel.id).filter(
-                    SourceComicModel.source_chapter_count != SourceComicModel.chapter_count).offset(offset).limit(
-                    batch_size).all()
-                for result in results:
-                    tasks.append(str(result[0]))
-                tasks = list(set(tasks))
-                offset += batch_size
-                if len(results) < batch_size:
-                    GB.redis.delete(GB.process_cache_conf['chapter']['key'])
-                    for _, comic_id in enumerate(tasks):
-                        GB.redis.enqueue(GB.process_cache_conf['chapter']['key'], comic_id)
-                    break
-        except Exception as e:
-            logger = logging.getLogger(__name__)
-            logger.exception(str(e))
-        time.sleep(3600 * 9)
-
-
-def reset_chapter_img_queue():
-    while True:
-        try:
-            i.insert_process('重置章节图片抓取队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 6)
-            batch_size = 500
-            offset = 0
-            tasks = GB.redis.get_queue(GB.process_cache_conf['img']['key'], 0, -1)
-            while True:
-                results = GB.mysql['reset_chapter_img_queue'].session.query(SourceChapterModel.id).filter(
-                    SourceChapterModel.img_count == 0).offset(offset).limit(
-                    batch_size).all()
-                for result in results:
-                    tasks.append(str(result[0]))
-                tasks = list(set(tasks))
-                offset += batch_size
-                if len(results) < batch_size:
-                    GB.redis.delete(GB.process_cache_conf['img']['key'])
-                    for _, chapter_id in enumerate(tasks):
-                        GB.redis.enqueue(GB.process_cache_conf['img']['key'], chapter_id)
-                    break
-        except Exception as e:
-            logger = logging.getLogger(__name__)
-            logger.exception(str(e))
-        time.sleep(3600 * 6)
 
 
 if __name__ == '__main__':

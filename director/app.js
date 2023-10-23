@@ -94,4 +94,4 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 setInterval(() => {
     process_board();
-}, 80000);
+}, 30000);
