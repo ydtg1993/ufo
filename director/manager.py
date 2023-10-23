@@ -38,7 +38,7 @@ class Manager(BaseHTTPRequestHandler):
                 data['data']['process_cache_conf'] = GB.process_cache_conf
             elif parsed_data['command'] == 'process_cache':
                 if parsed_data['type'] == 'queue':
-                    data['data'] = GB.redis.get_queue(parsed_data['cache'], 0, 200)
+                    data['data'] = GB.redis.get_queue(parsed_data['cache'], -201, -1)
                 elif parsed_data['type'] == 'hash':
                     data['data'] = GB.redis.get_hash_keys(parsed_data['cache'])
             elif parsed_data['command'] == 'command_reset_comic':

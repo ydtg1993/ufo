@@ -66,7 +66,7 @@ function process_board() {
                 }
                 html += `<div class="dlp-button">${title}</div>`;
             });
-            if (response.data.length === 200){
+            if (response.data.length >= 200){
                 html += '......';
             }
             dom.innerHTML = html;
