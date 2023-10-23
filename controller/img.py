@@ -66,13 +66,14 @@ class Img:
                         if not re.match(r'.*<amp-img.*', html):
                             continue
                         src = div.find_element(By.TAG_NAME, 'amp-img').get_attribute('data-src')
-                        response = requests.get(src, {
-                            "Referer": url,
-                        })
-                        if response.status_code == 200:
-                            image = Image.open(BytesIO(response.content))
-                            width, height = image.size
-                            img_list.append({'s': src, 'w': width, 'h': height})
+                        #response = requests.get(src, {
+                        #    "Referer": url,
+                        #})
+                        #if response.status_code == 200:
+                        #    image = Image.open(BytesIO(response.content))
+                        #    width, height = image.size
+                        #    img_list.append({'s': src, 'w': width, 'h': height})
+                        img_list.append(src)
                     except StaleElementReferenceException:
                         pass
 

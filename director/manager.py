@@ -61,7 +61,7 @@ class Manager(BaseHTTPRequestHandler):
         offset = 0
         tasks = GB.redis.get_queue(GB.process_cache_conf['chapter']['key'], 0, -1)
         while True:
-            results = GB.mysql.session.query(SourceComicModel.id).filter(
+            results = GB.mysql['main'].session.query(SourceComicModel.id).filter(
                 SourceComicModel.source_chapter_count != SourceComicModel.chapter_count).offset(
                 offset).limit(
                 batch_size).all()
@@ -81,7 +81,7 @@ class Manager(BaseHTTPRequestHandler):
         offset = 0
         tasks = GB.redis.get_queue(GB.process_cache_conf['img']['key'], 0, -1)
         while True:
-            results = GB.mysql.session.query(SourceChapterModel.id).filter(
+            results = GB.mysql['main'].session.query(SourceChapterModel.id).filter(
                 SourceChapterModel.img_count == 0).offset(offset).limit(
                 batch_size).all()
             for result in results:

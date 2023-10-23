@@ -22,8 +22,7 @@ config.read('config.ini')
 GB = Globe(config, {
     'comic': MysqlConnector(config),
     'img': MysqlConnector(config),
-    'reset_comic_update_queue': MysqlConnector(config),
-    'reset_chapter_img_queue': MysqlConnector(config),
+    'main': MysqlConnector(config),
 },
            RedisConnector(config),
            Bot(config))
