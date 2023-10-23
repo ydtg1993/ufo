@@ -9,7 +9,7 @@ MITM_PROXY = http://127.0.0.1:8080
 [Database]
 HOST = 127.0.0.1
 PORT = 3306
-DB = news
+DB =
 USER = root
 PASS = 123456
 
@@ -23,4 +23,4 @@ INDEX = 1
 [Http]
 HOST = localhost
 PORT = 8990
-
+SECRET =

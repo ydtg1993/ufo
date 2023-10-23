@@ -9,6 +9,13 @@ from model.source_comic_model import SourceComicModel
 
 class Manager(BaseHTTPRequestHandler):
     def do_GET(self):
+        token = self.headers.get('secret')
+        if token != GB.config.get('Http', 'SECRET'):
+            self.send_response(401)
+            self.send_header('Content-type', 'text/plain; charset=utf-8')
+            self.end_headers()
+            self.wfile.write('Unauthorized'.encode('utf-8'))
+            return
         self.send_response(200)
         self.send_header('Content-type', 'text/html; charset=utf-8')
         self.end_headers()
