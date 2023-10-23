@@ -102,14 +102,14 @@ class Menu:
                 a = comic_dom.find_element(By.CSS_SELECTOR, "a:first-child")
                 title = a.get_attribute('title')
                 link = a.get_attribute('href')
-                if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:comic:link", link) is not None:
+                if GB.redis.get_hash(GB.process_cache_conf['comic.unique'], link) is not None:
                     is_bottom = wb.execute_script(
                         "return (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2);")
                     if is_bottom is True:
                         GB.menu_tick[unique_key]["repeat"] -= 1
                     break
 
-                GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:comic:link", link, "0")
+                GB.redis.set_hash(GB.process_cache_conf['comic.unique'], link, "0")
                 cover = a.find_element(By.TAG_NAME, "amp-img").get_attribute("src")
                 GB.redis.enqueue(GB.process_cache_conf['comic']['key'],
                                  json.dumps(

@@ -44,18 +44,14 @@ function process_board() {
                 menu_dom.className = 'dlp-button dlp-button-green';
                 menu_dom.textContent = response.data.process_cache_conf[i]['name'];
                 menu_dom.addEventListener('click',()=>{
-                    if (response.data.process_cache_conf[i]['type'] === 'queue'){
-                        taskQueueEvent(response.data.process_cache_conf[i]['key'],response.data.process_cache_conf[i]['type'])
-                    }else{
-
-                    }
+                    taskItemsRequest(response.data.process_cache_conf[i]['key'],response.data.process_cache_conf[i]['type'])
                 });
                 process_task_menu_dom.insertAdjacentElement('afterbegin',menu_dom)
             }
         }
     });
 
-    function taskQueueEvent(cache,type) {
+    function taskItemsRequest(cache,type) {
         if (block.process_cache) return;
         block.process_cache = true;
          _component.request({url: window.location.href,method:'POST', data: {command: 'process_cache',cache:cache,type:type},callback:function (response) {
@@ -64,7 +60,11 @@ function process_board() {
             html = '';
             dom.innerHTML = html;
             response.data.forEach((item)=>{
-                html += `<div class="dlp-button dlp-button-blue">${JSON.stringify(JSON.parse(item), null, 2)}</div>`;
+                let title = item;
+                if(/{.*?}/.test(item)){
+                    title = JSON.stringify(JSON.parse(item), null, 2);
+                }
+                html += `<div class="dlp-button">${title}</div>`;
             });
             if (response.data.length === 200){
                 html += '......';

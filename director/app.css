@@ -61,6 +61,7 @@ body {
     margin-bottom: 5px;
     -webkit-animation: fadein .5s;
     animation: fadein .5s;
+    background: linear-gradient(180deg,#222222 0,#444 49%,#242424 59%,#3e3e3e 100%);
 }
 
 #process-board {
@@ -149,6 +150,9 @@ i.tag.red{
 #task-board>div:nth-child(2)>.dlp-button{
     margin-bottom: 5px;
     margin-right: 5px;
+    -webkit-animation: fadein .5s;
+    animation: fadein .5s;
+    background: linear-gradient(180deg,#222222 0,#444 49%,#242424 59%,#3e3e3e 100%);
 }
 
 #control-board {
