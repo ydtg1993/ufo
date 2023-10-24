@@ -1,6 +1,7 @@
 import json
 import logging
 import random
+import re
 import time
 from selenium.webdriver.common.by import By
 from undetected_chromedriver import Chrome
@@ -12,108 +13,41 @@ class Menu:
     page_limit = 5
 
     def __init__(self):
-        categories = [
-            {"name": "恋爱", "value": "lianai"},
-            {"name": "纯爱", "value": "chunai"},
-            {"name": "古風", "value": "gufeng"},
-            {"name": "異能", "value": "yineng"},
-            {"name": "懸疑", "value": "xuanyi"},
-            {"name": "劇情", "value": "juqing"},
-            {"name": "科幻", "value": "kehuan"},
-            {"name": "奇幻", "value": "qihuan"},
-            {"name": "玄幻", "value": "xuanhuan"},
-            {"name": "穿越", "value": "chuanyue"},
-            {"name": "冒險", "value": "mouxian"},
-            {"name": "推理", "value": "tuili"},
-            {"name": "武俠", "value": "wuxia"},
-            {"name": "格鬥", "value": "gedou"},
-            {"name": "戰爭", "value": "zhanzheng"},
-            {"name": "熱血", "value": "rexie"},
-            {"name": "搞笑", "value": "gaoxiao"},
-            {"name": "大女主", "value": "danuzhu"},
-            {"name": "都市", "value": "dushi"},
-            {"name": "總裁", "value": "zongcai"},
-            {"name": "後宮", "value": "hougong"},
-            {"name": "日常", "value": "richang"},
-            {"name": "少年", "value": "shaonian"},
-            {"name": "其它", "value": "qita"},
-        ]
-        regions = [
-            {"name": "国漫", "value": "cn"},
-            {"name": "日本", "value": "jp"},
-            {"name": "韩漫", "value": "kr"}
-        ]
-
-        num_per_group = 6
-        category_groups = [categories[i:i + num_per_group] for i in range(0, len(categories), num_per_group)]
         wb = GB.bot.start()
         try:
             wb.get(GB.config.get("App", "URL"))
         except Exception:
             wb.quit()
             wb = GB.bot.start(proxy=True)
-        for region in regions:
-            for category_group in category_groups:
-                try:
-                    wb.get(GB.config.get("App", "URL"))
-                    for category in category_group:
-                        self.browser(wb, category, region)
-                except Exception as e:
-                    logger = logging.getLogger(__name__)
-                    logger.exception(str(e))
+
+        try:
+            wb.get(GB.config.get("App", "URL") + 'allmanga/')
+            self.browser(wb)
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.exception(str(e))
         wb.quit()
 
-    def browser(self, wb: Chrome, category: dict, region: dict):
-        time.sleep(random.randint(30, 150))
-        list_url = GB.config.get("App", "URL") + 'classify?type={category}&region={region}&state=all&filter=%2a'.format(
-            category=category['value'], region=region['value'])
-        unique_key = category['value'] + region['value']
-        if unique_key not in GB.menu_tick:
-            wb.switch_to.new_window()
-            wb.get(list_url)
-            GB.menu_tick[unique_key] = {"start": 0, "repeat": 5, "time": datetime.now()}
-        now = datetime.now()
-        if now - GB.menu_tick[unique_key]['time'] > timedelta(hours=72):
-            GB.menu_tick[unique_key] = {"start": 0, "repeat": 3, "time": now}
-
-        limit = 1
+    def browser(self, wb: Chrome):
         while True:
-            if GB.menu_tick[unique_key]["repeat"] < 0:
+            nav_dom = wb.find_element(By.CSS_SELECTOR, 'nav.ct-pagination')
+            if not re.match(r'.*class="next page-numbers".*',
+                            nav_dom.get_attribute('innerHTML'),
+                            re.DOTALL):
                 break
-            if self.page_limit < limit:
-                break
-            limit += 1
 
-            if GB.menu_tick[unique_key]['start'] > 0:
-                for _ in range(GB.menu_tick[unique_key]['start']):
-                    wb.execute_script(
-                        "window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
-                    time.sleep(random.randint(6, 12))
-                    is_bottom = wb.execute_script(
-                        "return (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2);")
-                    if is_bottom is True:
-                        break
-            else:
-                wb.execute_script("window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
             time.sleep(random.randint(10, 90))
-            comic_doms = wb.find_elements(By.CSS_SELECTOR, 'div.comics-card')
-            comic_doms.reverse()
+            comic_doms = wb.find_elements(By.CSS_SELECTOR, 'div.entries>article>a')
             for _, comic_dom in enumerate(comic_doms):
-                a = comic_dom.find_element(By.CSS_SELECTOR, "a:first-child")
-                title = a.get_attribute('title')
-                link = a.get_attribute('href')
+                title = comic_dom.get_attribute('aria-label')
+                link = comic_dom.get_attribute('href')
                 if GB.redis.get_hash(GB.process_cache_conf['comic.unique']['key'], link) is not None:
-                    is_bottom = wb.execute_script(
-                        "return (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2);")
-                    if is_bottom is True:
-                        GB.menu_tick[unique_key]["repeat"] -= 1
-                    break
+                    continue
 
                 GB.redis.set_hash(GB.process_cache_conf['comic.unique']['key'], link, "0")
-                cover = a.find_element(By.TAG_NAME, "amp-img").get_attribute("src")
+                cover = comic_dom.find_element(By.CSS_SELECTOR, "a img").get_attribute("data-src")
                 GB.redis.enqueue(GB.process_cache_conf['comic']['key'],
                                  json.dumps(
-                                     {"title": title, "link": link, "cover": cover, "category": category['name'],
-                                      "region": region['name']}))
-        wb.switch_to.window(wb.window_handles[0])
-        GB.menu_tick[unique_key]['start'] += self.page_limit
+                                     {"title": title, "link": link, "cover": cover}))
+            wb.find_element(By.CSS_SELECTOR, 'nav.ct-pagination .next').click()
+            wb.execute_script("document.querySelector('nav.ct-pagination .next').click();")

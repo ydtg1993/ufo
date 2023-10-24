@@ -32,6 +32,7 @@ class Img:
             try:
                 chapter_id = GB.redis.dequeue(GB.process_cache_conf['img']['key'])
                 if chapter_id is None:
+                    time.sleep(random.randint(300, 600))
                     break
 
                 record = GB.mysql['img'].session.query(SourceChapterModel).filter(

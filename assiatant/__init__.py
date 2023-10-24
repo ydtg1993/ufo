@@ -26,7 +26,6 @@ GB = Globe(config, {
 },
            RedisConnector(config),
            Bot(config))
-GB.menu_tick = {}
 
 # step cache key setting
 GB.process_cache_conf = {
