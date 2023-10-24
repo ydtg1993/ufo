@@ -59,14 +59,14 @@ class Img:
                 ''')
                 time.sleep(second)
 
-                divs = wb.find_elements(By.CSS_SELECTOR, '.comic-contain div')
+                divs = wb.find_elements(By.CSS_SELECTOR, 'img.img_content_jpg')
                 img_list = []
                 for _, div in enumerate(divs):
                     try:
-                        html = div.get_attribute('innerHTML')
-                        if not re.match(r'.*<amp-img.*', html):
+                        alt = div.get_attribute('alt')
+                        if not re.match(r'.*chapter.*', alt):
                             continue
-                        src = div.find_element(By.TAG_NAME, 'amp-img').get_attribute('data-src')
+                        src = div.get_attribute('data-src')
                         #response = requests.get(src, {
                         #    "Referer": url,
                         #})
