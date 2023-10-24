@@ -42,6 +42,7 @@ class Comic:
             try:
                 task = GB.redis.dequeue(GB.process_cache_conf['comic']['key'])
                 if task is None:
+                    time.sleep(random.randint(300, 600))
                     break
                 task = json.loads(task)
                 time.sleep(random.randint(7, 30))
