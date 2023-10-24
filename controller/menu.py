@@ -49,5 +49,4 @@ class Menu:
                 GB.redis.enqueue(GB.process_cache_conf['comic']['key'],
                                  json.dumps(
                                      {"title": title, "link": link, "cover": cover}))
-            wb.find_element(By.CSS_SELECTOR, 'nav.ct-pagination .next').click()
             wb.execute_script("document.querySelector('nav.ct-pagination .next').click();")
