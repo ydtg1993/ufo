@@ -2,7 +2,7 @@ import cachetools
 import random
 import time
 import requests
-import undetected_chromedriver.v2 as uc
+import undetected_chromedriver as uc
 from configparser import ConfigParser
 
 
