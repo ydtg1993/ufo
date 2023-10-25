@@ -2,8 +2,9 @@ import cachetools
 import random
 import time
 import requests
-import undetected_chromedriver as uc
+import undetected_chromedriver.v2 as uc
 from configparser import ConfigParser
+
 
 class Bot(object):
     _debug = None
@@ -13,9 +14,9 @@ class Bot(object):
 
     def __init__(self, config: ConfigParser):
         self._debug = True if config.get("App", "DEBUG") == 'on' else False
-        if config.get("Bot", "PROXY_URL") :
+        if config.get("Bot", "PROXY_URL"):
             self._proxy = config.get("Bot", "PROXY_URL")
-        if config.get("Bot", "MITM_PROXY") :
+        if config.get("Bot", "MITM_PROXY"):
             self._mitm = config.get("Bot", "MITM_PROXY")
 
     @cachetools.cached(cache)
@@ -54,10 +55,11 @@ class Bot(object):
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
 
-            driver = uc.Chrome(options=options,port=random.randint(20000,30000))
+            driver = uc.Chrome(use_subprocess=True,
+                               #browser_executable_path='/usr/bin/chromium-browser',
+                               #driver_executable_path='/usr/bin/chromedriver', options=options,
+                               port=random.randint(20000, 30000))
 
             return driver
         except BaseException as e:
             print(f'webview开启失败{e}')
-
-

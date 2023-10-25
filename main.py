@@ -68,7 +68,7 @@ def process_img():
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
-        time.sleep(random.randint(60, 180))
+        time.sleep(random.randint(15, 60))
 
 
 def process_update_comic():

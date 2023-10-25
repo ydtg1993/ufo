@@ -1,0 +1,1 @@
+docker run -ti --name=bz -p 8990:8990 -v E:\py-project\bz:/home/bz --net=server_myserver_v1 allonvendia/ufo:v1.0

@@ -23,10 +23,10 @@ class Img:
         except Exception:
             wb.quit()
             wb = GB.bot.start(proxy=True)
+            url = GB.config.get("App", "URL")
+            wb.get(url)
 
-        url = GB.config.get("App", "URL")
-        wb.get(url)
-        for _ in range(20):
+        for _ in range(12):
             i = Info()
             i.check_stop_signal()
             try:
