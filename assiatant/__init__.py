@@ -1,9 +1,13 @@
 import configparser
+import os
 from assiatant.globe import Globe
 from assiatant.bot import Bot
 from assiatant.db import MysqlConnector
 from assiatant.rd import RedisConnector
 import logging.handlers
+
+# timezone setting
+os.environ["TZ"] = "Asia/Shanghai"
 
 # log setting
 fh = logging.handlers.TimedRotatingFileHandler('./log/app.log', when='midnight', backupCount=7, encoding='utf8',
