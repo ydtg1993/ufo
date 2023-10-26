@@ -63,7 +63,7 @@ class Bot(object):
                     browser_executable_path='/usr/bin/chromium-browser',
                     driver_executable_path='/usr/bin/chromedriver', options=options,
                 )
-
+            driver.set_page_load_timeout(90)
             return driver
         except BaseException as e:
             print(f'webview开启失败{e}')
