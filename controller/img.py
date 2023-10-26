@@ -74,7 +74,7 @@ class Img:
                 if len(img_list) > 0:
                     record.images = json.dumps(img_list)
                     record.img_count = len(img_list)
-                    count = GB.mysql['img'].session.query(SourceChapterModel).filter(
+                    count = session.query(SourceChapterModel).filter(
                         SourceChapterModel.comic_id == record.comic_id).count()
 
                     session.query(SourceComicModel).filter(
