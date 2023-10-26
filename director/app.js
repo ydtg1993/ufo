@@ -62,8 +62,9 @@ function process_board() {
             response.data.forEach((item)=>{
                 let title;
                 if (type === 'queue') {
-                    if (/{.*?}/.test(item)) {
-                        title = JSON.stringify(JSON.parse(item), null, 2);
+                    title = item;
+                    if (/{.*?}/.test(title)) {
+                        title = JSON.stringify(JSON.parse(title), null, 2);
                     }
                     html += `<div class="dlp-button">${title}</div>`;
                 }else {
