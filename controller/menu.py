@@ -46,16 +46,10 @@ class Menu:
 
         num_per_group = 6
         category_groups = [categories[i:i + num_per_group] for i in range(0, len(categories), num_per_group)]
-        wb = GB.bot.start()
-        try:
-            wb.get(GB.config.get("App", "URL"))
-        except Exception:
-            wb.quit()
-            wb = GB.bot.start(proxy=True)
+        wb = GB.bot.retry_start(GB.config.get("App", "URL"))
         for region in regions:
             for category_group in category_groups:
                 try:
-                    wb.get(GB.config.get("App", "URL"))
                     for category in category_group:
                         self.browser(wb, category, region)
                 except Exception as e:
@@ -73,7 +67,7 @@ class Menu:
             wb.switch_to.new_window()
             wb.get(list_url)
             GB.redis.set_hash(GB.process_cache_conf['menu.unique']['key'], unique_key,
-                              json.dumps({"start": 0, "repeat": 5, "time": datetime.now()}))
+                              json.dumps({"start": 0, "repeat": 5, "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}))
 
         menu_ticker = json.loads(GB.redis.get_hash(GB.process_cache_conf['menu.unique']['key'], unique_key))
         now = datetime.now()

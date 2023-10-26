@@ -16,15 +16,9 @@ class Comic:
     session = None
 
     def __init__(self, is_update=False):
-        wb = GB.bot.start()
-        try:
-            wb.get(GB.config.get("App", "URL"))
-        except Exception:
-            wb.quit()
-            wb = GB.bot.start(proxy=True)
         self.session = GB.mysql.connect()
         try:
-            wb.get(GB.config.get("App", "URL"))
+            wb = GB.bot.retry_start(GB.config.get("App", "URL"))
             if is_update:
                 self.update_process(wb)
             else:

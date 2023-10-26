@@ -17,14 +17,7 @@ from io import BytesIO
 
 class Img:
     def __init__(self):
-        wb = GB.bot.start()
-        try:
-            wb.get(GB.config.get("App", "URL"))
-        except Exception:
-            wb.quit()
-            wb = GB.bot.start(proxy=True)
-            url = GB.config.get("App", "URL")
-            wb.get(url)
+        wb = GB.bot.retry_start(GB.config.get("App", "URL"))
 
         for _ in range(12):
             i = Info()
