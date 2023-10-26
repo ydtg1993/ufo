@@ -1,9 +1,12 @@
+import sys
+
 import cachetools
 import random
 import time
 import requests
 import undetected_chromedriver as uc
 from configparser import ConfigParser
+
 
 class Bot(object):
     _debug = None
@@ -13,9 +16,9 @@ class Bot(object):
 
     def __init__(self, config: ConfigParser):
         self._debug = True if config.get("App", "DEBUG") == 'on' else False
-        if config.get("Bot", "PROXY_URL") :
+        if config.get("Bot", "PROXY_URL"):
             self._proxy = config.get("Bot", "PROXY_URL")
-        if config.get("Bot", "MITM_PROXY") :
+        if config.get("Bot", "MITM_PROXY"):
             self._mitm = config.get("Bot", "MITM_PROXY")
 
     @cachetools.cached(cache)
@@ -31,7 +34,7 @@ class Bot(object):
             else:
                 time.sleep(5)
 
-    def start(self, proxy=False, mitm=False):
+    def start(self, proxy=False, mitm=False)-> uc.Chrome:
         try:
             options = uc.ChromeOptions()
             if self._proxy is not None and proxy is True:
@@ -53,11 +56,37 @@ class Bot(object):
                 options.add_argument("--disable-extensions")
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
-
-            driver = uc.Chrome(options=options,port=random.randint(20000,30000))
+            if sys.platform.startswith('win'):
+                driver = uc.Chrome()
+            else:
+                driver = uc.Chrome(
+                    browser_executable_path='/usr/bin/chromium-browser',
+                    driver_executable_path='/usr/bin/chromedriver', options=options,
+                )
 
             return driver
         except BaseException as e:
             print(f'webview开启失败{e}')
 
+    def retry_start(self, url: str)-> uc.Chrome:
+        wb = self.start()
+        try:
+            wb.get(url)
+            return wb
+        except Exception:
+            if type(wb) is uc.Chrome:
+                wb.quit()
 
+
+        max_attempts = 3
+        for _ in range(max_attempts):
+            wb = self.start(proxy=True)
+            try:
+                wb.get(url)
+                return wb
+            except Exception:
+                if type(wb) is uc.Chrome:
+                    wb.quit()
+                continue
+
+        raise Exception("Failed to initialize WebDriver after {} attempts.".format(max_attempts))

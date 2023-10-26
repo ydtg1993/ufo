@@ -14,15 +14,11 @@ from model.source_comic_model import SourceComicModel
 
 class Comic:
     chapter_limit = 30
+    session = None
 
     def __init__(self, is_update=False):
-        wb = GB.bot.start()
-        try:
-            wb.get(GB.config.get("App", "URL"))
-        except Exception:
-            wb.quit()
-            wb = GB.bot.start(proxy=True)
-
+        wb = GB.bot.retry_start(GB.config.get("App", "URL"))
+        self.session = GB.mysql.connect()
         try:
             wb.get(GB.config.get("App", "URL"))
             if is_update:
@@ -34,7 +30,7 @@ class Comic:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
         finally:
-            GB.mysql['comic'].session.commit()
+            self.session.close()
 
     def insert_process(self, wb):
         for _ in range(12):
@@ -50,7 +46,7 @@ class Comic:
                 title = task['title']
                 link = task['link']
                 i.insert_current_task('img', f'漫画导入《{title}》-{link}')
-                exist = GB.mysql['comic'].session.query(SourceComicModel).filter(
+                exist = self.session.query(SourceComicModel).filter(
                     SourceComicModel.source_url == task['link']).first()
                 if exist is not None:
                     continue
@@ -79,7 +75,7 @@ class Comic:
                 if comic_id is None:
                     break
                 time.sleep(random.randint(7, 30))
-                record = GB.mysql['comic'].session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
+                record = self.session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
                 if record is None:
                     continue
                 i.insert_current_task('img', f'漫画更新《{record.title}》-{comic_id}')
@@ -101,7 +97,7 @@ class Comic:
                 logger.exception(str(e))
 
     def comic_info(self, wb, task):
-        exist = GB.mysql['comic'].session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
+        exist = self.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
         if exist is not None:
             return
         author = wb.find_element(By.CSS_SELECTOR, "div.author-content>a").text
@@ -125,20 +121,21 @@ class Comic:
                                  is_finish=is_finish,
                                  description=description,
                                  author=author)
-        GB.mysql['comic'].session.add(comic)
-        GB.mysql['comic'].session.commit()
+        self.session.add(comic)
+        self.session.commit()
         return comic.id
 
     def comic_chapter(self, wb, comic_id):
-        record = GB.mysql['comic'].session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
+        record = self.session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
         if record is None:
             return
         chapters = wb.find_elements(By.CSS_SELECTOR, "a.wp-manga-chapterlist")
         chapters.reverse()
         self.chapter_patch(comic_id, chapters)
         record.source_chapter_count = len(chapters)
-        record.chapter_count = GB.mysql['comic'].session.query(SourceChapterModel).filter(
+        record.chapter_count = self.session.query(SourceChapterModel).filter(
             SourceChapterModel.comic_id == comic_id).count()
+        self.session.commit()
 
     def chapter_patch(self, comic_id, chapters):
         limit = 0
@@ -157,8 +154,8 @@ class Comic:
                                              source_url=link,
                                              images='[]',
                                              sort=sort)
-                GB.mysql['comic'].session.add(chapter)
-                GB.mysql['comic'].session.commit()
+                self.session.add(chapter)
+                self.session.commit()
                 GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id), link, "0")
                 GB.redis.enqueue(GB.process_cache_conf['img']['key'], chapter.id)
                 limit += 1

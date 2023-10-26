@@ -17,15 +17,8 @@ from io import BytesIO
 
 class Img:
     def __init__(self):
-        wb = GB.bot.start()
-        try:
-            wb.get(GB.config.get("App", "URL"))
-        except Exception:
-            wb.quit()
-            wb = GB.bot.start(proxy=True)
-
-        url = GB.config.get("App", "URL")
-        wb.get(url)
+        wb = GB.bot.retry_start(GB.config.get("App", "URL"))
+        session = GB.mysql.connect()
         for _ in range(20):
             i = Info()
             i.check_stop_signal()
@@ -35,7 +28,7 @@ class Img:
                     time.sleep(random.randint(300, 600))
                     break
 
-                record = GB.mysql['img'].session.query(SourceChapterModel).filter(
+                record = session.query(SourceChapterModel).filter(
                     SourceChapterModel.id == chapter_id).first()
                 if record is None:
                     continue
@@ -81,15 +74,17 @@ class Img:
                 if len(img_list) > 0:
                     record.images = json.dumps(img_list)
                     record.img_count = len(img_list)
-                    count = GB.mysql['img'].session.query(SourceChapterModel).filter(
+                    count = session.query(SourceChapterModel).filter(
                         SourceChapterModel.comic_id == record.comic_id).count()
 
-                    GB.mysql['img'].session.query(SourceComicModel).filter(
+                    session.query(SourceComicModel).filter(
                         SourceComicModel.id == record.comic_id).update(
                         {SourceComicModel.chapter_count: count,
                          SourceComicModel.last_chapter_update_at: record.created_at})
-                    GB.mysql['img'].session.commit()
+                    session.commit()
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))
+            finally:
+                session.close()
         wb.quit()
