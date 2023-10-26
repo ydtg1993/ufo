@@ -11,11 +11,13 @@ class MysqlConnector:
         self.DB_USER = config.get("Database", "USER")
         self.DB_PASS = config.get("Database", "PASS")
         self.DB_NAME = config.get("Database", "DB")
+        self.session_factory = None
         try:
             self.engine = create_engine(
                 f"mysql+mysqlconnector://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}",
                 pool_size=20, max_overflow=10)
             self.engine.connect()
+            self.session_factory = sessionmaker(bind=self.engine, autocommit=True)
         except BaseException as e:
             print(f'{e}')
         else:
@@ -23,7 +25,6 @@ class MysqlConnector:
 
     def connect(self):
         try:
-            session = sessionmaker(bind=self.engine, autocommit=True)
-            return session()
+            return self.session_factory()
         except OperationalError as e:
             print(f'Error connecting to MySQL: {e}')

@@ -22,9 +22,8 @@ class Comic:
         except Exception:
             wb.quit()
             wb = GB.bot.start(proxy=True)
-
+        self.session = GB.mysql.connect()
         try:
-            self.session = GB.mysql.connect()
             wb.get(GB.config.get("App", "URL"))
             if is_update:
                 self.update_process(wb)
@@ -35,7 +34,7 @@ class Comic:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
         finally:
-            self.session.commit()
+            self.session.close()
 
     def insert_process(self, wb):
         for _ in range(12):
@@ -150,6 +149,7 @@ class Comic:
         record.source_chapter_count = len(chapters)
         record.chapter_count = self.session.query(SourceChapterModel).filter(
             SourceChapterModel.comic_id == comic_id).count()
+        self.session.commit()
 
     def chapter_patch(self, comic_id, chapters):
         limit = 0

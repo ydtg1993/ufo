@@ -29,12 +29,12 @@ class Img:
         for _ in range(12):
             i = Info()
             i.check_stop_signal()
+            session = GB.mysql.connect()
             try:
                 chapter_id = GB.redis.dequeue(GB.process_cache_conf['img']['key'])
                 if chapter_id is None:
                     time.sleep(random.randint(300, 600))
                     break
-                session = GB.mysql.connect()
                 record = session.query(SourceChapterModel).filter(
                     SourceChapterModel.id == chapter_id).first()
                 if record is None:
@@ -92,4 +92,6 @@ class Img:
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))
+            finally:
+                session.close()
         wb.quit()

@@ -82,6 +82,7 @@ class Manager(BaseHTTPRequestHandler):
                 for _, comic_id in enumerate(tasks):
                     GB.redis.enqueue(GB.process_cache_conf['chapter']['key'], comic_id)
                 break
+        session.close()
 
     @staticmethod
     def reset_chapter_img_queue():
@@ -102,3 +103,4 @@ class Manager(BaseHTTPRequestHandler):
                 for _, chapter_id in enumerate(tasks):
                     GB.redis.enqueue(GB.process_cache_conf['img']['key'], chapter_id)
                 break
+        session.close()
