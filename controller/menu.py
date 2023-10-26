@@ -68,24 +68,30 @@ class Menu:
         list_url = GB.config.get("App", "URL") + 'classify?type={category}&region={region}&state=all&filter=%2a'.format(
             category=category['value'], region=region['value'])
         unique_key = category['value'] + region['value']
-        if unique_key not in GB.menu_tick:
+        GB.redis.get_hash(GB.process_cache_conf['menu.unique']['key'], unique_key)
+        if GB.redis.get_hash(GB.process_cache_conf['menu.unique']['key'], unique_key) is None:
             wb.switch_to.new_window()
             wb.get(list_url)
-            GB.menu_tick[unique_key] = {"start": 0, "repeat": 5, "time": datetime.now()}
+            GB.redis.set_hash(GB.process_cache_conf['menu.unique']['key'], unique_key,
+                              json.dumps({"start": 0, "repeat": 5, "time": datetime.now()}))
+
+        menu_ticker = json.loads(GB.redis.get_hash(GB.process_cache_conf['menu.unique']['key'], unique_key))
         now = datetime.now()
-        if now - GB.menu_tick[unique_key]['time'] > timedelta(hours=72):
-            GB.menu_tick[unique_key] = {"start": 0, "repeat": 3, "time": now}
+        if now - datetime.strptime(menu_ticker['time'], '%Y-%m-%d %H:%M:%S') > timedelta(hours=72):
+            GB.redis.set_hash(GB.process_cache_conf['menu.unique']['key'], unique_key,
+                              json.dumps({"start": 0, "repeat": 5, "time": datetime.now()}))
+            menu_ticker = json.loads(GB.redis.get_hash(GB.process_cache_conf['menu.unique']['key'], unique_key))
 
         limit = 1
         while True:
-            if GB.menu_tick[unique_key]["repeat"] < 0:
+            if menu_ticker["repeat"] < 0:
                 break
             if self.page_limit < limit:
                 break
             limit += 1
 
-            if GB.menu_tick[unique_key]['start'] > 0:
-                for _ in range(GB.menu_tick[unique_key]['start']):
+            if menu_ticker['start'] > 0:
+                for _ in range(menu_ticker['start']):
                     wb.execute_script(
                         "window.scrollTo({'left':0,'top': document.body.scrollHeight,behavior: 'smooth'})")
                     time.sleep(random.randint(6, 12))
@@ -106,7 +112,7 @@ class Menu:
                     is_bottom = wb.execute_script(
                         "return (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2);")
                     if is_bottom is True:
-                        GB.menu_tick[unique_key]["repeat"] -= 1
+                        menu_ticker["repeat"] -= 1
                     break
 
                 GB.redis.set_hash(GB.process_cache_conf['comic.unique']['key'], link, "0")
@@ -116,4 +122,6 @@ class Menu:
                                      {"title": title, "link": link, "cover": cover, "category": category['name'],
                                       "region": region['name']}))
         wb.switch_to.window(wb.window_handles[0])
-        GB.menu_tick[unique_key]['start'] += self.page_limit
+        menu_ticker['start'] += self.page_limit
+        GB.redis.set_hash(GB.process_cache_conf['menu.unique']['key'], unique_key,
+                          json.dumps(menu_ticker))
