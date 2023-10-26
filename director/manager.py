@@ -47,7 +47,10 @@ class Manager(BaseHTTPRequestHandler):
                 if parsed_data['type'] == 'queue':
                     data['data'] = GB.redis.get_queue(parsed_data['cache'], -201, -1)
                 elif parsed_data['type'] == 'hash':
-                    data['data'] = GB.redis.get_hash_keys(parsed_data['cache'])
+                    keys = GB.redis.get_hash_keys(parsed_data['cache'])
+                    data['data'] = []
+                    for _, key in enumerate(keys):
+                        data['data'].append({'key': key, 'val': GB.redis.get_hash(parsed_data['cache'], key)})
             elif parsed_data['command'] == 'command_reset_comic':
                 Manager.reset_comic_update_queue()
             elif parsed_data['command'] == 'command_reset_chapter':

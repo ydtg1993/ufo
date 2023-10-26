@@ -57,14 +57,22 @@ function process_board() {
          _component.request({url: window.location.href,method:'POST', data: {command: 'process_cache',cache:cache,type:type},callback:function (response) {
             block.process_cache = false;
             let dom = document.querySelector('#task-board>div:nth-child(2)');
-            html = '';
+            let html = '';
             dom.innerHTML = html;
             response.data.forEach((item)=>{
-                let title = item;
-                if(/{.*?}/.test(item)){
-                    title = JSON.stringify(JSON.parse(item), null, 2);
+                let title;
+                if (type === 'queue') {
+                    if (/{.*?}/.test(item)) {
+                        title = JSON.stringify(JSON.parse(item), null, 2);
+                    }
+                    html += `<div class="dlp-button">${title}</div>`;
+                }else {
+                    title = item.val;
+                    if (/{.*?}/.test(title)) {
+                        title = JSON.stringify(JSON.parse(title), null, 2);
+                    }
+                    html += `<div class="dlp-button">${item.key} -> ${title}</div>`;
                 }
-                html += `<div class="dlp-button">${title}</div>`;
             });
             if (response.data.length >= 200){
                 html += '......';
