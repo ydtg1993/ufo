@@ -50,15 +50,15 @@ class Manager(BaseHTTPRequestHandler):
                     keys = GB.redis.get_hash_keys(parsed_data['cache'])
                     data['data'] = []
                     for _, key in enumerate(keys):
-                        data['data'].append(key + " --> " + GB.redis.get_hash(parsed_data['cache'], key))
-            elif parsed_data['command'] == 'command_reset_comic':
-                Manager.reset_comic_update_queue()
-            elif parsed_data['command'] == 'command_reset_chapter':
-                Manager.reset_chapter_img_queue()
-            elif parsed_data['command'] == 'command_stop':
-                i.set_stop_signal()
+                        data['data'].append({'key': key, 'val': GB.redis.get_hash(parsed_data['cache'], key)})
+                elif parsed_data['command'] == 'command_reset_comic':
+                    Manager.reset_comic_update_queue()
+                elif parsed_data['command'] == 'command_reset_chapter':
+                    Manager.reset_chapter_img_queue()
+                elif parsed_data['command'] == 'command_stop':
+                    i.set_stop_signal()
 
-        except json.JSONDecodeError as e:
+            except json.JSONDecodeError as e:
             data = {'code': 1, 'data': {}, 'message': str(e)}
         self.send_response(200)
         self.send_header('Content-type', 'application/json; charset=utf-8')
