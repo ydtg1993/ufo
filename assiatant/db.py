@@ -5,8 +5,6 @@ from configparser import ConfigParser
 
 
 class MysqlConnector:
-    session = None
-
     def __init__(self, config: ConfigParser):
         self.DB_HOST = config.get("Database", "HOST")
         self.DB_PORT = int(config.get("Database", "PORT"))
@@ -15,8 +13,9 @@ class MysqlConnector:
         self.DB_NAME = config.get("Database", "DB")
         try:
             self.engine = create_engine(
-                f"mysql+mysqlconnector://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}")
-            self.connect()
+                f"mysql+mysqlconnector://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}",
+                pool_size=20, max_overflow=10)
+            self.engine.connect()
         except BaseException as e:
             print(f'{e}')
         else:
@@ -24,18 +23,7 @@ class MysqlConnector:
 
     def connect(self):
         try:
-            self.engine.connect()
-            session = sessionmaker(bind=self.engine)
-            self.session = session()
-            print('MySQL connection successful')
+            session = sessionmaker(bind=self.engine, autocommit=True)
+            return session()
         except OperationalError as e:
             print(f'Error connecting to MySQL: {e}')
-
-    def reconnect(self):
-        try:
-            self.engine.dispose()
-            self.connect()
-        except BaseException as e:
-            print(f'{e}')
-        else:
-            print('mysql重新链接成功')

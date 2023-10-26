@@ -86,11 +86,12 @@ def reset_comic_update_queue():
     while True:
         try:
             i.insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 9)
+            session = GB.mysql.connect()
             batch_size = 500
             offset = 0
             tasks = GB.redis.get_queue(GB.process_cache_conf['chapter']['key'], 0, -1)
             while True:
-                results = GB.mysql['main'].session.query(SourceComicModel.id).filter(
+                results = session.query(SourceComicModel.id).filter(
                     SourceComicModel.source_chapter_count != SourceComicModel.chapter_count).offset(offset).limit(
                     batch_size).all()
                 for result in results:

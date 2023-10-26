@@ -34,8 +34,8 @@ class Img:
                 if chapter_id is None:
                     time.sleep(random.randint(300, 600))
                     break
-
-                record = GB.mysql['img'].session.query(SourceChapterModel).filter(
+                session = GB.mysql.connect()
+                record = session.query(SourceChapterModel).filter(
                     SourceChapterModel.id == chapter_id).first()
                 if record is None:
                     continue
@@ -84,11 +84,11 @@ class Img:
                     count = GB.mysql['img'].session.query(SourceChapterModel).filter(
                         SourceChapterModel.comic_id == record.comic_id).count()
 
-                    GB.mysql['img'].session.query(SourceComicModel).filter(
+                    session.query(SourceComicModel).filter(
                         SourceComicModel.id == record.comic_id).update(
                         {SourceComicModel.chapter_count: count,
                          SourceComicModel.last_chapter_update_at: record.created_at})
-                    GB.mysql['img'].session.commit()
+                    session.commit()
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))

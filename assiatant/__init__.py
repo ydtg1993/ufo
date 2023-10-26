@@ -19,13 +19,7 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 # globe setting
-GB = Globe(config, {
-    'comic': MysqlConnector(config),
-    'img': MysqlConnector(config),
-    'main': MysqlConnector(config),
-},
-           RedisConnector(config),
-           Bot(config))
+GB = Globe(config, MysqlConnector(config), RedisConnector(config), Bot(config))
 GB.menu_tick = {}
 
 # step cache key setting
