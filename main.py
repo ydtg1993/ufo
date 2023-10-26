@@ -2,14 +2,12 @@ import logging
 import random
 import threading
 import time
-
 from assiatant import GB
 from controller.comic import Comic
 from controller.img import Img
 from controller.menu import Menu
 from director.info import Info
 from director.service import HttpService
-from model.source_chapter_model import SourceChapterModel
 from model.source_comic_model import SourceComicModel
 from datetime import datetime
 

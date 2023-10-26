@@ -56,8 +56,8 @@ class Bot(object):
                 options.add_argument("--disable-setuid-sandbox")
 
             driver = uc.Chrome(
-                               #browser_executable_path='/usr/bin/chromium-browser',
-                               #driver_executable_path='/usr/bin/chromedriver', options=options,
+                               browser_executable_path='/usr/bin/chromium-browser',
+                               driver_executable_path='/usr/bin/chromedriver', options=options,
                                )
 
             return driver

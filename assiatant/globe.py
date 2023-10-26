@@ -1,5 +1,5 @@
 from configparser import ConfigParser
-from assiatant import MysqlConnector
+from assiatant.db import MysqlConnector
 from assiatant.bot import Bot
 from assiatant.rd import RedisConnector
 
