@@ -12,6 +12,7 @@ from assiatant import GB
 from model.new_model import NewModel
 from sqlalchemy.exc import OperationalError
 
+
 class Reuter:
     session = None
 
@@ -99,9 +100,12 @@ class Reuter:
             self.wb.get(link)
             time.sleep(3)
             try:
+                if not re.match(r'.*main-content.*',
+                                 self.wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'), re.DOTALL):
+                    continue
+
                 main = self.wb.find_element(By.ID, 'main-content')
-                match = re.match(r'.*<h1 data-testid="Heading".*', main.get_attribute('innerHTML'))
-                if not match:
+                if not re.match(r'.*<h1 data-testid="Heading".*', main.get_attribute('innerHTML'), re.DOTALL):
                     continue
 
                 exist = self.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
@@ -168,13 +172,13 @@ class Reuter:
                             introduce.append({'type': 'text', 'val': p.text})
 
                     news = NewModel(title=task['title'],
-                             cover=cover,
-                             full_title=full_title,
-                             source_url=link,
-                             introduce=json.dumps(introduce),
-                             source_id=6,
-                             categories=json.dumps(categories),
-                             publish_at=formatted_date)
+                                    cover=cover,
+                                    full_title=full_title,
+                                    source_url=link,
+                                    introduce=json.dumps(introduce),
+                                    source_id=6,
+                                    categories=json.dumps(categories),
+                                    publish_at=formatted_date)
                     self.session.add(news)
                     self.session.commit()
             except Exception as e:
