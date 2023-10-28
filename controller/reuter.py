@@ -27,17 +27,10 @@ class Reuter:
                 ''')
             time.sleep(7)
             task_map = {}
-            t = self.wb.find_element(By.CSS_SELECTOR, 'ul.home-page-grid__home-hero__N90H7 a[data-testid="Heading"]')
+            t = self.wb.find_element(By.CSS_SELECTOR, 'div.content-layout__item__SC_GG a[data-testid="Heading"]')
             if t.text != '':
                 link = t.get_attribute("href")
                 task_map[link] = {"title": t.text, 'cover': ''}
-
-            t0 = self.wb.find_elements(By.CSS_SELECTOR, 'ul.home-page-grid__left-col__2K7_S a[data-testid="Heading"]')
-            for t in t0:
-                title = t.text
-                if title == '': continue
-                link = t.get_attribute("href")
-                task_map[link] = {"title": title, 'cover': ''}
 
             t1 = self.wb.find_elements(By.CSS_SELECTOR, 'div[data-testid="Topic"] li')
             for t in t1:

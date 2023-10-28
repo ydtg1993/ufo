@@ -1,9 +1,8 @@
 import logging
 import threading
 import time
+import random
 from datetime import datetime
-from random import random
-
 from assiatant.singleton import Singleton
 from director.info import Info
 
@@ -13,9 +12,11 @@ class TaskManager:
     tasks = []
     messager = None
 
-    def __init__(self, main_task_num: int):
+    def __init__(self):
         self.messager = Info()
-        self.messager.set_stop_num(main_task_num)
+
+    def main_task_num(self, num: int):
+        self.messager.set_stop_num(num)
 
     def fill_task(self, func, delay: int = 0):
         t = threading.Thread(target=func)

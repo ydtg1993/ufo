@@ -5,11 +5,12 @@ from controller.nytime import Nytime
 from controller.reuter import Reuter
 from director.service import HttpService
 
-T = TaskManager(3)
+T = TaskManager()
 
 
 def main():
     threading.Thread(target=HttpService).start()
+    T.main_task_num(3)
     T.fill_task(process_reuter, 300)
     T.fill_task(process_nytime)
     T.dealing()
