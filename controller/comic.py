@@ -17,17 +17,17 @@ class Comic:
 
     def __init__(self, is_update=False):
         self.session = GB.mysql.connect()
+        wb = GB.bot.retry_start(GB.config.get("App", "URL"))
         try:
-            wb = GB.bot.retry_start(GB.config.get("App", "URL"))
             if is_update:
                 self.update_process(wb)
             else:
                 self.insert_process(wb)
-            wb.quit()
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
         finally:
+            wb.quit()
             self.session.close()
 
     def insert_process(self, wb):
