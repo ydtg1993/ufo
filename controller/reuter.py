@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 import os
 import time
 from datetime import datetime
@@ -12,24 +13,19 @@ from model.new_model import NewModel
 from sqlalchemy.exc import OperationalError
 
 class Reuter:
-    def __init__(self):
-        self.db = GB.mysql
-        self.config = GB.config
-        self.rd = GB.redis
+    session = None
 
+    def __init__(self):
+        self.session = GB.mysql.connect()
+        self.url = "https://www.reuters.com"
+        self.wb = GB.bot.retry_start(self.url)
         try:
-            self.wb = GB.bot.start()
-            self.url = "https://www.reuters.com"
-            self.wb.get(self.url)
             self.login()
             self.wb.get(self.url)
             self.wb.execute_script('''
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
-            time.sleep(2)
-            current_time = datetime.now()
-            formatted_time = current_time.strftime("%Y-%m-%d %H")
-            print("路透社开始任务------------" + formatted_time)
+            time.sleep(7)
             task_map = {}
             t = self.wb.find_element(By.CSS_SELECTOR, 'ul.home-page-grid__home-hero__N90H7 a[data-testid="Heading"]')
             if t.text != '':
@@ -79,10 +75,12 @@ class Reuter:
                     task_map[link] = {"title": title, 'cover': cover}
 
             self.run_task(task_map)
-
-            self.wb.quit()
         except BaseException as e:
-            print(e)
+            logger = logging.getLogger(__name__)
+            logger.exception(str(e))
+        finally:
+            self.session.close()
+            self.wb.quit()
 
     def login(self):
         # cookies = self.rd.get_cache("reuter:cookies")
@@ -113,7 +111,7 @@ class Reuter:
                 if not match:
                     continue
 
-                exist = self.db.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
+                exist = self.session.query(NewModel.media_id).filter(NewModel.source_url == link).first()
                 if exist is None:
                     cover = task['cover']
                     tags = main.find_elements(By.CSS_SELECTOR, 'nav[aria-label="Tags"] li')
@@ -176,16 +174,16 @@ class Reuter:
                         else:
                             introduce.append({'type': 'text', 'val': p.text})
 
-                    NewModel(title=task['title'],
+                    news = NewModel(title=task['title'],
                              cover=cover,
                              full_title=full_title,
                              source_url=link,
                              introduce=json.dumps(introduce),
                              source_id=6,
                              categories=json.dumps(categories),
-                             publish_at=formatted_date).insert()
-            except OperationalError as e:
-                print(e)
-                GB.mysql.reconnect()
+                             publish_at=formatted_date)
+                    self.session.add(news)
+                    self.session.commit()
             except Exception as e:
-                print(e, link)
+                logger = logging.getLogger(__name__)
+                logger.exception(str(e))

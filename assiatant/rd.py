@@ -25,10 +25,59 @@ class RedisConnector:
         else:
             print('redis链接成功')
 
-    def get_cache(self, key):
+    def get_cache(self, key: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
         return channel.get(key)
 
-    def set_cache(self, key, val):
+    def set_cache(self, key: str, val: str, expire_time: int = 0):
+        if expire_time > 0:
+            channel = redis.Redis(connection_pool=self.redis_pool)
+            return channel.setex(key, expire_time, val)
+        else:
+            channel = redis.Redis(connection_pool=self.redis_pool)
+            return channel.set(key, val)
+
+    def get_hash(self, hash_name: str, field: str):
         channel = redis.Redis(connection_pool=self.redis_pool)
-        return channel.set(key, val)
+        return channel.hget(hash_name, field)
+
+    def set_hash(self, hash_name: str, field: str, value: str):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.hset(hash_name, field, value)
+
+    def get_hash_keys(self, hash_name: str):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.hkeys(hash_name)
+
+    def enqueue(self, queue_name: str, item: str):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.lpush(queue_name, item)
+
+    def dequeue(self, queue_name: str):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.rpop(queue_name)
+
+    def get_queue(self, queue_name: str, start: int, end: int):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.lrange(queue_name, start, end)
+
+    def delete(self, key: str):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        return channel.delete(key)
+
+    def get_keys_pattern(self, pattern)->list:
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        matched_keys = channel.keys(pattern)
+        result = []
+        for _,key in enumerate(matched_keys):
+            result.append(self.get_cache(key))
+        return result
+
+    def delete_keys_pattern(self, pattern: str):
+        channel = redis.Redis(connection_pool=self.redis_pool)
+        keys_to_delete = channel.keys(pattern)
+        deleted_keys_count = 0
+        for key in keys_to_delete:
+            result = channel.delete(key)
+            deleted_keys_count += result
+        return deleted_keys_count

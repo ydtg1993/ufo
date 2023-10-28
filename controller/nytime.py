@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 from datetime import datetime
 from selenium.webdriver.common.by import By
@@ -9,21 +10,18 @@ import re
 
 
 class Nytime:
+    session = None
+
     def __init__(self):
-        self.db = GB.mysql
-        self.config = GB.config
+        self.session = GB.mysql.connect()
+        self.url = "https://cn.nytimes.com"
+        self.wb = GB.bot.retry_start(self.url)
 
         try:
-            self.wb = GB.bot.start()
-            self.url = "https://cn.nytimes.com"
-            self.wb.get(self.url)
             self.wb.execute_script('''
             window.scrollTo({top: 10000000,behavior: 'smooth'});
                 ''')
-            time.sleep(2)
-            current_time = datetime.now()
-            formatted_time = current_time.strftime("%Y-%m-%d %H")
-            print("纽约时报开始任务------------" + formatted_time)
+            time.sleep(7)
             task_map = {}
 
             t0 = self.wb.find_elements(By.CSS_SELECTOR, "h3.regularSummaryHeadline")
@@ -44,7 +42,11 @@ class Nytime:
             self.run_task(task_map)
             self.wb.quit()
         except BaseException as e:
-            print(e)
+            logger = logging.getLogger(__name__)
+            logger.exception(str(e))
+        finally:
+            self.wb.quit()
+            self.session.close()
 
     @staticmethod
     def fill_task(task_map, doms):
@@ -67,7 +69,7 @@ class Nytime:
                     continue
 
                 area = self.wb.find_element(By.CLASS_NAME, 'article-area')
-                exist = self.db.session.query(NewModel.media_id).filter(NewModel.title == title).first()
+                exist = self.session.query(NewModel.media_id).filter(NewModel.title == title).first()
                 if exist is None:
                     categories = []
                     category = area.find_element(By.CSS_SELECTOR, ".setting-bar>.section-title>h3").text
@@ -93,16 +95,16 @@ class Nytime:
                         else:
                             introduce.append({'type': 'text', 'val': p.text})
 
-                    NewModel(title=title,
-                             cover=cover,
-                             full_title=area.find_element(By.CSS_SELECTOR, '.article-header h1').text,
-                             source_url=link,
-                             introduce=json.dumps(introduce),
-                             source_id=8,
-                             categories=json.dumps(categories),
-                             publish_at=publish_at).insert()
-            except OperationalError as e:
-                print(e)
-                GB.mysql.reconnect()
+                    news = NewModel(title=title,
+                                    cover=cover,
+                                    full_title=area.find_element(By.CSS_SELECTOR, '.article-header h1').text,
+                                    source_url=link,
+                                    introduce=json.dumps(introduce),
+                                    source_id=8,
+                                    categories=json.dumps(categories),
+                                    publish_at=publish_at)
+                    self.session.add(news)
+                    self.session.commit()
             except Exception as e:
-                print(e)
+                logger = logging.getLogger(__name__)
+                logger.exception(str(e))
