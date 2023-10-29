@@ -2,20 +2,17 @@ import re
 import mitmproxy.http
 from assiatant import GB
 
-print(GB)
-
 def request(flow: mitmproxy.http.HTTPFlow) -> None:
     url = flow.request.host
-    if "www.reuters.com" in url:
-        return
+    print(url)
 
 
 def response(flow: mitmproxy.http.HTTPFlow) -> None:
     url = flow.request.url
-    match = re.match(r".*/rest/v2/playlist/assets.*", url)
-    if not match:
-        return
-
+    match = re.match(r".*index.m3u8.*", url)
+    #if not match:
+    #    return
+    print(url)
     with open('output.txt', 'a') as file:
         file.write(f"Matched URL: {url}\n")
 

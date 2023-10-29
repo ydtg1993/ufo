@@ -21,9 +21,8 @@ class Menu:
                 if GB.redis.get_hash(GB.process_cache_conf['av.unique']['key'], link) is not None:
                     continue
                 GB.redis.enqueue(GB.process_cache_conf['detail']['key'],
-                                 json.dumps({"title": title, "link": link, "cover": cover, "category"}))
-                GB.redis.set_hash(GB.process_cache_conf['video.unique']['key'], link, "0")
-            print(wb.current_url)
+                                 json.dumps({"title": title, "link": link, "cover": cover}))
+                GB.redis.set_hash(GB.process_cache_conf['av.unique']['key'], link, "0")
             if wb.current_url == GB.config.get("App", "URL") + 'vod/show/by/hits/id/1/':
                 break
             wb.find_elements(By.CSS_SELECTOR, 'div.channel>div.mb_none a.page_link')[1].click()

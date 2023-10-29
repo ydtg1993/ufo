@@ -43,46 +43,46 @@ class Detail:
                 if exist is not None:
                     continue
                 wb.get(task['link'])
-                if not re.match(r'.*class="de-info-wr".*',
+                if not re.match(r'.*class="MacPlayer".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
                                 re.DOTALL):
                     continue
 
-                comic_id = self.comic_info(wb, task)
-                if comic_id:
-                    self.comic_chapter(wb, comic_id)
+                detail_id = self.comic_info(wb, task)
+
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))
 
     def comic_info(self, wb, task):
-        exist = self.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
+        exist = self.session.query(SourceVideoModel).filter(SourceVideoModel.source_url == task['link']).first()
         if exist is not None:
             return
-        info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
-        author = info_dom.find_element(By.CSS_SELECTOR, "h2.comics-detail__author").text
-        description = info_dom.find_element(By.CSS_SELECTOR, "p.comics-detail__desc").text.strip()
-        tag_doms = info_dom.find_elements(By.CSS_SELECTOR, "div.tag-list>span.tag")
-        is_finish = 0
+        info_dom = wb.find_element(By.CSS_SELECTOR, "div.detail")
+        dds = info_dom.find_elements(By.TAG_NAME, 'dd')
+        number = dds[1].text
+        producer = dds[3].text
+        publish_time = dds[5].text
+        description = wb.find_element(By.CSS_SELECTOR, '.des_xy').text
+        actors = []
+        for _,a in enumerate(dds[0].find_elements(By.TAG_NAME, 'a')):
+            if a.text == '未知' or a.text == '':
+                continue
+            actors.append(a.text)
         tags = []
-        for index, dom in enumerate(tag_doms):
-            if index == 0:
-                if dom.text != "連載中":
-                    is_finish = 1
+        for _, a in enumerate(dds[2].find_elements(By.TAG_NAME, 'a')):
+            if a.text == '':
                 continue
-            elif index == 1:
-                continue
-            tags.append(dom.text.strip())
-        comic = SourceComicModel(title=task['title'],
+            tags.append(a.text)
+        detail = SourceVideoModel(title=task['title'],
                                  source_url=task['link'],
-                                 source=1,
                                  cover=task['cover'],
-                                 region=task['region'],
-                                 category=task['category'],
+                                 number=number,
+                                 producer=producer,
+                                 actors=json.dumps(actors),
                                  label=json.dumps(tags),
-                                 is_finish=is_finish,
-                                 description=description,
-                                 author=author)
-        self.session.add(comic)
+                                 publish_time=publish_time,
+                                 description=description)
+        self.session.add(detail)
         self.session.commit()
-        return comic.id
+        return detail.id

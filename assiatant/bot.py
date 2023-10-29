@@ -44,7 +44,7 @@ class Bot(object):
                 options.add_argument(f"--proxy-server={proxy}")
 
             if self._mitm is not None and mitm is True:
-                options.add_argument(f"--proxy-server={self._mitm}")
+                options.add_argument(f"--proxy-server=127.0.0.1:8080")
 
             if not self._debug:
                 options.add_argument("--blink-settings=imagesEnabled=false")
@@ -57,7 +57,7 @@ class Bot(object):
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
             if sys.platform.startswith('win'):
-                driver = uc.Chrome()
+                driver = uc.Chrome(options=options)
             else:
                 driver = uc.Chrome(
                     browser_executable_path='/usr/bin/chromium-browser',
@@ -69,18 +69,9 @@ class Bot(object):
             print(f'webview开启失败{e}')
 
     def retry_start(self, url: str)-> uc.Chrome:
-        wb = self.start()
-        try:
-            wb.get(url)
-            return wb
-        except Exception:
-            if type(wb) is uc.Chrome:
-                wb.quit()
-
-
         max_attempts = 3
         for _ in range(max_attempts):
-            wb = self.start(proxy=True)
+            wb = self.start(proxy=False,mitm=True)
             try:
                 wb.get(url)
                 return wb
