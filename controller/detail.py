@@ -51,13 +51,13 @@ class Detail:
 
                 detail_id = self.comic_info(wb, task)
                 if detail_id:
-                    wb.find_element(By.CSS_SELECTOR, '#playerCnt button.dplayer-play-icon').click()
                     for _ in range(10):
                         cache = GB.redis.get_cache(GB.process_cache_conf['video']['key'])
                         if re.match(r'^http.*', cache):
                             GB.redis.delete(GB.process_cache_conf['video']['key'])
-                            self.session.query.filter(SourceVideoModel.id == detail_id).update({
+                            self.session.query(SourceVideoModel).filter(SourceVideoModel.id == detail_id).update({
                                 SourceVideoModel.url: cache})
+                            self.session.commit()
                             time.sleep(5)
                             break
                         time.sleep(1)
