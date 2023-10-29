@@ -57,7 +57,7 @@ class Bot(object):
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
             if sys.platform.startswith('win'):
-                driver = uc.Chrome()
+                driver = uc.Chrome(options=options)
             else:
                 driver = uc.Chrome(
                     browser_executable_path='/usr/bin/chromium-browser',
