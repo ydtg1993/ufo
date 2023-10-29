@@ -3,8 +3,6 @@ import os
 from http.server import BaseHTTPRequestHandler
 from assiatant import GB
 from director.info import Info
-from model.source_chapter_model import SourceChapterModel
-from model.source_comic_model import SourceComicModel
 
 
 class Manager(BaseHTTPRequestHandler):
@@ -51,10 +49,6 @@ class Manager(BaseHTTPRequestHandler):
                     data['data'] = []
                     for _, key in enumerate(keys):
                         data['data'].append({'key': key, 'val': GB.redis.get_hash(parsed_data['cache'], key)})
-            elif parsed_data['command'] == 'command_reset_comic':
-                Manager.reset_comic_update_queue()
-            elif parsed_data['command'] == 'command_reset_chapter':
-                Manager.reset_chapter_img_queue()
             elif parsed_data['command'] == 'command_stop':
                 i.set_stop_signal()
 
@@ -64,46 +58,3 @@ class Manager(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json; charset=utf-8')
         self.end_headers()
         self.wfile.write(json.dumps(data).encode('utf-8'))
-
-    @staticmethod
-    def reset_comic_update_queue():
-        batch_size = 500
-        offset = 0
-        tasks = GB.redis.get_queue(GB.process_cache_conf['chapter']['key'], 0, -1)
-        session = GB.mysql.connect()
-        while True:
-            results = session.query(SourceComicModel.id).filter(
-                SourceComicModel.source_chapter_count != SourceComicModel.chapter_count).offset(
-                offset).limit(
-                batch_size).all()
-            for result in results:
-                tasks.append(str(result[0]))
-            tasks = list(set(tasks))
-            offset += batch_size
-            if len(results) < batch_size:
-                GB.redis.delete(GB.process_cache_conf['chapter']['key'])
-                for _, comic_id in enumerate(tasks):
-                    GB.redis.enqueue(GB.process_cache_conf['chapter']['key'], comic_id)
-                break
-        session.close()
-
-    @staticmethod
-    def reset_chapter_img_queue():
-        batch_size = 500
-        offset = 0
-        tasks = GB.redis.get_queue(GB.process_cache_conf['img']['key'], 0, -1)
-        session = GB.mysql.connect()
-        while True:
-            results = session.query(SourceChapterModel.id).filter(
-                SourceChapterModel.img_count == 0).offset(offset).limit(
-                batch_size).all()
-            for result in results:
-                tasks.append(str(result[0]))
-            tasks = list(set(tasks))
-            offset += batch_size
-            if len(results) < batch_size:
-                GB.redis.delete(GB.process_cache_conf['img']['key'])
-                for _, chapter_id in enumerate(tasks):
-                    GB.redis.enqueue(GB.process_cache_conf['img']['key'], chapter_id)
-                break
-        session.close()

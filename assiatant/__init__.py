@@ -27,9 +27,7 @@ GB = Globe(config, MysqlConnector(config), RedisConnector(config), Bot(config))
 
 # step cache key setting
 GB.process_cache_conf = {
-    'comic': {'key': GB.config.get("App", "PROJECT") + ":comic:task", 'name': '漫画队列', 'type': 'queue'},
-    'img': {'key': GB.config.get("App", "PROJECT") + ":img:task", 'name': '章节抓图队列', 'type': 'queue'},
-    'chapter': {'key': GB.config.get("App", "PROJECT") + ":chapter:task", 'name': '章节更新队列', 'type': 'queue'},
-    'comic.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:comic:link", 'name': '漫画去重hash', 'type': 'hash'},
-    'menu.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:menu:page", 'name': '漫画翻页', 'type': 'hash'},
+    'detail': {'key': GB.config.get("App", "PROJECT") + ":detail:task", 'name': '基础信息队列', 'type': 'queue'},
+    'video': {'key': GB.config.get("App", "PROJECT") + ":video:task", 'name': '视频队列', 'type': 'queue'},
+    'av.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:video:link", 'name': '片子去重hash', 'type': 'hash'},
 }
