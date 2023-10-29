@@ -6,6 +6,7 @@ from assiatant.task_manager import TaskManager
 from controller.comic import Comic
 from controller.img import Img
 from controller.menu import Menu
+from director.info import Info
 from director.service import HttpService
 from model.source_comic_model import SourceComicModel
 from datetime import datetime
@@ -44,7 +45,7 @@ def reset_comic_update_queue():
     while True:
         session = GB.mysql.connect()
         try:
-            i.insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 9)
+            Info().insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 9)
             batch_size = 500
             offset = 0
             tasks = GB.redis.get_queue(GB.process_cache_conf['chapter']['key'], 0, -1)
