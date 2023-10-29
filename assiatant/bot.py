@@ -44,7 +44,8 @@ class Bot(object):
                 options.add_argument(f"--proxy-server={proxy}")
 
             if self._mitm is not None and mitm is True:
-                options.add_argument(f"--proxy-server=127.0.0.1:8080")
+                options.add_argument(f"--proxy-server={self._mitm}")
+                options.add_argument("--ignore-certificate-errors")
 
             if not self._debug:
                 options.add_argument("--blink-settings=imagesEnabled=false")

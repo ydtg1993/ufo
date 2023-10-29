@@ -42,6 +42,7 @@ class Detail:
                     SourceVideoModel.source_url == task['link']).first()
                 if exist is not None:
                     continue
+                GB.redis.set_cache(GB.process_cache_conf['video']['key'], '', 30)
                 wb.get(task['link'])
                 if not re.match(r'.*class="MacPlayer".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -49,7 +50,17 @@ class Detail:
                     continue
 
                 detail_id = self.comic_info(wb, task)
-
+                if detail_id:
+                    wb.find_element(By.CSS_SELECTOR, '#playerCnt button.dplayer-play-icon').click()
+                    for _ in range(10):
+                        cache = GB.redis.get_cache(GB.process_cache_conf['video']['key'])
+                        if re.match(r'^http.*', cache):
+                            GB.redis.delete(GB.process_cache_conf['video']['key'])
+                            self.session.query.filter(SourceVideoModel.id == detail_id).update({
+                                SourceVideoModel.url: cache})
+                            time.sleep(5)
+                            break
+                        time.sleep(1)
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))
@@ -65,7 +76,7 @@ class Detail:
         publish_time = dds[5].text
         description = wb.find_element(By.CSS_SELECTOR, '.des_xy').text
         actors = []
-        for _,a in enumerate(dds[0].find_elements(By.TAG_NAME, 'a')):
+        for _, a in enumerate(dds[0].find_elements(By.TAG_NAME, 'a')):
             if a.text == '未知' or a.text == '':
                 continue
             actors.append(a.text)
@@ -75,14 +86,14 @@ class Detail:
                 continue
             tags.append(a.text)
         detail = SourceVideoModel(title=task['title'],
-                                 source_url=task['link'],
-                                 cover=task['cover'],
-                                 number=number,
-                                 producer=producer,
-                                 actors=json.dumps(actors),
-                                 label=json.dumps(tags),
-                                 publish_time=publish_time,
-                                 description=description)
+                                  source_url=task['link'],
+                                  cover=task['cover'],
+                                  number=number,
+                                  producer=producer,
+                                  actors=json.dumps(actors),
+                                  label=json.dumps(tags),
+                                  publish_time=publish_time,
+                                  description=description)
         self.session.add(detail)
         self.session.commit()
         return detail.id

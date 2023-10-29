@@ -28,6 +28,6 @@ GB = Globe(config, MysqlConnector(config), RedisConnector(config), Bot(config))
 # step cache key setting
 GB.process_cache_conf = {
     'detail': {'key': GB.config.get("App", "PROJECT") + ":detail:task", 'name': '基础信息队列', 'type': 'queue'},
-    'video': {'key': GB.config.get("App", "PROJECT") + ":video:task", 'name': '视频队列', 'type': 'queue'},
+    'video': {'key': GB.config.get("App", "PROJECT") + ":video:task", 'name': '视频锚', 'type': 'cache'},
     'av.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:video:link", 'name': '片子去重hash', 'type': 'hash'},
 }

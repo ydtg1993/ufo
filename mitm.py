@@ -1,18 +1,21 @@
 import re
+import time
+
 import mitmproxy.http
 from assiatant import GB
+from model.source_video_model import SourceVideoModel
+
 
 def request(flow: mitmproxy.http.HTTPFlow) -> None:
     url = flow.request.host
-    print(url)
+    if "fanzafree.com" in url:
+        return
 
 
 def response(flow: mitmproxy.http.HTTPFlow) -> None:
     url = flow.request.url
     match = re.match(r".*index.m3u8.*", url)
-    #if not match:
-    #    return
-    print(url)
-    with open('output.txt', 'a') as file:
-        file.write(f"Matched URL: {url}\n")
+    if not match:
+        return
 
+    GB.redis.set_cache(GB.process_cache_conf['video']['key'], url, 7)
