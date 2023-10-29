@@ -58,7 +58,7 @@ class Manager(BaseHTTPRequestHandler):
                 elif parsed_data['command'] == 'command_stop':
                     i.set_stop_signal()
 
-            except json.JSONDecodeError as e:
+        except Exception as e:
             data = {'code': 1, 'data': {}, 'message': str(e)}
         self.send_response(200)
         self.send_header('Content-type', 'application/json; charset=utf-8')
