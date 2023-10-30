@@ -54,7 +54,7 @@ class Detail:
                     for _ in range(10):
                         cache = GB.redis.get_cache(GB.process_cache_conf['video']['key'])
                         if cache is None:
-                            time.sleep(1)
+                            break
                         if re.match(r'^http.*', cache):
                             GB.redis.delete(GB.process_cache_conf['video']['key'])
                             self.session.query(SourceVideoModel).filter(SourceVideoModel.id == detail_id).update({
@@ -62,7 +62,7 @@ class Detail:
                             self.session.commit()
                             time.sleep(5)
                             break
-                        time.sleep(1)
+                        time.sleep(3)
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))

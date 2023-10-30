@@ -18,4 +18,4 @@ def response(flow: mitmproxy.http.HTTPFlow) -> None:
     if not match:
         return
 
-    GB.redis.set_cache(GB.process_cache_conf['video']['key'], url, 7)
+    GB.redis.set_cache(GB.process_cache_conf['video']['key'], url, 15)
