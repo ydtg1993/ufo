@@ -42,7 +42,7 @@ class Detail:
                     SourceVideoModel.source_url == task['link']).first()
                 if exist is not None:
                     continue
-                GB.redis.set_cache(GB.process_cache_conf['video']['key'], '', 30)
+                GB.redis.set_cache(GB.process_cache_conf['video']['key'], '', 15)
                 wb.get(task['link'])
                 if not re.match(r'.*class="MacPlayer".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -54,15 +54,15 @@ class Detail:
                     for _ in range(10):
                         cache = GB.redis.get_cache(GB.process_cache_conf['video']['key'])
                         if cache is None:
-                            break
+                            time.sleep(2)
+                            continue
                         if re.match(r'^http.*', cache):
-                            GB.redis.delete(GB.process_cache_conf['video']['key'])
                             self.session.query(SourceVideoModel).filter(SourceVideoModel.id == detail_id).update({
                                 SourceVideoModel.url: cache})
                             self.session.commit()
-                            time.sleep(5)
                             break
-                        time.sleep(3)
+                        time.sleep(2)
+                    GB.redis.delete(GB.process_cache_conf['video']['key'])
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))
