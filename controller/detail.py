@@ -53,6 +53,8 @@ class Detail:
                 if detail_id:
                     for _ in range(10):
                         cache = GB.redis.get_cache(GB.process_cache_conf['video']['key'])
+                        if cache is None:
+                            time.sleep(1)
                         if re.match(r'^http.*', cache):
                             GB.redis.delete(GB.process_cache_conf['video']['key'])
                             self.session.query(SourceVideoModel).filter(SourceVideoModel.id == detail_id).update({
