@@ -42,8 +42,6 @@ class Detail:
                     SourceVideoModel.source_url == task['link']).first()
                 if exist is not None:
                     continue
-                GB.redis.set_cache(GB.process_cache_conf['hook_video']['key'], '', 15)
-                GB.redis.set_cache(GB.process_cache_conf['hook_cover']['key'], '', 15)
                 wb.get(task['link'])
                 if not re.match(r'.*class="MacPlayer".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -67,11 +65,11 @@ class Detail:
                 logger.exception(str(e))
 
     def sync_receive_info(self,receiver, **kwargs):
-        for _ in range(30):
+        for _ in range(15):
             time.sleep(1)
             for key, value in kwargs.items():
                 cache = GB.redis.get_cache(value)
-                if cache is not None or cache != '':
+                if cache is not None and cache != '' and receiver[key] == '':
                     receiver[key] = cache
             for _,value in receiver.items():
                 if value == '':

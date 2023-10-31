@@ -8,7 +8,7 @@ from assiatant import GB
 
 class Menu:
     def __init__(self):
-        wb = GB.bot.retry_start(GB.config.get("App", "URL") + 'vod/show/by/hits/id/1/')
+        wb = GB.bot.start(GB.config.get("App", "URL") + 'vod/show/by/hits/id/1/')
         wb.find_element(By.CSS_SELECTOR, 'div.channel>div.mb_none a:last-child').click()
         while True:
             time.sleep(random.randint(5, 10))

@@ -11,7 +11,7 @@ T = TaskManager()
 def main():
     threading.Thread(target=HttpService).start()
     T.main_task_num(3)
-    T.fill_task(process_menu, 300)
+    #T.fill_task(process_menu, 300)
     T.fill_task(process_detail)
     T.dealing()
 

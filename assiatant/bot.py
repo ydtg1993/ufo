@@ -34,7 +34,7 @@ class Bot(object):
             else:
                 time.sleep(5)
 
-    def start(self, proxy=False, mitm=False)-> uc.Chrome:
+    def start(self, proxy=False, mitm=False, image=False)-> uc.Chrome:
         try:
             options = uc.ChromeOptions()
             if self._proxy is not None and proxy is True:
@@ -48,7 +48,8 @@ class Bot(object):
                 options.add_argument("--ignore-certificate-errors")
 
             if not self._debug:
-                options.add_argument("--blink-settings=imagesEnabled=false")
+                if image is False:
+                    options.add_argument("--blink-settings=imagesEnabled=false")
                 options.add_argument("--headless")
                 options.add_argument("--disable-gpu")
                 options.add_argument('--no-sandbox')
@@ -72,7 +73,7 @@ class Bot(object):
     def retry_start(self, url: str)-> uc.Chrome:
         max_attempts = 3
         for _ in range(max_attempts):
-            wb = self.start(proxy=False,mitm=True)
+            wb = self.start(proxy=False,mitm=True,image=True)
             try:
                 wb.get(url)
                 return wb
