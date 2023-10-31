@@ -1,9 +1,6 @@
 import re
-import time
-
 import mitmproxy.http
 from assiatant import GB
-from model.source_video_model import SourceVideoModel
 
 
 def request(flow: mitmproxy.http.HTTPFlow) -> None:
