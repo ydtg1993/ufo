@@ -14,6 +14,7 @@ class SourceVideoModel(Base):
     title = Column(String)
     number = Column(String)
     cover = Column(String, default='')
+    big_cover = Column(String, default='')
     url = Column(String, default='')
     actors = Column(String, default='')
     producer = Column(String, default='')

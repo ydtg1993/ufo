@@ -42,7 +42,8 @@ class Detail:
                     SourceVideoModel.source_url == task['link']).first()
                 if exist is not None:
                     continue
-                GB.redis.set_cache(GB.process_cache_conf['video']['key'], '', 15)
+                GB.redis.set_cache(GB.process_cache_conf['hook_video']['key'], '', 15)
+                GB.redis.set_cache(GB.process_cache_conf['hook_cover']['key'], '', 15)
                 wb.get(task['link'])
                 if not re.match(r'.*class="MacPlayer".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -51,21 +52,32 @@ class Detail:
 
                 detail_id = self.comic_info(wb, task)
                 if detail_id:
-                    for _ in range(10):
-                        cache = GB.redis.get_cache(GB.process_cache_conf['video']['key'])
-                        if cache is None:
-                            time.sleep(2)
-                            continue
-                        if re.match(r'^http.*', cache):
-                            self.session.query(SourceVideoModel).filter(SourceVideoModel.id == detail_id).update({
-                                SourceVideoModel.url: cache})
-                            self.session.commit()
-                            break
-                        time.sleep(2)
-                    GB.redis.delete(GB.process_cache_conf['video']['key'])
+                    receiver = {'video':'','cover':''}
+                    self.sync_receive_info(receiver,
+                                           video=GB.process_cache_conf['hook_video']['key'],
+                                           cover=GB.process_cache_conf['hook_cover']['key'])
+                    GB.redis.delete(GB.process_cache_conf['hook_video']['key'])
+                    GB.redis.delete(GB.process_cache_conf['hook_cover']['key'])
+                    self.session.query(SourceVideoModel).filter(SourceVideoModel.id == detail_id).update({
+                        SourceVideoModel.url: receiver['video'],
+                        SourceVideoModel.big_cover: receiver['cover']})
+                    self.session.commit()
             except Exception as e:
                 logger = logging.getLogger(__name__)
                 logger.exception(str(e))
+
+    def sync_receive_info(self,receiver, **kwargs):
+        for _ in range(30):
+            time.sleep(1)
+            for key, value in kwargs.items():
+                cache = GB.redis.get_cache(value)
+                if cache is not None or cache != '':
+                    receiver[key] = cache
+            for _,value in receiver.items():
+                if value == '':
+                    break
+            else:
+                break
 
     def comic_info(self, wb, task):
         exist = self.session.query(SourceVideoModel).filter(SourceVideoModel.source_url == task['link']).first()
