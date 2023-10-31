@@ -34,7 +34,6 @@ class Detail:
                     time.sleep(random.randint(900, 1200))
                     break
                 task = json.loads(task)
-                time.sleep(random.randint(7, 30))
                 title = task['title']
                 link = task['link']
                 i.insert_current_task('img', f'详情导入《{title}》-{link}')
@@ -42,6 +41,9 @@ class Detail:
                     SourceVideoModel.source_url == task['link']).first()
                 if exist is not None:
                     continue
+                GB.redis.delete(GB.process_cache_conf['hook_video']['key'])
+                GB.redis.delete(GB.process_cache_conf['hook_cover']['key'])
+                time.sleep(random.randint(3, 5))
                 wb.get(task['link'])
                 if not re.match(r'.*class="MacPlayer".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -54,8 +56,6 @@ class Detail:
                     self.sync_receive_info(receiver,
                                            video=GB.process_cache_conf['hook_video']['key'],
                                            cover=GB.process_cache_conf['hook_cover']['key'])
-                    GB.redis.delete(GB.process_cache_conf['hook_video']['key'])
-                    GB.redis.delete(GB.process_cache_conf['hook_cover']['key'])
                     self.session.query(SourceVideoModel).filter(SourceVideoModel.id == detail_id).update({
                         SourceVideoModel.url: receiver['video'],
                         SourceVideoModel.big_cover: receiver['cover']})
