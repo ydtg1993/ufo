@@ -17,10 +17,11 @@ T = TaskManager()
 def main():
     threading.Thread(target=HttpService).start()
     T.main_task_num(4)
-    T.fill_task(process_menu, 300)
-    T.fill_task(process_comic, 120)
+    #T.fill_task(process_menu, 300)
+    #T.fill_task(process_comic, 120)
     T.fill_task(process_img, 30)
-    T.fill_task(process_img, 30)
+    T.fill_task(process_img2, 30)
+    T.fill_task(process_img3, 30)
     T.fill_task(process_update_comic)
     T.fill_task(reset_comic_update_queue)
     T.dealing()
@@ -40,6 +41,10 @@ def process_img():
 
 def process_img2():
     T.permanent_running(lambda: Img(), '章节图片页-进程2', 15, 60)
+
+
+def process_img3():
+    T.permanent_running(lambda: Img(), '章节图片页-进程3', 15, 60)
 
 
 def process_update_comic():

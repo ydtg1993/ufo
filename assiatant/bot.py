@@ -63,19 +63,20 @@ class Bot(object):
                     browser_executable_path='/usr/bin/chromium-browser',
                     driver_executable_path='/usr/bin/chromedriver', options=options,
                 )
-            driver.set_page_load_timeout(90)
+            driver.set_page_load_timeout(30)
             return driver
         except BaseException as e:
             print(f'webview开启失败{e}')
 
     def retry_start(self, url: str)-> uc.Chrome:
-        wb = self.start()
-        try:
-            wb.get(url)
-            return wb
-        except Exception:
-            if type(wb) is uc.Chrome:
-                wb.quit()
+        if random.random() < 0.3:
+            wb = self.start()
+            try:
+                wb.get(url)
+                return wb
+            except Exception:
+                if type(wb) is uc.Chrome:
+                    wb.quit()
 
 
         max_attempts = 3
