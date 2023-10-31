@@ -14,8 +14,8 @@ def request(flow: mitmproxy.http.HTTPFlow) -> None:
 
 def response(flow: mitmproxy.http.HTTPFlow) -> None:
     url = flow.request.url
-    match = re.match(r".*index.m3u8.*", url)
-    if not match:
-        return
 
-    GB.redis.set_cache(GB.process_cache_conf['video']['key'], url, 15)
+    if re.match(r".*index.m3u8.*", url):
+        GB.redis.set_cache(GB.process_cache_conf['hook_video']['key'], url, 15)
+    if re.match(r".*big_cover.*", url):
+        GB.redis.set_cache(GB.process_cache_conf['hook_cover']['key'], url, 15)
