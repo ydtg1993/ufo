@@ -15,7 +15,7 @@ class Menu:
     def __init__(self):
         wb = GB.bot.retry_start(GB.config.get("App", "URL"))
         try:
-            wb.get(GB.config.get("App", "URL") + 'allmanga/')
+            wb.get(GB.config.get("App", "URL") + 'allmanga/page/528/')
             self.browser(wb)
         except Exception as e:
             logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class Menu:
                             re.DOTALL):
                 break
 
-            time.sleep(random.randint(10, 90))
+            time.sleep(random.randint(5, 15))
             comic_doms = wb.find_elements(By.CSS_SELECTOR, 'div.entries>article>a')
             for _, comic_dom in enumerate(comic_doms):
                 title = comic_dom.get_attribute('aria-label')
@@ -43,4 +43,4 @@ class Menu:
                 GB.redis.enqueue(GB.process_cache_conf['comic']['key'],
                                  json.dumps(
                                      {"title": title, "link": link, "cover": cover}))
-            wb.execute_script("document.querySelector('nav.ct-pagination .next').click();")
+            wb.execute_script("document.querySelector('nav.ct-pagination .prev').click();")

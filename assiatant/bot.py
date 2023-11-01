@@ -57,7 +57,7 @@ class Bot(object):
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
             if sys.platform.startswith('win'):
-                driver = uc.Chrome()
+                driver = uc.Chrome(options=options)
             else:
                 driver = uc.Chrome(
                     browser_executable_path='/usr/bin/chromium-browser',
@@ -69,14 +69,14 @@ class Bot(object):
             print(f'webview开启失败{e}')
 
     def retry_start(self, url: str)-> uc.Chrome:
-        wb = self.start()
-        try:
-            wb.get(url)
-            return wb
-        except Exception:
-            if type(wb) is uc.Chrome:
-                wb.quit()
-
+        if random.random() < 0.3:
+            wb = self.start()
+            try:
+                wb.get(url)
+                return wb
+            except Exception:
+                if type(wb) is uc.Chrome:
+                    wb.quit()
 
         max_attempts = 3
         for _ in range(max_attempts):

@@ -16,21 +16,13 @@ T = TaskManager()
 
 def main():
     threading.Thread(target=HttpService).start()
-    T.main_task_num(3)
+    T.main_task_num(4)
     T.fill_task(process_menu, 300)
-    T.fill_task(process_comic, 120)
+    T.fill_task(process_comic, 180)
     T.fill_task(process_img, 30)
     T.fill_task(process_update_comic)
     T.fill_task(reset_comic_update_queue)
     T.dealing()
-
-
-def fill_task(func, delay: int = 0):
-    t = threading.Thread(target=func)
-    t.start()
-    tt.append(t)
-    if delay > 0:
-        time.sleep(delay)
 
 
 def process_menu():
