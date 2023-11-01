@@ -78,12 +78,13 @@ class Detail:
                 break
 
     def comic_info(self, wb, task):
-        exist = self.session.query(SourceVideoModel).filter(SourceVideoModel.source_url == task['link']).first()
-        if exist is not None:
+        if self.session.query(SourceVideoModel).filter(SourceVideoModel.source_url == task['link']).first() is not None:
             return
         info_dom = wb.find_element(By.CSS_SELECTOR, "div.detail")
         dds = info_dom.find_elements(By.TAG_NAME, 'dd')
         number = dds[1].text
+        if self.session.query(SourceVideoModel).filter(SourceVideoModel.number == number).first() is not None:
+            return
         producer = dds[3].text
         publish_time = dds[5].text
         description = wb.find_element(By.CSS_SELECTOR, '.des_xy').text
