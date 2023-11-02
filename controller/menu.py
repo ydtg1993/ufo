@@ -8,8 +8,8 @@ from assiatant import GB
 
 class Menu:
     def __init__(self):
-        wb = GB.bot.start(GB.config.get("App", "URL") + 'vod/show/by/hits/id/1/')
-        wb.find_element(By.CSS_SELECTOR, 'div.channel>div.mb_none a:last-child').click()
+        wb = GB.bot.start()
+        wb.get(GB.config.get("App", "URL") + 'vod/show/by/time/id/1/')
         while True:
             time.sleep(random.randint(1, 3))
             boxes = wb.find_elements(By.CSS_SELECTOR, 'div.list>ul li')
@@ -25,5 +25,5 @@ class Menu:
                 GB.redis.set_hash(GB.process_cache_conf['av.unique']['key'], link, "0")
             if wb.current_url == GB.config.get("App", "URL") + 'vod/show/by/hits/id/1/':
                 break
-            wb.find_elements(By.CSS_SELECTOR, 'div.channel>div.mb_none a.page_link')[1].click()
+            wb.find_elements(By.CSS_SELECTOR, 'div.channel>div.mb_none a.page_link')[2].click()
         wb.quit()
