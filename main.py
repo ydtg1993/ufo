@@ -16,12 +16,11 @@ T = TaskManager()
 
 def main():
     threading.Thread(target=HttpService).start()
-    T.main_task_num(4)
+    T.main_task_num(3)
     #T.fill_task(process_menu, 300)
     #T.fill_task(process_comic, 120)
     T.fill_task(process_img, 30)
     T.fill_task(process_img2, 30)
-    T.fill_task(process_img3, 30)
     T.fill_task(process_update_comic)
     T.fill_task(reset_comic_update_queue)
     T.dealing()
@@ -43,10 +42,6 @@ def process_img2():
     T.permanent_running(lambda: Img(), '章节图片页-进程2', 15, 60)
 
 
-def process_img3():
-    T.permanent_running(lambda: Img(), '章节图片页-进程3', 15, 60)
-
-
 def process_update_comic():
     T.permanent_running(lambda: Comic(True), '漫画章节更新', 600, 1800)
 
@@ -56,7 +51,7 @@ def reset_comic_update_queue():
         session = GB.mysql.connect()
         try:
             Info().insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 9)
-            batch_size = 500
+            batch_size = 1000
             offset = 0
             tasks = GB.redis.get_queue(GB.process_cache_conf['chapter']['key'], 0, -1)
             while True:
@@ -77,7 +72,7 @@ def reset_comic_update_queue():
             logger.exception(str(e))
         finally:
             session.close()
-        time.sleep(3600 * 24)
+        time.sleep(3600 * 12)
 
 
 if __name__ == '__main__':
