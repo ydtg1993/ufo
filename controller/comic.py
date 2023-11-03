@@ -44,10 +44,9 @@ class Comic:
                 title = task['title']
                 link = task['link']
                 i.insert_current_task('img', f'漫画导入《{title}》-{link}')
-                exist = self.session.query(SourceComicModel).filter(
-                    SourceComicModel.source_url == task['link']).first()
-                if exist is not None:
+                if GB.redis.get_hash(GB.process_cache_conf['comic.unique']['key'], link) is not None:
                     continue
+                GB.redis.set_hash(GB.process_cache_conf['comic.unique']['key'], link, '0')
                 wb.get(task['link'])
                 if not re.match(r'.*class="de-info-wr".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -92,8 +91,7 @@ class Comic:
                 logger.exception(str(e))
 
     def comic_info(self, wb, task):
-        exist = self.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
-        if exist is not None:
+        if self.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first() is not None:
             return
         info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
         author = info_dom.find_element(By.CSS_SELECTOR, "h2.comics-detail__author").text
@@ -153,7 +151,7 @@ class Comic:
                     break
                 link = chapter.get_attribute('href')
                 title = chapter.get_attribute('textContent')
-                if GB.redis.get_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id),
+                if GB.redis.get_hash(GB.process_cache_conf['chapter.unique']['key'] + str(comic_id),
                                      link) is not None:
                     continue
 
@@ -164,7 +162,7 @@ class Comic:
                                              sort=sort)
                 self.session.add(chapter)
                 self.session.commit()
-                GB.redis.set_hash(GB.config.get("App", "PROJECT") + ":unique:chapter:link:" + str(comic_id), link, "0")
+                GB.redis.set_hash(GB.process_cache_conf['chapter.unique']['key'] + str(comic_id), link, "0")
                 GB.redis.enqueue(GB.process_cache_conf['img']['key'], chapter.id)
                 limit += 1
         except Exception as e:
