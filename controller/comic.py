@@ -41,13 +41,14 @@ class Comic:
                 if task is None:
                     time.sleep(random.randint(300, 600))
                     break
+                if self.session.query(SourceComicModel).filter(
+                        SourceComicModel.source_url == task['link']).first() is not None:
+                    continue
                 task = json.loads(task)
                 time.sleep(random.randint(7, 15))
                 title = task['title']
                 link = task['link']
                 i.insert_current_task('img', f'漫画导入《{title}》-{link}')
-                if GB.redis.get_hash(GB.process_cache_conf['comic.unique']['key'],link) is not None:
-                    continue
                 wb.get(link)
                 if not re.match(r'.*class="entry-content".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -56,7 +57,6 @@ class Comic:
 
                 comic_id = self.comic_info(wb, task)
                 if comic_id:
-                    GB.redis.set_hash(GB.process_cache_conf['comic.unique']['key'], link, comic_id)
                     wb.get(GB.config.get("App", "URL") + 'chapterlist/' + urlparse(link).path.strip('/').split('/')[-1] + '.html')
                     self.comic_chapter(wb, comic_id)
             except Exception as e:
@@ -94,9 +94,6 @@ class Comic:
                 logger.exception(str(e))
 
     def comic_info(self, wb, task):
-        if self.session.query(SourceComicModel).filter(
-                    SourceComicModel.source_url == task['link']).first() is not None:
-            return
         author = wb.find_element(By.CSS_SELECTOR, "div.author-content>a").text
         region = wb.find_element(By.CSS_SELECTOR, "div.genres-content>a").text
         description = wb.find_element(By.CSS_SELECTOR, "p.stk-block-text__text").text.strip()
