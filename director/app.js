@@ -59,24 +59,31 @@ function process_board() {
             let dom = document.querySelector('#task-board>div:nth-child(2)');
             let html = '';
             dom.innerHTML = html;
-            response.data.forEach((item)=>{
-                let title;
-                if (type === 'queue') {
-                    title = item;
-                    if (/{.*?}/.test(title)) {
-                        title = JSON.stringify(JSON.parse(title), null, 2);
+            if(type === 'cache'){
+                if (/{.*?}/.test(response.data)) {
+                        response.data = JSON.stringify(JSON.parse(response.data), null, 2);
                     }
-                    html += `<div class="dlp-button">${title}</div>`;
-                }else {
-                    title = item.val;
-                    if (/{.*?}/.test(title)) {
-                        title = JSON.stringify(JSON.parse(title), null, 2);
+                html += `<div class="dlp-button">${response.data}</div>`;
+            }else {
+                response.data.forEach((item) => {
+                    let title;
+                    if (type === 'queue') {
+                        title = item;
+                        if (/{.*?}/.test(title)) {
+                            title = JSON.stringify(JSON.parse(title), null, 2);
+                        }
+                        html += `<div class="dlp-button">${title}</div>`;
+                    } else if (type === 'hash') {
+                        title = item.val;
+                        if (/{.*?}/.test(title)) {
+                            title = JSON.stringify(JSON.parse(title), null, 2);
+                        }
+                        html += `<div class="dlp-button">${item.key} -> ${title}</div>`;
                     }
-                    html += `<div class="dlp-button">${item.key} -> ${title}</div>`;
+                });
+                if (response.data.length >= 200) {
+                    html += '......';
                 }
-            });
-            if (response.data.length >= 200){
-                html += '......';
             }
             dom.innerHTML = html;
         }});
