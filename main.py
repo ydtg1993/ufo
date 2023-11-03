@@ -43,13 +43,14 @@ def process_update_comic():
 
 def reset_comic_update_queue():
     while True:
+        session = GB.mysql.connect()
         try:
             Info().insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 9)
-            batch_size = 500
+            batch_size = 1000
             offset = 0
             tasks = GB.redis.get_queue(GB.process_cache_conf['chapter']['key'], 0, -1)
             while True:
-                results = GB.mysql['main'].session.query(SourceComicModel.id).filter(
+                results = session.query(SourceComicModel.id).filter(
                     SourceComicModel.source_chapter_count != SourceComicModel.chapter_count).offset(offset).limit(
                     batch_size).all()
                 for result in results:
@@ -64,6 +65,8 @@ def reset_comic_update_queue():
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
+        finally:
+            session.close()
         time.sleep(3600 * 24)
 
 
