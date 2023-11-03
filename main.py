@@ -26,7 +26,7 @@ def main():
 
 
 def process_menu():
-    T.permanent_running(lambda: Menu(), '分类页列表', 900, 3600)
+    T.permanent_running(lambda: Menu(), '分类页列表', 600, 1200)
 
 
 def process_comic():

@@ -42,7 +42,8 @@ function process_board() {
             for(let i in response.data.process_cache_conf){
                 let menu_dom = document.createElement('button');
                 menu_dom.className = 'dlp-button dlp-button-green';
-                menu_dom.textContent = response.data.process_cache_conf[i]['name'];
+                menu_dom.innerHTML += `<div>${response.data.process_cache_conf[i]['type']}</div>`;
+                menu_dom.innerHTML += `<span class="letters" title="${response.data.process_cache_conf[i]['name']}">${response.data.process_cache_conf[i]['name']}</span>`;
                 menu_dom.addEventListener('click',()=>{
                     taskItemsRequest(response.data.process_cache_conf[i]['key'],response.data.process_cache_conf[i]['type'])
                 });
@@ -59,12 +60,27 @@ function process_board() {
             let dom = document.querySelector('#task-board>div:nth-child(2)');
             let html = '';
             dom.innerHTML = html;
-            if(type === 'cache'){
+            if(type === 'keys'){
+                 let box = document.createElement('div');
+                 box.className = 'section scroll';
+                 response.data.forEach(item=>{
+                    let menu_dom = document.createElement('button');
+                    menu_dom.className = 'dlp-button dlp-button-green';
+                    menu_dom.innerHTML += `<div>${item.type}</div>`;
+                    menu_dom.innerHTML += `<span class="letters" title="${item.key}">${item.key}</span>`;
+                    menu_dom.addEventListener('click',()=>{
+                        taskItemsRequest(item.key,item.type)
+                    });
+                    box.append(menu_dom)
+                 });
+                 new ComponentPlane(box).setParentDom(document.getElementById('task-board')).make();
+                 return
+            } else if(type === 'cache'){
                 if (/{.*?}/.test(response.data)) {
                         response.data = JSON.stringify(JSON.parse(response.data), null, 2);
                     }
                 html += `<div class="dlp-button">${response.data}</div>`;
-            }else {
+            } else {
                 response.data.forEach((item) => {
                     let title;
                     if (type === 'queue') {
