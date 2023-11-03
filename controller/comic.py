@@ -39,10 +39,10 @@ class Comic:
                 if task is None:
                     time.sleep(random.randint(300, 600))
                     break
+                task = json.loads(task)
                 if self.session.query(SourceComicModel).filter(
                         SourceComicModel.source_url == task['link']).first() is not None:
                     continue
-                task = json.loads(task)
                 time.sleep(random.randint(7, 30))
                 title = task['title']
                 link = task['link']
