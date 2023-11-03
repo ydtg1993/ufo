@@ -39,14 +39,14 @@ class Comic:
                 if task is None:
                     time.sleep(random.randint(300, 600))
                     break
+                if self.session.query(SourceComicModel).filter(
+                        SourceComicModel.source_url == task['link']).first() is not None:
+                    continue
                 task = json.loads(task)
                 time.sleep(random.randint(7, 30))
                 title = task['title']
                 link = task['link']
                 i.insert_current_task('img', f'漫画导入《{title}》-{link}')
-                if GB.redis.get_hash(GB.process_cache_conf['comic.unique']['key'], link) is not None:
-                    continue
-                GB.redis.set_hash(GB.process_cache_conf['comic.unique']['key'], link, '0')
                 wb.get(task['link'])
                 if not re.match(r'.*class="de-info-wr".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -91,8 +91,6 @@ class Comic:
                 logger.exception(str(e))
 
     def comic_info(self, wb, task):
-        if self.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first() is not None:
-            return
         info_dom = wb.find_element(By.CSS_SELECTOR, "div.de-info-wr")
         author = info_dom.find_element(By.CSS_SELECTOR, "h2.comics-detail__author").text
         description = info_dom.find_element(By.CSS_SELECTOR, "p.comics-detail__desc").text.strip()
