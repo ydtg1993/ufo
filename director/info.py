@@ -35,7 +35,11 @@ class Info(object):
         GB.redis.set_cache(self.current_task_key + ':' + name, signal, 3000000)
 
     def get_current_task(self) -> list:
-        return GB.redis.get_keys_pattern(self.current_task_key + ':*')
+        keys = GB.redis.get_keys_pattern(self.current_task_key + ':*')
+        result = []
+        for _, key in enumerate(keys):
+            result.append(GB.redis.get_cache(key['key']))
+        return result
 
     def clear_cache(self):
         GB.redis.delete(self.process_key)

@@ -51,6 +51,8 @@ class Manager(BaseHTTPRequestHandler):
                     data['data'] = []
                     for _, key in enumerate(keys):
                         data['data'].append({'key': key, 'val': GB.redis.get_hash(parsed_data['cache'], key)})
+                elif parsed_data['type'] == 'keys':
+                    data['data'] = GB.redis.get_keys_pattern(parsed_data['cache'] + '*')
                 elif parsed_data['type'] == 'cache':
                     data['data'] = GB.redis.get_cache(parsed_data['cache'])
             elif parsed_data['command'] == 'command_reset_comic':
@@ -60,7 +62,7 @@ class Manager(BaseHTTPRequestHandler):
             elif parsed_data['command'] == 'command_stop':
                 i.set_stop_signal()
 
-        except json.JSONDecodeError as e:
+        except Exception as e:
             data = {'code': 1, 'data': {}, 'message': str(e)}
         self.send_response(200)
         self.send_header('Content-type', 'application/json; charset=utf-8')

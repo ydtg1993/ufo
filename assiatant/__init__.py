@@ -30,8 +30,8 @@ GB.process_cache_conf = {
     'comic': {'key': GB.config.get("App", "PROJECT") + ":comic:task", 'name': '漫画队列', 'type': 'queue'},
     'img': {'key': GB.config.get("App", "PROJECT") + ":img:task", 'name': '章节抓图队列', 'type': 'queue'},
     'chapter': {'key': GB.config.get("App", "PROJECT") + ":chapter:task", 'name': '章节更新队列', 'type': 'queue'},
-    'chapter.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:chapter:link:", 'name': '漫画章节去重hash',
+    'chapter.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:chapter:link:", 'name': '漫画章节去重',
                        'type': 'batch_hash'},
-    'comic.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:comic:link", 'name': '漫画去重hash', 'type': 'hash'},
+    'comic.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:comic:link", 'name': '漫画去重', 'type': 'hash'},
     'menu.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:menu:page", 'name': '漫画翻页', 'type': 'hash'},
 }
