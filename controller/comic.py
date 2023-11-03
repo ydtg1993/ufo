@@ -48,7 +48,6 @@ class Comic:
                 i.insert_current_task('img', f'漫画导入《{title}》-{link}')
                 if GB.redis.get_hash(GB.process_cache_conf['comic.unique']['key'],link) is not None:
                     continue
-                GB.redis.set_hash(GB.process_cache_conf['comic.unique']['key'], link,'0')
                 wb.get(link)
                 if not re.match(r'.*class="entry-content".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
@@ -57,6 +56,7 @@ class Comic:
 
                 comic_id = self.comic_info(wb, task)
                 if comic_id:
+                    GB.redis.set_hash(GB.process_cache_conf['comic.unique']['key'], link, comic_id)
                     wb.get(GB.config.get("App", "URL") + 'chapterlist/' + urlparse(link).path.strip('/').split('/')[-1] + '.html')
                     self.comic_chapter(wb, comic_id)
             except Exception as e:
