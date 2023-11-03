@@ -10,13 +10,20 @@ from datetime import datetime, timedelta
 
 
 class Menu:
-    page_limit = 5
+    total_page = 0
+    page = 10
 
     def __init__(self):
         wb = GB.bot.retry_start(GB.config.get("App", "URL"))
         try:
-            wb.get(GB.config.get("App", "URL") + 'allmanga/page/528/')
+            cache_key = GB.process_cache_conf['menu']['key']
+            if GB.redis.get_cache(cache_key) is None:
+                GB.redis.set_cache(cache_key, 528)
+            p = GB.redis.get_cache(cache_key)
+            wb.get(GB.config.get("App", "URL") + 'allmanga/page/{p}/'.format(p=p))
+            self.total_page = int(p)
             self.browser(wb)
+            GB.redis.set_cache(cache_key, self.total_page)
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
@@ -24,12 +31,12 @@ class Menu:
 
     def browser(self, wb: Chrome):
         while True:
-            nav_dom = wb.find_element(By.CSS_SELECTOR, 'nav.ct-pagination')
-            if not re.match(r'.*class="next page-numbers".*',
-                            nav_dom.get_attribute('innerHTML'),
-                            re.DOTALL):
+            if self.page < 0:
                 break
-
+            if wb.current_url is GB.config.get("App", "URL") + 'allmanga/':
+                break
+            self.page -= 1
+            self.total_page -= 1
             time.sleep(random.randint(5, 15))
             comic_doms = wb.find_elements(By.CSS_SELECTOR, 'div.entries>article>a')
             for _, comic_dom in enumerate(comic_doms):

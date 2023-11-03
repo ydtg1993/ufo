@@ -25,11 +25,11 @@ class Comic:
                 self.update_process(wb)
             else:
                 self.insert_process(wb)
-            wb.quit()
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
         finally:
+            wb.quit()
             self.session.close()
 
     def insert_process(self, wb):
@@ -42,16 +42,14 @@ class Comic:
                     time.sleep(random.randint(300, 600))
                     break
                 task = json.loads(task)
-                time.sleep(random.randint(7, 30))
+                time.sleep(random.randint(7, 15))
                 title = task['title']
                 link = task['link']
                 i.insert_current_task('img', f'漫画导入《{title}》-{link}')
-                exist = self.session.query(SourceComicModel).filter(
-                    SourceComicModel.source_url == task['link']).first()
-                if exist is not None:
+                if GB.redis.get_hash(GB.process_cache_conf['comic.unique']['key'],link) is not None:
                     continue
-                wb.get(task['link'])
-                time.sleep(random.randint(3, 5))
+                GB.redis.set_hash(GB.process_cache_conf['comic.unique']['key'], link,'0')
+                wb.get(link)
                 if not re.match(r'.*class="entry-content".*',
                                 wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
                                 re.DOTALL):
@@ -60,7 +58,6 @@ class Comic:
                 comic_id = self.comic_info(wb, task)
                 if comic_id:
                     wb.get(GB.config.get("App", "URL") + 'chapterlist/' + urlparse(link).path.strip('/').split('/')[-1] + '.html')
-                    time.sleep(random.randint(3, 5))
                     self.comic_chapter(wb, comic_id)
             except Exception as e:
                 logger = logging.getLogger(__name__)
@@ -74,7 +71,7 @@ class Comic:
                 comic_id = GB.redis.dequeue(GB.process_cache_conf['chapter']['key'])
                 if comic_id is None:
                     break
-                time.sleep(random.randint(7, 30))
+                time.sleep(random.randint(7, 15))
                 record = self.session.query(SourceComicModel).filter(SourceComicModel.id == comic_id).first()
                 if record is None:
                     continue
@@ -97,8 +94,8 @@ class Comic:
                 logger.exception(str(e))
 
     def comic_info(self, wb, task):
-        exist = self.session.query(SourceComicModel).filter(SourceComicModel.source_url == task['link']).first()
-        if exist is not None:
+        if self.session.query(SourceComicModel).filter(
+                    SourceComicModel.source_url == task['link']).first() is not None:
             return
         author = wb.find_element(By.CSS_SELECTOR, "div.author-content>a").text
         region = wb.find_element(By.CSS_SELECTOR, "div.genres-content>a").text
