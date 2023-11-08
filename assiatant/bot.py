@@ -61,7 +61,7 @@ class Bot(object):
             else:
                 driver = uc.Chrome(
                     browser_executable_path='/usr/bin/chromium-browser',
-                    driver_executable_path='/usr/bin/chromedriver', options=options,
+                    driver_executable_path='./chromedriver', options=options,
                 )
             driver.set_page_load_timeout(30)
             return driver
