@@ -1,12 +1,12 @@
-import os
 import sys
-
 import cachetools
 import random
 import time
 import requests
 import undetected_chromedriver as uc
 from configparser import ConfigParser
+
+from assiatant import ROOT_PATH
 
 
 class Bot(object):
@@ -64,7 +64,7 @@ class Bot(object):
             else:
                 driver = uc.Chrome(
                     browser_executable_path='/usr/bin/chromium-browser',
-                    driver_executable_path=os.path.dirname(os.path.abspath(__file__))+'/../chromedriver', options=options,
+                    driver_executable_path=ROOT_PATH+'/chromedriver', options=options,
                 )
             driver.set_page_load_timeout(90)
             return driver
