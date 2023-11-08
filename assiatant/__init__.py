@@ -6,7 +6,6 @@ from assiatant.db import MysqlConnector
 from assiatant.rd import RedisConnector
 import logging.handlers
 
-ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # timezone setting
 os.environ["TZ"] = "Asia/Shanghai"
 
