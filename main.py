@@ -1,4 +1,4 @@
-
+import os
 import threading
 from assiatant.task_manager import TaskManager
 from controller.detail import Detail
@@ -6,7 +6,7 @@ from controller.menu import Menu
 from director.service import HttpService
 
 T = TaskManager()
-
+ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def main():
     threading.Thread(target=HttpService).start()

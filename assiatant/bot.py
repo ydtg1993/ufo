@@ -5,8 +5,7 @@ import time
 import requests
 import undetected_chromedriver as uc
 from configparser import ConfigParser
-
-from assiatant import ROOT_PATH
+from main import ROOT_PATH
 
 
 class Bot(object):
