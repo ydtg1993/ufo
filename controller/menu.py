@@ -10,7 +10,7 @@ class Menu:
     def __init__(self):
         wb = GB.bot.start()
         wb.get(GB.config.get("App", "URL") + 'vod/show/by/time/id/1/')
-        while True:
+        for _ in range(50):
             time.sleep(random.randint(1, 3))
             boxes = wb.find_elements(By.CSS_SELECTOR, 'div.list>ul li')
             for _, box in enumerate(boxes):
@@ -23,7 +23,5 @@ class Menu:
                 GB.redis.enqueue(GB.process_cache_conf['detail']['key'],
                                  json.dumps({"title": title, "link": link, "cover": cover}))
                 GB.redis.set_hash(GB.process_cache_conf['av.unique']['key'], link, "0")
-            if wb.current_url == GB.config.get("App", "URL") + 'vod/show/by/hits/id/1/':
-                break
             wb.find_elements(By.CSS_SELECTOR, 'div.channel>div.mb_none a.page_link')[2].click()
         wb.quit()
