@@ -7,6 +7,7 @@
 #install ssl certificate
 `cp ~/.mitmproxy/mitmproxy-ca-cert.pem /etc/ssl/certs/mitmproxy.crt`
 `update-ca-certificates`
+`openssl x509 -in /etc/ssl/certs/mitmproxy.crt -text`
 
 #mitmproxy
 #win
