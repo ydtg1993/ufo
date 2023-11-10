@@ -43,11 +43,11 @@ class Detail:
                     continue
                 GB.redis.delete(GB.process_cache_conf['hook_video']['key'])
                 GB.redis.delete(GB.process_cache_conf['hook_cover']['key'])
-                time.sleep(random.randint(3, 5))
+                time.sleep(random.randint(7, 30))
                 wb.get(task['link'])
-                if not re.match(r'.*class="MacPlayer".*',
-                                wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML'),
-                                re.DOTALL):
+                time.sleep(2)
+                body_html = wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML')
+                if not re.match(r'.*class="video-player-area.*',body_html,re.DOTALL):
                     continue
 
                 detail_id = self.comic_info(wb, task)
@@ -80,33 +80,17 @@ class Detail:
     def comic_info(self, wb, task):
         if self.session.query(SourceVideoModel).filter(SourceVideoModel.source_url == task['link']).first() is not None:
             return
-        info_dom = wb.find_element(By.CSS_SELECTOR, "div.detail")
-        dds = info_dom.find_elements(By.TAG_NAME, 'dd')
-        number = dds[1].text
-        if self.session.query(SourceVideoModel).filter(SourceVideoModel.number == number).first() is not None:
-            return
-        producer = dds[3].text
-        publish_time = dds[5].text
-        description = wb.find_element(By.CSS_SELECTOR, '.des_xy').text
-        actors = []
-        for _, a in enumerate(dds[0].find_elements(By.TAG_NAME, 'a')):
-            if a.text == '未知' or a.text == '':
-                continue
-            actors.append(a.text)
+        tag_doms = wb.find_elements(By.CSS_SELECTOR, '.tags-list>a')
         tags = []
-        for _, a in enumerate(dds[2].find_elements(By.TAG_NAME, 'a')):
-            if a.text == '':
+        for _, a in enumerate(tag_doms):
+            if a.get_attribute('title') == '':
                 continue
-            tags.append(a.text)
+            tags.append(a.get_attribute('title'))
         detail = SourceVideoModel(title=task['title'],
                                   source_url=task['link'],
                                   cover=task['cover'],
-                                  number=number,
-                                  producer=producer,
-                                  actors=json.dumps(actors),
-                                  label=json.dumps(tags),
-                                  publish_time=publish_time,
-                                  description=description)
+                                  label=json.dumps(tags),)
+
         self.session.add(detail)
         self.session.commit()
         return detail.id
