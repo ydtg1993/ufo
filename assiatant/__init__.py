@@ -31,4 +31,5 @@ GB.process_cache_conf = {
     'hook_video': {'key': GB.config.get("App", "PROJECT") + ":hook:video", 'name': '视频锚', 'type': 'cache'},
     'hook_cover': {'key': GB.config.get("App", "PROJECT") + ":hook:big_cover", 'name': '大图锚', 'type': 'cache'},
     'av.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:video:link", 'name': '片子去重hash', 'type': 'hash'},
+    'menu': {'key': GB.config.get("App", "PROJECT") + ":menu:page", 'name': '分页', 'type': 'cache'},
 }
