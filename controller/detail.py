@@ -45,7 +45,6 @@ class Detail:
                 GB.redis.delete(GB.process_cache_conf['hook_cover']['key'])
                 time.sleep(random.randint(7, 30))
                 wb.get(task['link'])
-                time.sleep(2)
                 body_html = wb.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML')
                 if not re.match(r'.*class="video-player-area.*',body_html,re.DOTALL):
                     continue
