@@ -15,4 +15,4 @@
 #win
 `mitmdump.exe -s mitm.py > mitmproxy.log &`
 #linux
-`mitmdump -s mitm.py > mitmproxy.log 2>&1 &`
+`mitmdump -p 8080 --ssl-insecure -s mitm.py > mitmproxy.log 2>&1 &`
