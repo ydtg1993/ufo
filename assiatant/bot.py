@@ -57,17 +57,12 @@ class Bot(object):
                 options.add_argument("--disable-extensions")
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
-
-                driver = uc.Chrome(
-                    browser_executable_path='/usr/bin/chrome-linux/chrome',
-                    driver_executable_path='/usr/bin/chromedriver_linux64/chromedriver',
-                    options=options,
-                )
+            if sys.platform.startswith('win'):
+                driver = uc.Chrome(options=options)
             else:
                 driver = uc.Chrome(
-                    browser_executable_path='/usr/bin/chrome-linux/chrome',
-                    driver_executable_path='/usr/bin/chromedriver_linux64/chromedriver',
-                    options=options,
+                    browser_executable_path='/usr/bin/chromium-browser',
+                    driver_executable_path='/usr/bin/chromedriver', options=options,
                 )
             driver.set_page_load_timeout(90)
             return driver
