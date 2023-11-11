@@ -5,7 +5,9 @@
 `docker run -ti --name= -v /home/server/www/py-jav:/home/jav -p 8992:8992 --link myredis --link mydb --network= allonvendia/ufo:v1.0 /bin/sh`
 
 #install ssl certificate
-`cp ~/.mitmproxy/mitmproxy-ca-cert.pem /etc/ssl/certs/mitmproxy.crt`
+`mitmdump`
+`cd ~/.mitmproxy/ && openssl x509 -in mitmproxy-ca-cert.pem -inform PEM -out mitmproxy-ca-cert.crt`
+`cp ~/.mitmproxy/mitmproxy-ca-cert.crt /etc/ssl/certs/mitmproxy.crt`
 `update-ca-certificates`
 `openssl x509 -in /etc/ssl/certs/mitmproxy.crt -text`
 
