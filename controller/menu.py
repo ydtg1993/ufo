@@ -14,7 +14,7 @@ class Menu:
         page = int(GB.redis.get_cache(cache_key))
         if page < 1:
             return
-        wb = GB.bot.start()
+        wb = GB.bot.retry_start(GB.config.get("App", "URL"), proxy=True, mitm=False, image=False)
         for _ in range(15):
             wb.get(GB.config.get("App", "URL") + 'page/{page}/?filter=most-viewed'.format(page=page))
             page -= 1

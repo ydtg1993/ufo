@@ -14,7 +14,7 @@ class Detail:
 
     def __init__(self):
         self.session = GB.mysql.connect()
-        wb = GB.bot.retry_start(GB.config.get("App", "URL"))
+        wb = GB.bot.retry_start(GB.config.get("App", "URL"), proxy=False, mitm=True, image=True)
         try:
             self.insert_process(wb)
         except Exception as e:

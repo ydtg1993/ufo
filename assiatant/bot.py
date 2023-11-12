@@ -69,10 +69,10 @@ class Bot(object):
         except BaseException as e:
             print(f'webview开启失败{e}')
 
-    def retry_start(self, url: str)-> uc.Chrome:
+    def retry_start(self, url: str, **kwargs)-> uc.Chrome:
         max_attempts = 3
         for _ in range(max_attempts):
-            wb = self.start(proxy=False,mitm=True,image=True)
+            wb = self.start(**kwargs)
             try:
                 wb.get(url)
                 return wb
