@@ -17,7 +17,12 @@
 `mitmdump`
 `cp ~/.mitmproxy/mitmproxy-ca-cert.pem /etc/ssl/certs/mitmproxy.crt`
 `update-ca-certificates`
-`openssl x509 -in /etc/ssl/certs/mitmproxy.crt -text`
+
+`apk add nss-tools`
+`mkdir -p $HOME/.pki/nssdb`
+`certutil -d sql:$HOME/.pki/nssdb -N`
+`certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n mitmproxy -i /etc/ssl/certs/ca-certificates.crt`
+`certutil -d sql:$HOME/.pki/nssdb -L`
 
 #mitmproxy
 #win
