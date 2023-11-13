@@ -1,7 +1,7 @@
 [App]
 DEBUG = on/off
-PROJECT = bz
-URL = https://www.baozimh.com/
+PROJECT = pav
+URL = https://pinaypie.net/
 
 [Bot]
 PROXY_URL = https://dvapi.doveproxy.net/cmapi.php?rq=distribute&user=onemanhua&token=OXBZTmJEL043clF4cmRRYW5sS3Fjdz09&auth=0&geo=all&city=all&agreement=1&timeout=30&num=10&rtype=0

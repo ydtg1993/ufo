@@ -4,10 +4,18 @@
 #linux
 `docker run -ti --name= -v /home/server/www/py-jav:/home/jav -p 8992:8992 --link myredis --link mydb --network= allonvendia/ufo:v1.0 /bin/sh`
 
+#mitmproxy
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    wget https://sh.rustup.rs -O rustup-init.sh
+    sh rustup-init.sh
+    source $HOME/.cargo/env
+    apk add openssl ca-certificates  linux-headers libffi-dev libressl zlib zlib-dev 
+    apk add bsd-compat-headers
+    pip3 install mitmproxy
+    
 #install ssl certificate
 `mitmdump`
-`cd ~/.mitmproxy/ && openssl x509 -in mitmproxy-ca-cert.pem -inform PEM -out mitmproxy-ca-cert.crt`
-`cp ~/.mitmproxy/mitmproxy-ca-cert.crt /etc/ssl/certs/mitmproxy.crt`
+`cp ~/.mitmproxy/mitmproxy-ca-cert.pem /etc/ssl/certs/mitmproxy.crt`
 `update-ca-certificates`
 `openssl x509 -in /etc/ssl/certs/mitmproxy.crt -text`
 
@@ -15,4 +23,4 @@
 #win
 `mitmdump.exe -s mitm.py > mitmproxy.log &`
 #linux
-`mitmdump -p 8080 --ssl-insecure -s mitm.py > mitmproxy.log 2>&1 &`
+`mitmdump -p 8080 -s mitm.py > mitmproxy.log 2>&1 &`
