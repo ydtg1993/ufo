@@ -57,8 +57,6 @@ class Bot(object):
                 options.add_argument("--disable-extensions")
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
-                options.add_argument("--ignore-certificate-errors")
-                options.add_argument("--allow-insecure-localhost")
             if sys.platform.startswith('win'):
                 driver = uc.Chrome(options=options)
             else:
