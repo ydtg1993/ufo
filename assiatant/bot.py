@@ -46,6 +46,7 @@ class Bot(object):
                 options.add_argument(f"--proxy-server={self._mitm}")
                 options.add_argument("--ignore-certificate-errors")
             options.add_argument('--no-sandbox')
+            
             if not self._debug:
                 if image is False:
                     options.add_argument("--blink-settings=imagesEnabled=false")
