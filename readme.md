@@ -21,7 +21,7 @@
 `apk add nss-tools`
 `mkdir -p $HOME/.pki/nssdb`
 `certutil -d sql:$HOME/.pki/nssdb -N`
-`certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n mitmproxy -i /etc/ssl/certs/ca-certificates.crt`
+`certutil -d sql:$HOME/.pki/nssdb -A -t "CT,," -n "mitmproxy" -a -i /etc/ssl/certs/ca-certificates.crt`
 `certutil -d sql:$HOME/.pki/nssdb -L`
 
 #mitmproxy
