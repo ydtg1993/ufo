@@ -8,6 +8,7 @@ from controller.img import Img
 from controller.menu import Menu
 from director.info import Info
 from director.service import HttpService
+from model.source_chapter_model import SourceChapterModel
 from model.source_comic_model import SourceComicModel
 from datetime import datetime
 
@@ -22,6 +23,7 @@ def main():
     T.fill_task(process_img, 30)
     T.fill_task(process_update_comic)
     T.fill_task(reset_comic_update_queue)
+    T.fill_task(reset_img_update_queue)
     T.dealing()
 
 
@@ -45,7 +47,7 @@ def reset_comic_update_queue():
     while True:
         session = GB.mysql.connect()
         try:
-            Info().insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 9)
+            Info().insert_process('重置漫画更新队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 1)
             batch_size = 1000
             offset = 0
             tasks = GB.redis.get_queue(GB.process_cache_conf['chapter']['key'], 0, -1)
@@ -68,6 +70,34 @@ def reset_comic_update_queue():
         finally:
             session.close()
         time.sleep(3600 * 24)
+
+
+def reset_img_update_queue():
+    while True:
+        session = GB.mysql.connect()
+        try:
+            Info().insert_process('重置章节图任务队列', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 3600 * 1)
+            batch_size = 1000
+            offset = 0
+            tasks = GB.redis.get_queue(GB.process_cache_conf['img']['key'], 0, -1)
+            while True:
+                results = session.query(SourceChapterModel.id).filter(
+                    SourceChapterModel.img_count == 0).offset(offset).limit(batch_size).all()
+                for result in results:
+                    tasks.append(str(result[0]))
+                tasks = list(set(tasks))
+                offset += batch_size
+                if len(results) < batch_size:
+                    GB.redis.delete(GB.process_cache_conf['img']['key'])
+                    for _, vid in enumerate(tasks):
+                        GB.redis.enqueue(GB.process_cache_conf['img']['key'], vid)
+                    break
+        except Exception as e:
+            logger = logging.getLogger(__name__)
+            logger.exception(str(e))
+        finally:
+            session.close()
+        time.sleep(3600 * 12)
 
 
 if __name__ == '__main__':
