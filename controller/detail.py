@@ -25,7 +25,7 @@ class Detail:
             self.session.close()
 
     def insert_process(self, wb):
-        for _ in range(12):
+        for _ in range(50):
             i = Info()
             i.check_stop_signal()
             try:
@@ -65,7 +65,7 @@ class Detail:
                 logger.exception(str(e))
 
     def sync_receive_info(self,receiver, **kwargs):
-        for _ in range(15):
+        for _ in range(50):
             time.sleep(1)
             for key, value in kwargs.items():
                 cache = GB.redis.get_cache(value)
