@@ -72,7 +72,7 @@ class Bot(object):
                 )
             else:
                 driver = uc.Chrome(options=options,)
-                
+
             driver.set_page_load_timeout(90)
             return driver
         except BaseException as e:
