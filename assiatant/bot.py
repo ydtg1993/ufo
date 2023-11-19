@@ -11,6 +11,8 @@ class Bot(object):
     _debug = None
     _proxy = None
     _mitm = None
+    _driver = None
+    _browser = None
     cache = cachetools.TTLCache(maxsize=100, ttl=800)
 
     def __init__(self, config: ConfigParser):
@@ -19,6 +21,10 @@ class Bot(object):
             self._proxy = config.get("Bot", "PROXY_URL")
         if config.get("Bot", "MITM_PROXY"):
             self._mitm = config.get("Bot", "MITM_PROXY")
+        if config.get("Bot","BROWSER_PATH"):
+            self._browser = config.get("Bot","BROWSER_PATH")
+        if config.get("Bot", "DRIVER_PATH"):
+            self._driver = config.get("Bot", "DRIVER_PATH")
 
     @cachetools.cached(cache)
     def fetch_proxy_data(self, url):
@@ -58,13 +64,15 @@ class Bot(object):
                 options.add_argument("--disable-extensions")
                 options.add_argument('--disable-application-cache')
                 options.add_argument("--disable-setuid-sandbox")
-            if sys.platform.startswith('win'):
-                driver = uc.Chrome(options=options)
-            else:
+
+            if self._driver is not None and self._browser is not None:
                 driver = uc.Chrome(
-                    browser_executable_path='/usr/bin/chromium-browser',
-                    driver_executable_path='/usr/bin/chromedriver', options=options,
+                    browser_executable_path=self._browser,
+                    driver_executable_path=self._driver, options=options,
                 )
+            else:
+                driver = uc.Chrome(options=options,)
+                
             driver.set_page_load_timeout(90)
             return driver
         except BaseException as e:
