@@ -17,5 +17,6 @@ class SourceVideoModel(Base):
     url = Column(String, default='')
     label = Column(String, default='[]')
     status = Column(Integer, default=0)
+    like = Column(Integer, default=0)
     updated_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)

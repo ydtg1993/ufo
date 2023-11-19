@@ -10,13 +10,13 @@ class Menu:
     def __init__(self):
         cache_key = GB.process_cache_conf['menu']['key']
         if GB.redis.get_cache(cache_key) is None:
-            GB.redis.set_cache(cache_key, 123)
+            GB.redis.set_cache(cache_key, 70)
         page = int(GB.redis.get_cache(cache_key))
         if page < 1:
             return
         wb = GB.bot.retry_start(GB.config.get("App", "URL"), proxy=True, mitm=False, image=False)
         for _ in range(15):
-            wb.get(GB.config.get("App", "URL") + 'page/{page}/?filter=most-viewed'.format(page=page))
+            wb.get(GB.config.get("App", "URL") + 'page/{page}/?filter=latest'.format(page=page))
             page -= 1
             if page < 1:
                 GB.redis.set_cache(cache_key, 0)

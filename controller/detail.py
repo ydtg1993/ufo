@@ -122,9 +122,11 @@ class Detail:
             if a.get_attribute('title') == '':
                 continue
             tags.append(a.get_attribute('title'))
+        like = wb.find_element(By.CSS_SELECTOR, "span.likes_count").text
         detail = SourceVideoModel(title=task['title'],
                                   source_url=task['link'],
                                   cover=task['cover'],
+                                  like = int(like),
                                   label=json.dumps(tags),)
         self.session.add(detail)
         self.session.commit()
