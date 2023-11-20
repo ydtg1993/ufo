@@ -15,7 +15,7 @@ class MysqlConnector:
         try:
             self.engine = create_engine(
                 f"mysql+mysqlconnector://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}",
-                pool_size=20, max_overflow=10)
+                pool_size=5, max_overflow=10)
             self.engine.connect()
             self.session_factory = sessionmaker(bind=self.engine)
         except BaseException as e:

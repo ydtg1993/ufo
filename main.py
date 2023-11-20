@@ -18,6 +18,7 @@ lock = threading.Lock()
 def main():
     threading.Thread(target=HttpService).start()
     T.main_task_num(3)
+    GB.redis.set_cache(GB.process_cache_conf['menu']['key'], 120)
     T.fill_task(process_menu, 300)
     T.fill_task(process_detail)
     T.fill_task(process_update_detail)
