@@ -9,7 +9,27 @@
 `update-ca-certificates`
 
 #mitmproxy
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    wget https://sh.rustup.rs -O rustup-init.sh
+    sh rustup-init.sh
+    source $HOME/.cargo/env
+    apk add openssl ca-certificates  linux-headers libffi-dev libressl zlib zlib-dev 
+    apk add bsd-compat-headers
+    pip3 install mitmproxy
+    
+#install ssl certificate
+`mitmdump`
+`cp ~/.mitmproxy/mitmproxy-ca-cert.pem /etc/ssl/certs/mitmproxy.crt`
+`update-ca-certificates`
+
+`apk add nss-tools`
+`mkdir -p $HOME/.pki/nssdb`
+`certutil -d sql:$HOME/.pki/nssdb -N`
+`certutil -d sql:$HOME/.pki/nssdb -A -t "CT,," -n "mitmproxy" -a -i /etc/ssl/certs/ca-certificates.crt`
+`certutil -d sql:$HOME/.pki/nssdb -L`
+
+#mitmproxy
 #win
 `mitmdump.exe -s mitm.py > mitmproxy.log &`
 #linux
-`mitmdump -s mitm.py > mitmproxy.log 2>&1 &`
+`mitmdump -p 8080 -s mitm.py > mitmproxy.log 2>&1 &`
