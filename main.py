@@ -10,6 +10,7 @@ from controller.menu import Menu
 from director.info import Info
 from director.service import HttpService
 from model.source_video_model import SourceVideoModel
+from trans.video import TransVideo
 
 T = TaskManager()
 lock = threading.Lock()
@@ -22,6 +23,7 @@ def main():
     T.fill_task(process_menu, 300)
     T.fill_task(process_detail)
     T.fill_task(process_update_detail)
+    T.fill_task(publish)
     T.dealing()
 
 
@@ -37,6 +39,10 @@ def process_detail():
 def process_update_detail():
     with lock:
         T.permanent_running(lambda: Detail(True), '详情页信息重试', 300, 900)
+
+
+def publish():
+    T.permanent_running(lambda: TransVideo(), '发布', 3600 * 6, 3600 * 8)
 
 
 def reset_comic_update_queue():
@@ -65,6 +71,7 @@ def reset_comic_update_queue():
         finally:
             session.close()
         time.sleep(3600 * 12)
+
 
 if __name__ == '__main__':
     main()
