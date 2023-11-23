@@ -34,7 +34,7 @@ class TransVideo:
                     SourceVideoModel.url != '',
                     SourceVideoModel.status == 0
                 )
-            ).offset(0).limit(random.randint(3,15)).all()
+            ).offset(0).limit(random.randint(3, 15)).all()
             self.get_all_label()
             for record in results:
                 labels = json.loads(record.label)
@@ -45,6 +45,9 @@ class TransVideo:
                     else:
                         lid = self.insert_label(label)
                         label_ids.append(lid)
+                if self.target_session.query(VideoModel).filter(
+                        VideoModel.source_url == record.source_url).first() is not None:
+                    continue
                 video = VideoModel(
                     title=record.title,
                     source_id=record.id,
@@ -56,7 +59,7 @@ class TransVideo:
                 )
                 self.target_session.add(video)
                 self.target_session.flush()
-                self.insert_label_ass(video.id,label_ids)
+                self.insert_label_ass(video.id, label_ids)
                 session.query(SourceVideoModel).filter(SourceVideoModel.id == record.id).update({
                     SourceVideoModel.status: 1})
             self.target_session.commit()
@@ -67,12 +70,12 @@ class TransVideo:
             session.close()
         pass
 
-    def insert_label_ass(self,vid,lids):
+    def insert_label_ass(self, vid, lids):
         if len(lids) == 0:
             return
         ass = []
-        for _,lid in enumerate(lids):
-            ass.append(VideoLabelAssModel(label_id=lid,video_id=vid))
+        for _, lid in enumerate(lids):
+            ass.append(VideoLabelAssModel(label_id=lid, video_id=vid))
         self.target_session.bulk_save_objects(ass)
 
     def insert_label(self, name) -> int:
