@@ -63,6 +63,7 @@ class TransVideo:
                 session.query(SourceVideoModel).filter(SourceVideoModel.id == record.id).update({
                     SourceVideoModel.status: 1})
             self.target_session.commit()
+            session.commit()
         except Exception as e:
             logger = logging.getLogger(__name__)
             logger.exception(str(e))
