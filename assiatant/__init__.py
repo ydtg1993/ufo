@@ -27,10 +27,9 @@ GB = Globe(config, MysqlConnector(config), RedisConnector(config), Bot(config))
 
 # step cache key setting
 GB.process_cache_conf = {
-    'detail': {'key': GB.config.get("App", "PROJECT") + ":detail:task", 'name': '信息录入队列', 'type': 'queue'},
-    'detail.retry': {'key': GB.config.get("App", "PROJECT") + ":detail_retry:task", 'name': '信息重录队列', 'type': 'queue'},
-    'hook_video': {'key': GB.config.get("App", "PROJECT") + ":hook:video", 'name': '视频锚', 'type': 'cache'},
-    'hook_cover': {'key': GB.config.get("App", "PROJECT") + ":hook:big_cover", 'name': '大图锚', 'type': 'cache'},
-    'av.unique': {'key': GB.config.get("App", "PROJECT") + ":unique:video:link", 'name': '片子去重hash', 'type': 'hash'},
-    'menu': {'key': GB.config.get("App", "PROJECT") + ":menu:page", 'name': '分页', 'type': 'cache'},
+    'comics': {'key': GB.config.get("App", "PROJECT") + ":comics", 'name': '漫画信息录入队列', 'type': 'queue'},
+    'comics.unique': {'key': GB.config.get("App", "PROJECT") + ":comics:link", 'name': '漫画去重hash', 'type': 'hash'},
+    'chapters': {'key': GB.config.get("App", "PROJECT") + ":chapters", 'name': '章节信息录队列', 'type': 'queue'},
+    'chapters.unique': {'key': GB.config.get("App", "PROJECT") + ":chapters:link", 'name': '章节去重hash', 'type': 'hash'},
+    'images': {'key': GB.config.get("App", "PROJECT") + ":chapters:images", 'name': '图片', 'type': 'cache'},
 }
